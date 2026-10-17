@@ -1,0 +1,35 @@
+{
+  "run_name": "run_002_20261002_155133",
+  "architecture_name": "l2cs_gaze_net_mobilenet_v3_small",
+  "total_duration_seconds": 35.88,
+  "best_epoch": 18,
+  "best_val_loss": 17.321438,
+  "test_loss": 17.508387,
+  "test_angular_error_deg": 12.877,
+  "test_pixel_mae": 580.1753,
+  "total_epochs_executed": 21,
+  "best_checkpoint_path": "mvp/experiments\\l2cs_gaze_net_mobilenet_v3_small\\run_002_20261002_155133\\checkpoints\\best_model.pt",
+  "hyperparameter_diff": {
+    "backbone": {
+      "previous": null,
+      "current": "mobilenet_v3_small"
+    },
+    "batch_size": {
+      "previous": 32,
+      "current": 16
+    },
+    "patience": {
+      "previous": null,
+      "current": 3
+    },
+    "max_samples": {
+      "previous": null,
+      "current": 60
+    },
+    "epochs_requested": {
+      "previous": null,
+      "current": 150
+    }
+  },
+  "completed_at": "2026-10-02T15:52:02.484576+03:00"
+}

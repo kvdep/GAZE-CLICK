@@ -1,0 +1,19 @@
+{
+  "run_name": "run_001_20261004_220950",
+  "architecture_name": "l2cs_gaze_net_mobilenet_v3_large",
+  "status": "completed",
+  "total_duration_seconds": 5643.22,
+  "best_epoch": 7,
+  "best_val_loss": 8.470793,
+  "test_loss": 34.674012,
+  "test_angular_error_deg": 10.8344,
+  "test_head_pitch_mae_deg": 10.1667,
+  "test_head_yaw_mae_deg": 13.8299,
+  "test_pixel_mae": 216.1876,
+  "total_epochs_executed": 44,
+  "weights_file_path": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\experiments\\l2cs_gaze_net_mobilenet_v3_large\\run_001_20261004_220950\\checkpoints\\best_model.pt",
+  "model_source_file": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\experiments\\l2cs_gaze_net_mobilenet_v3_large\\run_001_20261004_220950\\model_source.py",
+  "original_model_file": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\models\\l2cs_net.py",
+  "hyperparameter_diff": {},
+  "completed_at": "2026-10-04T23:41:47.382966+03:00"
+}

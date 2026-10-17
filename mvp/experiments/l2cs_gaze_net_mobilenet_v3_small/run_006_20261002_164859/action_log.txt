@@ -1,0 +1,18 @@
+[16:48:59] [00:00:00] [GPU] [16.2] [6.9] [experiment_manager.py:78] Initialized experiment: run_006_20261002_164859 in [DIR:mvp/experiments\l2cs_gaze_net_mobilenet_v3_small]
+[16:48:59] [00:00:00] [GPU] [16.2] [6.9] [experiment_manager.py:79] Copied model source definition to: [ARTIFACT:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_006_20261002_164859\model_source.py]
+[16:48:59] [00:00:00] [GPU] [16.2] [6.9] [experiment_manager.py:82] Hyperparameter modifications detected: test_interrupt: None -> True
+[16:48:59] [00:00:00] [GPU] [16.1] [6.9] [memory.py:33] Runtime verified: Free VRAM = 6.89 GB, Free RAM = 16.14 GB
+[16:48:59] [00:00:00] [GPU] [16.1] [6.9] [trainer.py:110] Starting training run: total_epochs=150, patience=15, save_interval_min=20.0
+[16:49:01] [00:00:01] [GPU] [15.1] [6.8] [trainer.py:126] Epoch 1/150 | L Train: 18.7204 | L Val: 20.4230
+[16:49:01] [00:00:00] [GPU] [15.1] [6.8] [registry.py:52] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_006_20261002_164859\checkpoints\best_model.pt
+[16:49:01] [00:00:00] [GPU] [15.1] [6.8] [trainer.py:148] Saved new best model checkpoint: [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_006_20261002_164859\checkpoints\best_model.pt]
+[16:49:02] [00:00:00] [GPU] [15.1] [6.8] [trainer.py:126] Epoch 2/150 | L Train: 18.3932 | L Val: 20.4182
+[16:49:02] [00:00:00] [GPU] [15.1] [6.8] [test_interrupt.py:45] Simulating user Ctrl+C KeyboardInterrupt at epoch 2
+[16:49:02] [00:00:00] [GPU] [15.1] [6.8] [trainer.py:168] Graceful shutdown initiated by user interrupt at epoch 2. Preserving weights and architecture.
+[16:49:02] [00:00:00] [GPU] [15.1] [6.8] [registry.py:52] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_006_20261002_164859\checkpoints\interrupted_model.pt
+[16:49:02] [00:00:00] [GPU] [15.1] [6.8] [trainer.py:177] Emergency interrupted checkpoint serialized: [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_006_20261002_164859\checkpoints\interrupted_model.pt]
+[16:49:02] [00:00:00] [GPU] [15.1] [6.8] [experiment_manager.py:207] Finalized experiment: run_006_20261002_164859. Status: INTERRUPTED, Total duration: 2.86s, Best Val Loss: 20.418175
+[16:49:02] [00:00:00] [GPU] [15.1] [6.8] [experiment_manager.py:208] Saved weights file (.pt): [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_006_20261002_164859\checkpoints\interrupted_model.pt]
+[16:49:02] [00:00:00] [GPU] [15.1] [6.8] [experiment_manager.py:209] Saved model source definition (.py): [ARTIFACT:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_006_20261002_164859\model_source.py]
+[16:49:02] [00:00:00] [GPU] [15.1] [6.8] [registry.py:58] Loading model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_006_20261002_164859\checkpoints\interrupted_model.pt
+[16:49:03] [00:00:00] [GPU] [15.1] [6.8] [registry.py:70] Loaded model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_006_20261002_164859\checkpoints\interrupted_model.pt

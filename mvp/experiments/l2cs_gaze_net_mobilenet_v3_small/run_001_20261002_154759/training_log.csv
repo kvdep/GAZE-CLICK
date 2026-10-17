@@ -1,0 +1,2 @@
+epoch,train_loss,val_loss,val_angular_error_deg,val_pixel_mae,duration_seconds,learning_rate,ram_gb,vram_gb,timestamp_msk
+1,5.200000,4.800000,12.3000,80.5000,1.50,0.00100000,18.08,6.89,15:47:59

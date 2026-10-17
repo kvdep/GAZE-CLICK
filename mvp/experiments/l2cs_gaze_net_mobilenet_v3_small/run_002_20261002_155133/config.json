@@ -1,0 +1,44 @@
+{
+  "run_name": "run_002_20261002_155133",
+  "architecture_name": "l2cs_gaze_net_mobilenet_v3_small",
+  "architecture_config": {
+    "model_type": "l2cs_gaze_net",
+    "backbone_name": "mobilenet_v3_small",
+    "num_bins": 90,
+    "max_angle_deg": 45.0,
+    "feature_dimension": 576,
+    "include_screen_head": true
+  },
+  "hyperparameters": {
+    "backbone": "mobilenet_v3_small",
+    "batch_size": 16,
+    "learning_rate": 0.001,
+    "optimizer": "AdamW",
+    "patience": 3,
+    "max_samples": 60,
+    "epochs_requested": 150
+  },
+  "hyperparameter_diff": {
+    "backbone": {
+      "previous": null,
+      "current": "mobilenet_v3_small"
+    },
+    "batch_size": {
+      "previous": 32,
+      "current": 16
+    },
+    "patience": {
+      "previous": null,
+      "current": 3
+    },
+    "max_samples": {
+      "previous": null,
+      "current": 60
+    },
+    "epochs_requested": {
+      "previous": null,
+      "current": 150
+    }
+  },
+  "created_at": "2026-10-02T15:51:33.959730+03:00"
+}

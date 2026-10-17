@@ -1,0 +1,39 @@
+[21:00:58] [00:00:00] [GPU] [18.5] [6.8] [experiment_manager.py:78] Initialized experiment: run_003_20261013_210058 in [DIR:mvp/experiments\yolo26n_gaze_net_yolo26n]
+[21:00:58] [00:00:00] [GPU] [18.5] [6.8] [experiment_manager.py:79] Copied model source definition to: [ARTIFACT:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_003_20261013_210058\model_source.py]
+[21:00:58] [00:00:00] [GPU] [18.5] [6.8] [experiment_manager.py:82] Hyperparameter modifications detected: batch_size: 64 -> 16, learning_rate: 0.0003 -> 0.0005, max_samples: 5000 -> 60, save_every_epoch: True -> False, gpu_latency_ms: 7.107 -> 8.282, gpu_fp16_latency_ms: 10.272 -> 12.407, gpu_jit_latency_ms: 7.107 -> 8.282, cpu_latency_ms: 10.515 -> 11.541, cpu_onnx_latency_ms: 3.386 -> 4.796, gpu_eager_latency_ms: 12.992 -> 14.908, cpu_eager_latency_ms: 12.278 -> 14.223
+[21:00:58] [00:00:00] [GPU] [18.4] [6.8] [memory.py:33] Runtime verified: Free VRAM = 6.82 GB, Free RAM = 18.44 GB
+[21:00:58] [00:00:00] [GPU] [18.4] [6.8] [trainer.py:138] Starting training run: total_epochs=150, patience=15, save_interval_min=20.0
+[21:01:00] [00:00:02] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 1/150 | L Train: 49.1513 | L Val: 6.4475 | Gaze Val: 14.30° | Head P/Y: 7.34°/21.14°
+[21:01:00] [00:00:00] [GPU] [18.0] [6.8] [registry.py:59] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_003_20261013_210058\checkpoints\best_model.pt
+[21:01:00] [00:00:00] [GPU] [18.0] [6.8] [trainer.py:181] Saved new best model checkpoint (Gaze Error: 14.30°): [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_003_20261013_210058\checkpoints\best_model.pt]
+[21:01:02] [00:00:01] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 2/150 | L Train: 8.7268 | L Val: 6.8547 | Gaze Val: 12.56° | Head P/Y: 6.33°/22.45°
+[21:01:02] [00:00:00] [GPU] [17.9] [6.8] [registry.py:59] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_003_20261013_210058\checkpoints\best_model.pt
+[21:01:02] [00:00:00] [GPU] [17.9] [6.8] [trainer.py:181] Saved new best model checkpoint (Gaze Error: 12.56°): [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_003_20261013_210058\checkpoints\best_model.pt]
+[21:01:04] [00:00:01] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 3/150 | L Train: 7.4312 | L Val: 4.6716 | Gaze Val: 10.28° | Head P/Y: 6.17°/19.10°
+[21:01:04] [00:00:00] [GPU] [18.0] [6.8] [registry.py:59] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_003_20261013_210058\checkpoints\best_model.pt
+[21:01:04] [00:00:00] [GPU] [18.0] [6.8] [trainer.py:181] Saved new best model checkpoint (Gaze Error: 10.28°): [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_003_20261013_210058\checkpoints\best_model.pt]
+[21:01:06] [00:00:01] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 4/150 | L Train: 7.3743 | L Val: 4.8973 | Gaze Val: 10.30° | Head P/Y: 5.48°/18.98°
+[21:01:07] [00:00:01] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 5/150 | L Train: 7.0476 | L Val: 4.9735 | Gaze Val: 9.91° | Head P/Y: 7.11°/20.48°
+[21:01:07] [00:00:00] [GPU] [18.0] [6.8] [registry.py:59] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_003_20261013_210058\checkpoints\best_model.pt
+[21:01:07] [00:00:00] [GPU] [18.0] [6.8] [trainer.py:181] Saved new best model checkpoint (Gaze Error: 9.91°): [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_003_20261013_210058\checkpoints\best_model.pt]
+[21:01:09] [00:00:01] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 6/150 | L Train: 6.1880 | L Val: 5.1830 | Gaze Val: 10.40° | Head P/Y: 9.13°/17.42°
+[21:01:10] [00:00:01] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 7/150 | L Train: 6.1632 | L Val: 5.1677 | Gaze Val: 10.95° | Head P/Y: 6.44°/15.49°
+[21:01:12] [00:00:01] [GPU] [17.9] [6.8] [trainer.py:157] Epoch 8/150 | L Train: 6.9487 | L Val: 5.5696 | Gaze Val: 11.70° | Head P/Y: 5.37°/15.75°
+[21:01:14] [00:00:01] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 9/150 | L Train: 5.7937 | L Val: 4.8920 | Gaze Val: 11.70° | Head P/Y: 8.68°/11.73°
+[21:01:15] [00:00:01] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 10/150 | L Train: 5.8808 | L Val: 5.7685 | Gaze Val: 12.72° | Head P/Y: 5.82°/18.89°
+[21:01:17] [00:00:01] [GPU] [17.9] [6.8] [trainer.py:157] Epoch 11/150 | L Train: 6.8041 | L Val: 5.7968 | Gaze Val: 12.28° | Head P/Y: 6.43°/19.62°
+[21:01:18] [00:00:01] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 12/150 | L Train: 6.3307 | L Val: 7.7337 | Gaze Val: 14.69° | Head P/Y: 4.53°/20.15°
+[21:01:20] [00:00:01] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 13/150 | L Train: 6.1358 | L Val: 5.9845 | Gaze Val: 12.64° | Head P/Y: 3.39°/17.93°
+[21:01:22] [00:00:01] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 14/150 | L Train: 5.7743 | L Val: 7.1540 | Gaze Val: 14.64° | Head P/Y: 4.82°/16.79°
+[21:01:23] [00:00:01] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 15/150 | L Train: 5.9999 | L Val: 7.4400 | Gaze Val: 14.95° | Head P/Y: 5.20°/17.06°
+[21:01:25] [00:00:01] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 16/150 | L Train: 6.1230 | L Val: 4.8229 | Gaze Val: 11.07° | Head P/Y: 6.25°/15.56°
+[21:01:26] [00:00:01] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 17/150 | L Train: 5.4111 | L Val: 4.9446 | Gaze Val: 11.37° | Head P/Y: 6.23°/20.12°
+[21:01:28] [00:00:01] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 18/150 | L Train: 5.4259 | L Val: 6.6069 | Gaze Val: 13.11° | Head P/Y: 6.49°/19.11°
+[21:01:29] [00:00:01] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 19/150 | L Train: 6.1135 | L Val: 4.5885 | Gaze Val: 11.27° | Head P/Y: 5.08°/12.68°
+[21:01:31] [00:00:01] [GPU] [18.0] [6.8] [trainer.py:157] Epoch 20/150 | L Train: 5.7370 | L Val: 5.9105 | Gaze Val: 13.44° | Head P/Y: 6.50°/14.53°
+[21:01:31] [00:00:00] [GPU] [18.0] [6.8] [trainer.py:196] Early stopping triggered at epoch 20. Restoring best weights.
+[21:01:31] [00:00:00] [GPU] [18.0] [6.8] [trainer.py:30] Restored best model weights from epoch 5 with val_angular_error=9.9089°
+[21:01:31] [00:00:00] [GPU] [18.0] [6.8] [trainer.py:226] L Test: 8.4698 | Gaze Error: 16.90° | Head Pitch MAE: 10.32° | Head Yaw MAE: 16.65° | Screen MAE: 0.0 px
+[21:01:31] [00:00:00] [GPU] [18.0] [6.8] [experiment_manager.py:243] Finalized experiment: run_003_20261013_210058. Status: COMPLETED, Total duration: 66.78s, Best Val Loss: 9.90886
+[21:01:31] [00:00:00] [GPU] [18.0] [6.8] [experiment_manager.py:244] Saved weights file (.pt): [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_003_20261013_210058\checkpoints\best_model.pt]
+[21:01:31] [00:00:00] [GPU] [18.0] [6.8] [experiment_manager.py:245] Saved model source definition (.py): [ARTIFACT:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_003_20261013_210058\model_source.py]

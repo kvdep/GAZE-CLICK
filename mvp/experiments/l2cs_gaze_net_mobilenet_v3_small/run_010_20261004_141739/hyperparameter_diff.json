@@ -1,0 +1,10 @@
+{
+  "gpu_latency_ms": {
+    "previous": 12.805,
+    "current": 11.696
+  },
+  "cpu_latency_ms": {
+    "previous": 13.443,
+    "current": 11.681
+  }
+}

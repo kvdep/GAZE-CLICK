@@ -1,0 +1,75 @@
+{
+  "run_name": "run_002_20261013_192014",
+  "architecture_name": "yolo26n_gaze_net_yolo26n",
+  "architecture_config": {
+    "model_type": "yolo26n_gaze_net",
+    "backbone_name": "yolo26n",
+    "weights_path": "mvp/models/weights/yolo26n.pt",
+    "pretrained": true,
+    "feature_dim": 256,
+    "dropout": 0.2
+  },
+  "original_model_file": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\models\\yolo26n_gaze_net.py",
+  "copied_model_source_path": "mvp/experiments\\yolo26n_gaze_net_yolo26n\\run_002_20261013_192014\\model_source.py",
+  "hyperparameters": {
+    "backbone": "yolo26n",
+    "batch_size": 64,
+    "learning_rate": 0.0003,
+    "optimizer": "AdamW",
+    "patience": 15,
+    "max_samples": 5000,
+    "epochs_requested": 150,
+    "save_interval_minutes": 20.0,
+    "save_every_epoch": true,
+    "gpu_latency_ms": 7.107,
+    "gpu_fp16_latency_ms": 10.272,
+    "gpu_jit_latency_ms": 7.107,
+    "cpu_latency_ms": 10.515,
+    "cpu_onnx_latency_ms": 3.386,
+    "gpu_eager_latency_ms": 12.992,
+    "cpu_eager_latency_ms": 12.278
+  },
+  "hyperparameter_diff": {
+    "batch_size": {
+      "previous": 32,
+      "current": 64
+    },
+    "patience": {
+      "previous": 2,
+      "current": 15
+    },
+    "max_samples": {
+      "previous": 300,
+      "current": 5000
+    },
+    "gpu_latency_ms": {
+      "previous": 7.911,
+      "current": 7.107
+    },
+    "gpu_fp16_latency_ms": {
+      "previous": 10.798,
+      "current": 10.272
+    },
+    "gpu_jit_latency_ms": {
+      "previous": 7.911,
+      "current": 7.107
+    },
+    "cpu_latency_ms": {
+      "previous": 9.453,
+      "current": 10.515
+    },
+    "cpu_onnx_latency_ms": {
+      "previous": 3.742,
+      "current": 3.386
+    },
+    "gpu_eager_latency_ms": {
+      "previous": 12.903,
+      "current": 12.992
+    },
+    "cpu_eager_latency_ms": {
+      "previous": 13.118,
+      "current": 12.278
+    }
+  },
+  "created_at": "2026-10-13T19:20:14.210417+03:00"
+}

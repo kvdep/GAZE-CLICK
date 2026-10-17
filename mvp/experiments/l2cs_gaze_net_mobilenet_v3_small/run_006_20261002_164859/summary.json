@@ -1,0 +1,22 @@
+{
+  "run_name": "run_006_20261002_164859",
+  "architecture_name": "l2cs_gaze_net_mobilenet_v3_small",
+  "status": "interrupted",
+  "total_duration_seconds": 2.86,
+  "best_epoch": 2,
+  "best_val_loss": 20.418175,
+  "test_loss": null,
+  "test_angular_error_deg": null,
+  "test_pixel_mae": null,
+  "total_epochs_executed": 2,
+  "weights_file_path": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\experiments\\l2cs_gaze_net_mobilenet_v3_small\\run_006_20261002_164859\\checkpoints\\interrupted_model.pt",
+  "model_source_file": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\experiments\\l2cs_gaze_net_mobilenet_v3_small\\run_006_20261002_164859\\model_source.py",
+  "original_model_file": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\models\\l2cs_net.py",
+  "hyperparameter_diff": {
+    "test_interrupt": {
+      "previous": null,
+      "current": true
+    }
+  },
+  "completed_at": "2026-10-02T16:49:02.697042+03:00"
+}

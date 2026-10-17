@@ -1,0 +1,83 @@
+{
+  "run_name": "run_006_20261013_215210",
+  "architecture_name": "yolo26n_gaze_net_yolo26n",
+  "architecture_config": {
+    "model_type": "yolo26n_gaze_net",
+    "backbone_name": "yolo26n",
+    "weights_path": "mvp/models/weights/yolo26n.pt",
+    "pretrained": true,
+    "feature_dim": 256,
+    "dropout": 0.2
+  },
+  "original_model_file": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\models\\yolo26n_gaze_net.py",
+  "copied_model_source_path": "mvp/experiments\\yolo26n_gaze_net_yolo26n\\run_006_20261013_215210\\model_source.py",
+  "hyperparameters": {
+    "backbone": "yolo26n",
+    "batch_size": 64,
+    "learning_rate": 0.0003,
+    "optimizer": "AdamW",
+    "patience": 15,
+    "max_samples": 0,
+    "epochs_requested": 150,
+    "save_interval_minutes": 15.0,
+    "save_every_epoch": true,
+    "gpu_latency_ms": 7.971,
+    "gpu_fp16_latency_ms": 11.14,
+    "gpu_jit_latency_ms": 7.971,
+    "cpu_latency_ms": 12.281,
+    "cpu_onnx_latency_ms": 5.124,
+    "gpu_eager_latency_ms": 12.6,
+    "cpu_eager_latency_ms": 15.828
+  },
+  "hyperparameter_diff": {
+    "batch_size": {
+      "previous": 16,
+      "current": 64
+    },
+    "learning_rate": {
+      "previous": 0.0005,
+      "current": 0.0003
+    },
+    "max_samples": {
+      "previous": 60,
+      "current": 0
+    },
+    "save_interval_minutes": {
+      "previous": 20.0,
+      "current": 15.0
+    },
+    "save_every_epoch": {
+      "previous": false,
+      "current": true
+    },
+    "gpu_latency_ms": {
+      "previous": 8.371,
+      "current": 7.971
+    },
+    "gpu_fp16_latency_ms": {
+      "previous": 10.626,
+      "current": 11.14
+    },
+    "gpu_jit_latency_ms": {
+      "previous": 8.371,
+      "current": 7.971
+    },
+    "cpu_latency_ms": {
+      "previous": 11.882,
+      "current": 12.281
+    },
+    "cpu_onnx_latency_ms": {
+      "previous": 5.42,
+      "current": 5.124
+    },
+    "gpu_eager_latency_ms": {
+      "previous": 14.686,
+      "current": 12.6
+    },
+    "cpu_eager_latency_ms": {
+      "previous": 15.192,
+      "current": 15.828
+    }
+  },
+  "created_at": "2026-10-13T21:52:10.599390+03:00"
+}

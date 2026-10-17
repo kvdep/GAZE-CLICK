@@ -1,0 +1,18 @@
+{
+  "batch_size": {
+    "previous": 16,
+    "current": 128
+  },
+  "patience": {
+    "previous": 3,
+    "current": 15
+  },
+  "save_interval_minutes": {
+    "previous": null,
+    "current": 20.0
+  },
+  "save_every_epoch": {
+    "previous": null,
+    "current": true
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "run_name": "run_001_20261002_154759",
+  "architecture_name": "l2cs_gaze_net_mobilenet_v3_small",
+  "total_duration_seconds": 2854.5,
+  "best_epoch": 1,
+  "best_val_loss": 4.8,
+  "test_loss": 4.7,
+  "test_angular_error_deg": 11.9,
+  "test_pixel_mae": 78.2,
+  "total_epochs_executed": 1,
+  "best_checkpoint_path": "fake_path.pt",
+  "hyperparameter_diff": {},
+  "completed_at": "2026-10-02T15:47:59.779046+03:00"
+}

@@ -1,0 +1,44 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+build/
+dist/
+*.egg-info/
+
+# Datasets and large binary files
+DATA/
+*.pt
+*.pth
+*.onnx
+*.parquet
+*.h5
+*.hdf5
+*.tar
+*.tar.gz
+*.zip
+*.7z
+*.mp4
+*.avi
+*.mkv
+*.mov
+
+# Large checkpoint weights and MLflow stores
+**/checkpoints/*.pt
+mvp/mlruns/
+mlruns/
+mvp/scratch/remote_repo/
+mvp/scratch/*.jpg
+mvp/scratch/*.png
+mvp/scratch/eval_visualizations/
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

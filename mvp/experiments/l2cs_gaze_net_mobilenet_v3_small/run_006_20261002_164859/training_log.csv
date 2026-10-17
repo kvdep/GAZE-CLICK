@@ -1,0 +1,1 @@
+epoch,train_loss,val_loss,val_angular_error_deg,val_pixel_mae,duration_seconds,learning_rate,ram_gb,vram_gb,timestamp_msk

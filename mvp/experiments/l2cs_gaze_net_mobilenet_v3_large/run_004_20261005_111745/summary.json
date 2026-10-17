@@ -1,0 +1,48 @@
+{
+  "run_name": "run_004_20261005_111745",
+  "architecture_name": "l2cs_gaze_net_mobilenet_v3_large",
+  "status": "completed",
+  "total_duration_seconds": 7569.5,
+  "best_epoch": 39,
+  "best_val_loss": 5.932704,
+  "test_loss": 34.196077,
+  "test_angular_error_deg": 7.8416,
+  "test_head_pitch_mae_deg": 3.4168,
+  "test_head_yaw_mae_deg": 8.3003,
+  "test_pixel_mae": 188.823,
+  "total_epochs_executed": 54,
+  "weights_file_path": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\experiments\\l2cs_gaze_net_mobilenet_v3_large\\run_004_20261005_111745\\checkpoints\\best_model.pt",
+  "model_source_file": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\experiments\\l2cs_gaze_net_mobilenet_v3_large\\run_004_20261005_111745\\model_source.py",
+  "original_model_file": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\models\\l2cs_net.py",
+  "hyperparameter_diff": {
+    "gpu_latency_ms": {
+      "previous": 8.802,
+      "current": 9.789
+    },
+    "gpu_fp16_latency_ms": {
+      "previous": 13.237,
+      "current": 13.286
+    },
+    "gpu_jit_latency_ms": {
+      "previous": 8.802,
+      "current": 9.789
+    },
+    "cpu_latency_ms": {
+      "previous": 15.521,
+      "current": 17.333
+    },
+    "cpu_onnx_latency_ms": {
+      "previous": 4.544,
+      "current": 4.423
+    },
+    "gpu_eager_latency_ms": {
+      "previous": 15.143,
+      "current": 15.487
+    },
+    "cpu_eager_latency_ms": {
+      "previous": 20.274,
+      "current": 20.352
+    }
+  },
+  "completed_at": "2026-10-05T13:21:54.991383+03:00"
+}

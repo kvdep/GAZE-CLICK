@@ -1,0 +1,16 @@
+TIMESTAMP: 2026-10-02T16:50:08.302712+03:00
+RUN_NAME: run_007_20261002_165006
+EXCEPTION_TYPE: RuntimeError
+EXCEPTION_MESSAGE: CRITICAL_SIMULATED_NUMERICAL_INSTABILITY
+
+TRACEBACK:
+Traceback (most recent call last):
+  File "C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\test_error_logging.py", line 49, in test_error_shortcut_logging
+    trainer.fit(train_loader, val_loader, test_loader, log_callback=failing_callback)
+  File "C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\engine\trainer.py", line 189, in fit
+    raise exc
+  File "C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\engine\trainer.py", line 138, in fit
+    log_callback(epoch_record)
+  File "C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\test_error_logging.py", line 46, in failing_callback
+    raise RuntimeError("CRITICAL_SIMULATED_NUMERICAL_INSTABILITY")
+RuntimeError: CRITICAL_SIMULATED_NUMERICAL_INSTABILITY

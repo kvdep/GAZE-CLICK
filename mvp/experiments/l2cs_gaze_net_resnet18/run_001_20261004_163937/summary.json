@@ -1,0 +1,19 @@
+{
+  "run_name": "run_001_20261004_163937",
+  "architecture_name": "l2cs_gaze_net_resnet18",
+  "status": "completed",
+  "total_duration_seconds": 4974.61,
+  "best_epoch": 21,
+  "best_val_loss": 7.986172,
+  "test_loss": 44.047049,
+  "test_angular_error_deg": 13.3675,
+  "test_head_pitch_mae_deg": 16.8742,
+  "test_head_yaw_mae_deg": 18.497,
+  "test_pixel_mae": 197.2412,
+  "total_epochs_executed": 44,
+  "weights_file_path": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\experiments\\l2cs_gaze_net_resnet18\\run_001_20261004_163937\\checkpoints\\best_model.pt",
+  "model_source_file": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\experiments\\l2cs_gaze_net_resnet18\\run_001_20261004_163937\\model_source.py",
+  "original_model_file": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\models\\l2cs_net.py",
+  "hyperparameter_diff": {},
+  "completed_at": "2026-10-04T18:00:38.053724+03:00"
+}

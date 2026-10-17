@@ -1,0 +1,25 @@
+{
+  "run_name": "run_006_20261002_164859",
+  "architecture_name": "l2cs_gaze_net_mobilenet_v3_small",
+  "architecture_config": {
+    "model_type": "l2cs_gaze_net",
+    "backbone_name": "mobilenet_v3_small",
+    "num_bins": 90,
+    "max_angle_deg": 45.0,
+    "feature_dimension": 576,
+    "include_screen_head": true
+  },
+  "original_model_file": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\models\\l2cs_net.py",
+  "copied_model_source_path": "mvp/experiments\\l2cs_gaze_net_mobilenet_v3_small\\run_006_20261002_164859\\model_source.py",
+  "hyperparameters": {
+    "backbone": "mobilenet_v3_small",
+    "test_interrupt": true
+  },
+  "hyperparameter_diff": {
+    "test_interrupt": {
+      "previous": null,
+      "current": true
+    }
+  },
+  "created_at": "2026-10-02T16:48:59.681869+03:00"
+}

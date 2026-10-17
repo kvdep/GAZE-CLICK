@@ -1,0 +1,75 @@
+[16:39:37] [00:00:00] [GPU] [15.8] [6.8] [experiment_manager.py:78] Initialized experiment: run_001_20261004_163937 in [DIR:mvp/experiments\l2cs_gaze_net_resnet18]
+[16:39:37] [00:00:00] [GPU] [15.8] [6.8] [experiment_manager.py:79] Copied model source definition to: [ARTIFACT:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\model_source.py]
+[16:39:41] [00:00:04] [GPU] [15.7] [6.8] [main.py:288] MLflow tracking started: [TRACKING_URI:file:./mvp/mlruns] [RUN:run_001_20261004_163937]
+[16:39:42] [00:00:00] [GPU] [15.7] [6.8] [memory.py:33] Runtime verified: Free VRAM = 6.84 GB, Free RAM = 15.71 GB
+[16:39:42] [00:00:00] [GPU] [15.7] [6.8] [trainer.py:122] Starting training run: total_epochs=150, patience=15, save_interval_min=20.0
+[16:41:38] [00:01:56] [GPU] [14.7] [6.3] [trainer.py:141] Epoch 1/150 | L Train: 26.5093 | L Val: 33.8601 | Gaze Val: 11.43° | Head P/Y: 9.22°/14.54°
+[16:41:39] [00:00:00] [GPU] [14.6] [6.3] [registry.py:52] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\best_model.pt
+[16:41:39] [00:00:00] [GPU] [14.6] [6.3] [trainer.py:165] Saved new best model checkpoint (Gaze Error: 11.43°): [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\best_model.pt]
+[16:43:34] [00:01:55] [GPU] [14.5] [6.3] [trainer.py:141] Epoch 2/150 | L Train: 16.8980 | L Val: 29.4282 | Gaze Val: 8.91° | Head P/Y: 11.28°/13.95°
+[16:43:34] [00:00:00] [GPU] [14.5] [6.3] [registry.py:52] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\best_model.pt
+[16:43:34] [00:00:00] [GPU] [14.5] [6.3] [trainer.py:165] Saved new best model checkpoint (Gaze Error: 8.91°): [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\best_model.pt]
+[16:45:27] [00:01:52] [GPU] [14.8] [6.3] [trainer.py:141] Epoch 3/150 | L Train: 12.6781 | L Val: 30.9747 | Gaze Val: 9.63° | Head P/Y: 11.83°/14.61°
+[16:47:17] [00:01:49] [GPU] [14.8] [6.3] [trainer.py:141] Epoch 4/150 | L Train: 10.9171 | L Val: 33.8389 | Gaze Val: 11.24° | Head P/Y: 10.42°/16.48°
+[16:49:06] [00:01:49] [GPU] [15.0] [6.3] [trainer.py:141] Epoch 5/150 | L Train: 9.6098 | L Val: 28.1702 | Gaze Val: 8.61° | Head P/Y: 10.59°/12.90°
+[16:49:06] [00:00:00] [GPU] [15.1] [6.3] [registry.py:52] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\best_model.pt
+[16:49:06] [00:00:00] [GPU] [15.1] [6.3] [trainer.py:165] Saved new best model checkpoint (Gaze Error: 8.61°): [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\best_model.pt]
+[16:50:55] [00:01:49] [GPU] [16.3] [6.3] [trainer.py:141] Epoch 6/150 | L Train: 9.0225 | L Val: 34.6065 | Gaze Val: 11.80° | Head P/Y: 10.79°/14.30°
+[16:52:44] [00:01:48] [GPU] [16.3] [6.3] [trainer.py:141] Epoch 7/150 | L Train: 8.4231 | L Val: 30.7296 | Gaze Val: 9.74° | Head P/Y: 9.61°/14.55°
+[16:54:34] [00:01:49] [GPU] [16.3] [6.3] [trainer.py:141] Epoch 8/150 | L Train: 7.8157 | L Val: 31.3482 | Gaze Val: 10.17° | Head P/Y: 10.12°/13.17°
+[16:56:23] [00:01:49] [GPU] [16.3] [6.3] [trainer.py:141] Epoch 9/150 | L Train: 7.1023 | L Val: 37.4023 | Gaze Val: 12.64° | Head P/Y: 11.54°/14.18°
+[16:58:13] [00:01:49] [GPU] [16.1] [6.3] [trainer.py:141] Epoch 10/150 | L Train: 6.9075 | L Val: 30.6026 | Gaze Val: 9.01° | Head P/Y: 10.95°/16.56°
+[17:00:04] [00:01:50] [GPU] [16.5] [6.3] [trainer.py:141] Epoch 11/150 | L Train: 6.5157 | L Val: 34.3675 | Gaze Val: 11.69° | Head P/Y: 9.87°/13.44°
+[17:00:04] [00:00:00] [GPU] [16.4] [6.3] [registry.py:52] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\latest_model.pt
+[17:00:04] [00:00:00] [GPU] [16.4] [6.3] [trainer.py:177] Periodic checkpoint synchronized: [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\latest_model.pt]
+[17:01:54] [00:01:49] [GPU] [16.5] [6.3] [trainer.py:141] Epoch 12/150 | L Train: 6.2289 | L Val: 29.7066 | Gaze Val: 8.64° | Head P/Y: 10.65°/15.55°
+[17:03:43] [00:01:49] [GPU] [16.2] [6.3] [trainer.py:141] Epoch 13/150 | L Train: 5.5713 | L Val: 32.2838 | Gaze Val: 9.94° | Head P/Y: 10.43°/15.05°
+[17:05:33] [00:01:49] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 14/150 | L Train: 5.5721 | L Val: 29.1491 | Gaze Val: 8.46° | Head P/Y: 8.83°/13.82°
+[17:05:33] [00:00:00] [GPU] [16.4] [6.3] [registry.py:52] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\best_model.pt
+[17:05:33] [00:00:00] [GPU] [16.4] [6.3] [trainer.py:165] Saved new best model checkpoint (Gaze Error: 8.46°): [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\best_model.pt]
+[17:07:23] [00:01:49] [GPU] [16.5] [6.3] [trainer.py:141] Epoch 15/150 | L Train: 5.4054 | L Val: 30.4473 | Gaze Val: 8.32° | Head P/Y: 13.03°/14.57°
+[17:07:23] [00:00:00] [GPU] [16.4] [6.3] [registry.py:52] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\best_model.pt
+[17:07:23] [00:00:00] [GPU] [16.4] [6.3] [trainer.py:165] Saved new best model checkpoint (Gaze Error: 8.32°): [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\best_model.pt]
+[17:09:14] [00:01:50] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 16/150 | L Train: 5.2318 | L Val: 30.6640 | Gaze Val: 8.88° | Head P/Y: 9.22°/15.16°
+[17:11:03] [00:01:49] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 17/150 | L Train: 4.8045 | L Val: 31.4911 | Gaze Val: 9.62° | Head P/Y: 8.65°/14.52°
+[17:12:53] [00:01:49] [GPU] [16.1] [6.3] [trainer.py:141] Epoch 18/150 | L Train: 4.7149 | L Val: 32.0735 | Gaze Val: 9.40° | Head P/Y: 11.15°/14.19°
+[17:14:43] [00:01:49] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 19/150 | L Train: 4.4696 | L Val: 30.8218 | Gaze Val: 9.05° | Head P/Y: 9.77°/14.59°
+[17:16:33] [00:01:50] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 20/150 | L Train: 4.3815 | L Val: 31.2398 | Gaze Val: 8.63° | Head P/Y: 13.17°/13.66°
+[17:18:23] [00:01:49] [GPU] [16.2] [6.3] [trainer.py:141] Epoch 21/150 | L Train: 4.2452 | L Val: 29.7196 | Gaze Val: 7.99° | Head P/Y: 9.08°/15.68°
+[17:18:23] [00:00:00] [GPU] [16.2] [6.3] [registry.py:52] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\best_model.pt
+[17:18:23] [00:00:00] [GPU] [16.2] [6.3] [trainer.py:165] Saved new best model checkpoint (Gaze Error: 7.99°): [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\best_model.pt]
+[17:20:13] [00:01:49] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 22/150 | L Train: 4.2155 | L Val: 29.3787 | Gaze Val: 8.13° | Head P/Y: 9.52°/13.71°
+[17:20:13] [00:00:00] [GPU] [16.3] [6.3] [registry.py:52] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\latest_model.pt
+[17:20:13] [00:00:00] [GPU] [16.3] [6.3] [trainer.py:177] Periodic checkpoint synchronized: [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\latest_model.pt]
+[17:22:03] [00:01:49] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 23/150 | L Train: 4.0697 | L Val: 30.3752 | Gaze Val: 8.31° | Head P/Y: 10.67°/13.51°
+[17:23:52] [00:01:49] [GPU] [16.2] [6.3] [trainer.py:141] Epoch 24/150 | L Train: 3.9029 | L Val: 30.9046 | Gaze Val: 8.51° | Head P/Y: 8.59°/15.10°
+[17:25:42] [00:01:50] [GPU] [16.3] [6.3] [trainer.py:141] Epoch 25/150 | L Train: 3.8625 | L Val: 31.4229 | Gaze Val: 8.50° | Head P/Y: 12.21°/14.16°
+[17:27:33] [00:01:50] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 26/150 | L Train: 3.5805 | L Val: 33.4796 | Gaze Val: 9.41° | Head P/Y: 13.15°/14.08°
+[17:29:22] [00:01:49] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 27/150 | L Train: 3.6137 | L Val: 36.8926 | Gaze Val: 10.80° | Head P/Y: 12.49°/13.85°
+[17:31:12] [00:01:49] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 28/150 | L Train: 3.2566 | L Val: 34.8792 | Gaze Val: 9.54° | Head P/Y: 12.61°/14.37°
+[17:33:01] [00:01:49] [GPU] [16.2] [6.3] [trainer.py:141] Epoch 29/150 | L Train: 3.1905 | L Val: 36.5605 | Gaze Val: 10.19° | Head P/Y: 12.89°/13.62°
+[17:34:51] [00:01:50] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 30/150 | L Train: 3.0799 | L Val: 34.4330 | Gaze Val: 8.81° | Head P/Y: 15.38°/13.84°
+[17:36:42] [00:01:50] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 31/150 | L Train: 2.9329 | L Val: 39.4207 | Gaze Val: 11.02° | Head P/Y: 15.81°/15.24°
+[17:38:31] [00:01:49] [GPU] [16.2] [6.3] [trainer.py:141] Epoch 32/150 | L Train: 2.7826 | L Val: 35.7752 | Gaze Val: 9.27° | Head P/Y: 11.03°/14.89°
+[17:40:21] [00:01:49] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 33/150 | L Train: 2.7115 | L Val: 33.1491 | Gaze Val: 8.51° | Head P/Y: 10.80°/15.62°
+[17:40:21] [00:00:00] [GPU] [16.3] [6.3] [registry.py:52] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\latest_model.pt
+[17:40:21] [00:00:00] [GPU] [16.3] [6.3] [trainer.py:177] Periodic checkpoint synchronized: [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\latest_model.pt]
+[17:42:11] [00:01:49] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 34/150 | L Train: 2.5531 | L Val: 39.2842 | Gaze Val: 10.32° | Head P/Y: 16.24°/14.49°
+[17:44:00] [00:01:49] [GPU] [16.2] [6.3] [trainer.py:141] Epoch 35/150 | L Train: 2.5177 | L Val: 38.4619 | Gaze Val: 10.39° | Head P/Y: 13.93°/14.30°
+[17:45:50] [00:01:49] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 36/150 | L Train: 2.3784 | L Val: 35.6627 | Gaze Val: 9.22° | Head P/Y: 13.96°/14.66°
+[17:47:40] [00:01:50] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 37/150 | L Train: 2.3084 | L Val: 35.2250 | Gaze Val: 8.97° | Head P/Y: 13.32°/14.11°
+[17:49:31] [00:01:50] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 38/150 | L Train: 2.1582 | L Val: 38.8939 | Gaze Val: 10.37° | Head P/Y: 13.81°/14.32°
+[17:51:21] [00:01:49] [GPU] [16.3] [6.3] [trainer.py:141] Epoch 39/150 | L Train: 2.1699 | L Val: 38.9551 | Gaze Val: 10.33° | Head P/Y: 12.88°/14.43°
+[17:53:11] [00:01:50] [GPU] [16.2] [6.3] [trainer.py:141] Epoch 40/150 | L Train: 2.0627 | L Val: 42.1291 | Gaze Val: 11.04° | Head P/Y: 11.63°/14.61°
+[17:55:01] [00:01:49] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 41/150 | L Train: 1.9763 | L Val: 34.8904 | Gaze Val: 8.64° | Head P/Y: 11.53°/13.90°
+[17:56:50] [00:01:49] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 42/150 | L Train: 1.8374 | L Val: 38.4093 | Gaze Val: 10.29° | Head P/Y: 13.80°/13.25°
+[17:58:40] [00:01:49] [GPU] [16.2] [6.3] [trainer.py:141] Epoch 43/150 | L Train: 1.8288 | L Val: 37.3302 | Gaze Val: 9.60° | Head P/Y: 12.69°/15.40°
+[18:00:30] [00:01:50] [GPU] [16.4] [6.3] [trainer.py:141] Epoch 44/150 | L Train: 1.7660 | L Val: 39.6899 | Gaze Val: 9.90° | Head P/Y: 16.46°/15.17°
+[18:00:30] [00:00:00] [GPU] [16.3] [6.3] [registry.py:52] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\latest_model.pt
+[18:00:30] [00:00:00] [GPU] [16.3] [6.3] [trainer.py:177] Periodic checkpoint synchronized: [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\latest_model.pt]
+[18:00:30] [00:00:00] [GPU] [16.3] [6.3] [trainer.py:180] Early stopping triggered at epoch 44. Restoring best weights.
+[18:00:30] [00:00:00] [GPU] [16.3] [6.3] [trainer.py:30] Restored best model weights from epoch 21 with val_angular_error=7.9862°
+[18:00:38] [00:00:07] [GPU] [16.2] [6.3] [trainer.py:210] L Test: 44.0470 | Gaze Error: 13.37° | Head Pitch MAE: 16.87° | Head Yaw MAE: 18.50° | Screen MAE: 197.2 px
+[18:00:38] [00:00:00] [GPU] [16.2] [6.3] [experiment_manager.py:211] Finalized experiment: run_001_20261004_163937. Status: COMPLETED, Total duration: 4974.61s, Best Val Loss: 7.986172
+[18:00:38] [00:00:00] [GPU] [16.2] [6.3] [experiment_manager.py:212] Saved weights file (.pt): [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\best_model.pt]
+[18:00:38] [00:00:00] [GPU] [16.2] [6.3] [experiment_manager.py:213] Saved model source definition (.py): [ARTIFACT:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\model_source.py]

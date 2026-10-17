@@ -1,0 +1,2 @@
+run_name,architecture,status,duration_s,best_epoch,best_val_loss,test_loss,test_ang_deg,head_pitch_mae,head_yaw_mae,test_pixel_mae,weights_path,model_source
+run_001_20261004_163937,l2cs_gaze_net_resnet18,completed,4974.61,21,7.986172,44.047049,13.3675,16.8742,18.497,197.2412,C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\checkpoints\best_model.pt,C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_resnet18\run_001_20261004_163937\model_source.py

@@ -1,0 +1,6 @@
+{
+  "max_samples": {
+    "previous": 60,
+    "current": 50
+  }
+}

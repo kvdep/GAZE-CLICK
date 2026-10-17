@@ -1,0 +1,26 @@
+{
+  "batch_size": {
+    "previous": 64,
+    "current": 128
+  },
+  "max_samples": {
+    "previous": 800,
+    "current": 1500
+  },
+  "gpu_latency_ms": {
+    "previous": 11.696,
+    "current": 5.872
+  },
+  "cpu_latency_ms": {
+    "previous": 11.681,
+    "current": 8.407
+  },
+  "gpu_eager_latency_ms": {
+    "previous": null,
+    "current": 11.566
+  },
+  "cpu_eager_latency_ms": {
+    "previous": null,
+    "current": 13.852
+  }
+}

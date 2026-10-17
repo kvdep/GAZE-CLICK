@@ -1,0 +1,35 @@
+[16:14:13] [00:00:00] [GPU] [16.6] [6.9] Initialized experiment: run_003_20261002_161413 in mvp/experiments\l2cs_gaze_net_mobilenet_v3_small
+[16:14:13] [00:00:00] [GPU] [16.6] [6.9] Copied model source definition to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\model_source.py
+[16:14:13] [00:00:00] [GPU] [16.6] [6.9] Hyperparameter modifications detected: max_samples: 60 -> 50
+[16:14:13] [00:00:00] [GPU] [16.6] [6.9] Runtime verified: Free VRAM = 6.89 GB, Free RAM = 16.58 GB
+[16:14:13] [00:00:00] [GPU] [16.6] [6.9] Starting training run: total_epochs=150, patience=3
+[16:14:17] [00:00:03] [GPU] [15.6] [6.8] Epoch 1/150 | L Train: 15.7749 | L Val: 19.4537
+[16:14:17] [00:00:00] [GPU] [15.6] [6.8] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\checkpoints\best_model.pt
+[16:14:17] [00:00:00] [GPU] [15.6] [6.8] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\checkpoints\latest_model.pt
+[16:14:18] [00:00:01] [GPU] [15.6] [6.8] Epoch 2/150 | L Train: 16.6572 | L Val: 19.4465
+[16:14:19] [00:00:00] [GPU] [15.5] [6.8] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\checkpoints\best_model.pt
+[16:14:19] [00:00:00] [GPU] [15.5] [6.8] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\checkpoints\latest_model.pt
+[16:14:20] [00:00:01] [GPU] [15.6] [6.8] Epoch 3/150 | L Train: 15.3120 | L Val: 19.4426
+[16:14:20] [00:00:00] [GPU] [15.6] [6.8] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\checkpoints\best_model.pt
+[16:14:20] [00:00:00] [GPU] [15.6] [6.8] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\checkpoints\latest_model.pt
+[16:14:22] [00:00:01] [GPU] [15.6] [6.8] Epoch 4/150 | L Train: 13.7572 | L Val: 19.4346
+[16:14:22] [00:00:00] [GPU] [15.6] [6.8] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\checkpoints\best_model.pt
+[16:14:22] [00:00:00] [GPU] [15.5] [6.8] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\checkpoints\latest_model.pt
+[16:14:24] [00:00:01] [GPU] [15.5] [6.8] Epoch 5/150 | L Train: 13.8605 | L Val: 19.4207
+[16:14:24] [00:00:00] [GPU] [15.5] [6.8] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\checkpoints\best_model.pt
+[16:14:24] [00:00:00] [GPU] [15.5] [6.8] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\checkpoints\latest_model.pt
+[16:14:26] [00:00:01] [GPU] [15.5] [6.8] Epoch 6/150 | L Train: 13.6577 | L Val: 19.4118
+[16:14:26] [00:00:00] [GPU] [15.5] [6.8] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\checkpoints\best_model.pt
+[16:14:26] [00:00:00] [GPU] [15.5] [6.8] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\checkpoints\latest_model.pt
+[16:14:27] [00:00:01] [GPU] [15.5] [6.8] Epoch 7/150 | L Train: 13.8582 | L Val: 19.4153
+[16:14:27] [00:00:00] [GPU] [15.4] [6.8] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\checkpoints\latest_model.pt
+[16:14:29] [00:00:01] [GPU] [15.5] [6.8] Epoch 8/150 | L Train: 13.6375 | L Val: 19.4310
+[16:14:29] [00:00:00] [GPU] [15.5] [6.8] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\checkpoints\latest_model.pt
+[16:14:31] [00:00:01] [GPU] [15.4] [6.8] Epoch 9/150 | L Train: 13.1212 | L Val: 19.4453
+[16:14:31] [00:00:00] [GPU] [15.5] [6.8] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\checkpoints\latest_model.pt
+[16:14:31] [00:00:00] [GPU] [15.5] [6.8] Early stopping triggered at epoch 9. Restoring best weights.
+[16:14:31] [00:00:00] [GPU] [15.5] [6.8] Restored best model weights from epoch 6 with val_loss=19.4118
+[16:14:31] [00:00:00] [GPU] [15.4] [6.8] L Test: 17.1516 | Angular Error: 12.73° | Pixel MAE: 830.7 px
+[16:14:31] [00:00:00] [GPU] [15.4] [6.8] Finalized experiment: run_003_20261002_161413. Total duration: 46.56s, Best Val Loss: 19.4118, Test Loss: 17.1516
+[16:14:31] [00:00:00] [GPU] [15.4] [6.8] Saved weights file (.pt): C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\checkpoints\best_model.pt
+[16:14:31] [00:00:00] [GPU] [15.4] [6.8] Saved model source definition (.py): C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_003_20261002_161413\model_source.py

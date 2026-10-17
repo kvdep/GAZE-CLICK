@@ -1,0 +1,30 @@
+{
+  "max_samples": {
+    "previous": 1500,
+    "current": 2000
+  },
+  "gpu_latency_ms": {
+    "previous": 5.872,
+    "current": 2.068
+  },
+  "gpu_fp16_latency_ms": {
+    "previous": null,
+    "current": 2.068
+  },
+  "gpu_jit_latency_ms": {
+    "previous": null,
+    "current": 7.223
+  },
+  "cpu_latency_ms": {
+    "previous": 8.407,
+    "current": 9.317
+  },
+  "gpu_eager_latency_ms": {
+    "previous": 11.566,
+    "current": 12.438
+  },
+  "cpu_eager_latency_ms": {
+    "previous": 13.852,
+    "current": 12.673
+  }
+}

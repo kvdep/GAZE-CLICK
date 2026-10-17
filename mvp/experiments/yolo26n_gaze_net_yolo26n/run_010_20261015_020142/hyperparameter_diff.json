@@ -1,0 +1,38 @@
+{
+  "save_interval_minutes": {
+    "previous": 15.0,
+    "current": 20.0
+  },
+  "save_every_epoch": {
+    "previous": true,
+    "current": false
+  },
+  "gpu_latency_ms": {
+    "previous": 7.992,
+    "current": 10.435
+  },
+  "gpu_fp16_latency_ms": {
+    "previous": 11.931,
+    "current": 12.845
+  },
+  "gpu_jit_latency_ms": {
+    "previous": 7.992,
+    "current": 10.435
+  },
+  "cpu_latency_ms": {
+    "previous": 11.815,
+    "current": 13.215
+  },
+  "cpu_onnx_latency_ms": {
+    "previous": 5.503,
+    "current": 13.215
+  },
+  "gpu_eager_latency_ms": {
+    "previous": 15.916,
+    "current": 18.428
+  },
+  "cpu_eager_latency_ms": {
+    "previous": 15.389,
+    "current": 16.864
+  }
+}

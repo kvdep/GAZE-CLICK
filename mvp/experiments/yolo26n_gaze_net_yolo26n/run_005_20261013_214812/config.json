@@ -1,0 +1,83 @@
+{
+  "run_name": "run_005_20261013_214812",
+  "architecture_name": "yolo26n_gaze_net_yolo26n",
+  "architecture_config": {
+    "model_type": "yolo26n_gaze_net",
+    "backbone_name": "yolo26n",
+    "weights_path": "mvp/models/weights/yolo26n.pt",
+    "pretrained": true,
+    "feature_dim": 256,
+    "dropout": 0.2
+  },
+  "original_model_file": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\models\\yolo26n_gaze_net.py",
+  "copied_model_source_path": "mvp/experiments\\yolo26n_gaze_net_yolo26n\\run_005_20261013_214812\\model_source.py",
+  "hyperparameters": {
+    "backbone": "yolo26n",
+    "batch_size": 16,
+    "learning_rate": 0.0005,
+    "optimizer": "AdamW",
+    "patience": 15,
+    "max_samples": 60,
+    "epochs_requested": 150,
+    "save_interval_minutes": 20.0,
+    "save_every_epoch": false,
+    "gpu_latency_ms": 8.371,
+    "gpu_fp16_latency_ms": 10.626,
+    "gpu_jit_latency_ms": 8.371,
+    "cpu_latency_ms": 11.882,
+    "cpu_onnx_latency_ms": 5.42,
+    "gpu_eager_latency_ms": 14.686,
+    "cpu_eager_latency_ms": 15.192
+  },
+  "hyperparameter_diff": {
+    "batch_size": {
+      "previous": 64,
+      "current": 16
+    },
+    "learning_rate": {
+      "previous": 0.0003,
+      "current": 0.0005
+    },
+    "max_samples": {
+      "previous": 0,
+      "current": 60
+    },
+    "save_interval_minutes": {
+      "previous": 15.0,
+      "current": 20.0
+    },
+    "save_every_epoch": {
+      "previous": true,
+      "current": false
+    },
+    "gpu_latency_ms": {
+      "previous": 8.229,
+      "current": 8.371
+    },
+    "gpu_fp16_latency_ms": {
+      "previous": 11.595,
+      "current": 10.626
+    },
+    "gpu_jit_latency_ms": {
+      "previous": 8.229,
+      "current": 8.371
+    },
+    "cpu_latency_ms": {
+      "previous": 11.703,
+      "current": 11.882
+    },
+    "cpu_onnx_latency_ms": {
+      "previous": 4.715,
+      "current": 5.42
+    },
+    "gpu_eager_latency_ms": {
+      "previous": 14.317,
+      "current": 14.686
+    },
+    "cpu_eager_latency_ms": {
+      "previous": 14.676,
+      "current": 15.192
+    }
+  },
+  "created_at": "2026-10-13T21:48:12.209708+03:00"
+}

@@ -1,0 +1,11 @@
+[16:50:06] [00:00:00] [GPU] [16.0] [6.9] [experiment_manager.py:78] Initialized experiment: run_007_20261002_165006 in [DIR:mvp/experiments\l2cs_gaze_net_mobilenet_v3_small]
+[16:50:06] [00:00:00] [GPU] [16.0] [6.9] [experiment_manager.py:79] Copied model source definition to: [ARTIFACT:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_007_20261002_165006\model_source.py]
+[16:50:06] [00:00:00] [GPU] [16.0] [6.9] [experiment_manager.py:82] Hyperparameter modifications detected: test_error_handling: None -> True
+[16:50:06] [00:00:00] [GPU] [16.0] [6.9] [memory.py:33] Runtime verified: Free VRAM = 6.89 GB, Free RAM = 16.01 GB
+[16:50:06] [00:00:00] [GPU] [16.0] [6.9] [trainer.py:110] Starting training run: total_epochs=150, patience=15, save_interval_min=20.0
+[16:50:08] [00:00:01] [GPU] [14.9] [6.8] [trainer.py:126] Epoch 1/150 | L Train: 17.6756 | L Val: 18.6606
+[16:50:08] [00:00:00] [GPU] [14.9] [6.8] [test_error_logging.py:45] Simulating synthetic runtime failure at epoch 1
+[16:50:08] [00:00:00] [GPU] [15.0] [6.8] [registry.py:52] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_007_20261002_165006\checkpoints\interrupted_model.pt
+[16:50:08] [00:00:00] [GPU] [15.0] [6.8] [trainer.py:188] Exception encountered during training. Weights salvaged: [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_007_20261002_165006\checkpoints\interrupted_model.pt]
+[16:50:08] [00:00:00] [GPU] [15.0] [6.8] [experiment_manager.py:128] Error trace written to: [ARTIFACT:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\l2cs_gaze_net_mobilenet_v3_small\run_007_20261002_165006\error_traceback.log]
+[16:50:08] [00:00:00] [GPU] [15.0] [6.8] [experiment_manager.py:129] Error shortcut generated: [SHORTCUT:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\error_logs\run_007_20261002_165006.lnk]

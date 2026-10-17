@@ -1,0 +1,48 @@
+{
+  "run_name": "run_007_20261014_001457",
+  "architecture_name": "yolo26n_gaze_net_yolo26n",
+  "status": "completed",
+  "total_duration_seconds": 6876.84,
+  "best_epoch": 5,
+  "best_val_loss": 7.627885,
+  "test_loss": 2.923916,
+  "test_angular_error_deg": 7.0391,
+  "test_head_pitch_mae_deg": 4.5678,
+  "test_head_yaw_mae_deg": 8.4055,
+  "test_pixel_mae": 285.2385,
+  "total_epochs_executed": 20,
+  "weights_file_path": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\experiments\\yolo26n_gaze_net_yolo26n\\run_007_20261014_001457\\checkpoints\\best_model.pt",
+  "model_source_file": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\experiments\\yolo26n_gaze_net_yolo26n\\run_007_20261014_001457\\model_source.py",
+  "original_model_file": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\models\\yolo26n_gaze_net.py",
+  "hyperparameter_diff": {
+    "gpu_latency_ms": {
+      "previous": 7.971,
+      "current": 8.341
+    },
+    "gpu_fp16_latency_ms": {
+      "previous": 11.14,
+      "current": 12.66
+    },
+    "gpu_jit_latency_ms": {
+      "previous": 7.971,
+      "current": 8.341
+    },
+    "cpu_latency_ms": {
+      "previous": 12.281,
+      "current": 11.81
+    },
+    "cpu_onnx_latency_ms": {
+      "previous": 5.124,
+      "current": 5.1
+    },
+    "gpu_eager_latency_ms": {
+      "previous": 12.6,
+      "current": 14.929
+    },
+    "cpu_eager_latency_ms": {
+      "previous": 15.828,
+      "current": 15.586
+    }
+  },
+  "completed_at": "2026-10-14T02:08:27.523094+03:00"
+}

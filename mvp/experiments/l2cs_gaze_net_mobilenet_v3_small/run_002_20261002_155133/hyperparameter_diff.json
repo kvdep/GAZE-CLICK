@@ -1,0 +1,22 @@
+{
+  "backbone": {
+    "previous": null,
+    "current": "mobilenet_v3_small"
+  },
+  "batch_size": {
+    "previous": 32,
+    "current": 16
+  },
+  "patience": {
+    "previous": null,
+    "current": 3
+  },
+  "max_samples": {
+    "previous": null,
+    "current": 60
+  },
+  "epochs_requested": {
+    "previous": null,
+    "current": 150
+  }
+}

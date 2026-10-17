@@ -1,0 +1,5 @@
+[21:04:50] [00:00:00] [GPU] [15.0] [6.8] [experiment_manager.py:78] Initialized experiment: run_004_20261013_210450 in [DIR:mvp/experiments\yolo26n_gaze_net_yolo26n]
+[21:04:50] [00:00:00] [GPU] [15.0] [6.8] [experiment_manager.py:79] Copied model source definition to: [ARTIFACT:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_004_20261013_210450\model_source.py]
+[21:04:50] [00:00:00] [GPU] [15.0] [6.8] [experiment_manager.py:82] Hyperparameter modifications detected: batch_size: 16 -> 64, learning_rate: 0.0005 -> 0.0003, max_samples: 60 -> 0, save_interval_minutes: 20.0 -> 15.0, save_every_epoch: False -> True, gpu_latency_ms: 8.282 -> 8.229, gpu_fp16_latency_ms: 12.407 -> 11.595, gpu_jit_latency_ms: 8.282 -> 8.229, cpu_latency_ms: 11.541 -> 11.703, cpu_onnx_latency_ms: 4.796 -> 4.715, gpu_eager_latency_ms: 14.908 -> 14.317, cpu_eager_latency_ms: 14.223 -> 14.676
+[21:04:50] [00:00:00] [GPU] [15.0] [6.8] [memory.py:33] Runtime verified: Free VRAM = 6.82 GB, Free RAM = 15.00 GB
+[21:04:50] [00:00:00] [GPU] [15.0] [6.8] [trainer.py:138] Starting training run: total_epochs=150, patience=15, save_interval_min=15.0

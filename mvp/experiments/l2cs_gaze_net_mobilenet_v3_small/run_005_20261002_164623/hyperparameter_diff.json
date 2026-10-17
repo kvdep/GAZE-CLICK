@@ -1,0 +1,10 @@
+{
+  "patience": {
+    "previous": 15,
+    "current": 3
+  },
+  "save_every_epoch": {
+    "previous": true,
+    "current": false
+  }
+}

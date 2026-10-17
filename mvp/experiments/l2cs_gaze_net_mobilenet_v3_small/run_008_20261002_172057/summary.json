@@ -1,0 +1,50 @@
+{
+  "run_name": "run_008_20261002_172057",
+  "architecture_name": "l2cs_gaze_net_mobilenet_v3_small",
+  "status": "completed",
+  "total_duration_seconds": 102.06,
+  "best_epoch": 15,
+  "best_val_loss": 18.983658,
+  "test_loss": 19.006794,
+  "test_angular_error_deg": 16.6554,
+  "test_pixel_mae": 996.1475,
+  "total_epochs_executed": 21,
+  "weights_file_path": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\experiments\\l2cs_gaze_net_mobilenet_v3_small\\run_008_20261002_172057\\checkpoints\\best_model.pt",
+  "model_source_file": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\experiments\\l2cs_gaze_net_mobilenet_v3_small\\run_008_20261002_172057\\model_source.py",
+  "original_model_file": "C:\\Users\\jack_\\MAIN\\ВУЗ\\ВКР\\mvp\\models\\l2cs_net.py",
+  "hyperparameter_diff": {
+    "batch_size": {
+      "previous": null,
+      "current": 128
+    },
+    "learning_rate": {
+      "previous": null,
+      "current": 0.001
+    },
+    "optimizer": {
+      "previous": null,
+      "current": "AdamW"
+    },
+    "patience": {
+      "previous": null,
+      "current": 6
+    },
+    "max_samples": {
+      "previous": null,
+      "current": 100
+    },
+    "epochs_requested": {
+      "previous": null,
+      "current": 150
+    },
+    "save_interval_minutes": {
+      "previous": null,
+      "current": 20.0
+    },
+    "save_every_epoch": {
+      "previous": null,
+      "current": false
+    }
+  },
+  "completed_at": "2026-10-02T17:22:03.081818+03:00"
+}
