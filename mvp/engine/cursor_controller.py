@@ -1,5 +1,5 @@
 import ctypes, time, math
-from typing import Tuple, Optional, List
+from typing import Tuple, Optional, List, Dict, Any
 
 class CursorController:
     def __init__(self, screen_w: int = 1920, screen_h: int = 1080, enable_control: bool = False) -> None:
@@ -23,6 +23,12 @@ class CursorController:
         self.active_target = None; self.prev_raw_pos = None; self.prev_time = None
         self.registered_targets: List[Tuple[float, float, float]] = []
         self.set_taskbar_targets(screen_w, screen_h)
+        self.is_magnifier_active = False
+        self.magnifier_cluster: List[Dict[str, Any]] = []
+        self.taskbar_entry_time = None
+        self.taskbar_entry_pos = None
+        self.magnifier_dwell_start = None
+        self.magnifier_selected_target = None
 
     def set_screen_resolution(self, w: int, h: int) -> None:
         self.screen_w = w; self.screen_h = h
@@ -103,7 +109,103 @@ class CursorController:
             return snapped_x, snapped_y
         return filtered_x, filtered_y
 
+    def activate_magnifier(self, focus_x: float, base_y: float) -> None:
+        self.is_magnifier_active = True
+        self.magnifier_cluster.clear()
+        self.magnifier_dwell_start = None
+        self.magnifier_selected_target = None
+        icon_step = 82.0
+        center_x = self.screen_w / 2.0
+        k = round((focus_x - center_x) / icon_step)
+        mag_w = 130.0
+        mag_h = 110.0
+        mag_y = self.screen_h - 180.0
+        indices = [k - 2, k - 1, k, k + 1, k + 2]
+        for idx, i in enumerate(indices):
+            orig_x = center_x + i * icon_step
+            orig_y = base_y
+            offset_mag_x = focus_x + (idx - 2) * (mag_w + 12.0)
+            self.magnifier_cluster.append({
+                "index": i,
+                "orig_x": float(orig_x),
+                "orig_y": float(orig_y),
+                "mag_x": float(offset_mag_x),
+                "mag_y": float(mag_y),
+                "mag_w": float(mag_w),
+                "mag_h": float(mag_h),
+                "mag_radius": float(mag_w / 2.0)
+            })
+
+    def deactivate_magnifier(self) -> None:
+        self.is_magnifier_active = False
+        self.magnifier_cluster.clear()
+        self.magnifier_dwell_start = None
+        self.magnifier_selected_target = None
+        self.taskbar_entry_time = None
+        self.taskbar_entry_pos = None
+
+    def check_taskbar_magnifier(self, raw_x: float, raw_y: float) -> Tuple[bool, Optional[Tuple[float, float]]]:
+        now = time.perf_counter()
+        taskbar_top_y = self.screen_h - 110.0
+        if not self.is_magnifier_active:
+            if raw_y >= taskbar_top_y:
+                if self.taskbar_entry_time is None:
+                    self.taskbar_entry_time = now
+                    self.taskbar_entry_pos = (raw_x, raw_y)
+                else:
+                    dist = math.hypot(raw_x - self.taskbar_entry_pos[0], raw_y - self.taskbar_entry_pos[1])
+                    if dist > 100.0:
+                        self.taskbar_entry_time = now
+                        self.taskbar_entry_pos = (raw_x, raw_y)
+                    elif now - self.taskbar_entry_time >= 0.20:
+                        self.activate_magnifier(raw_x, self.screen_h - 40.0)
+                        return True, None
+            else:
+                self.taskbar_entry_time = None
+                self.taskbar_entry_pos = None
+            return False, None
+        else:
+            if raw_y < self.screen_h - 320.0 or raw_y > self.screen_h + 50.0:
+                self.deactivate_magnifier()
+                return False, None
+            best_icon = None
+            min_dist = float("inf")
+            for item in self.magnifier_cluster:
+                d = math.hypot(raw_x - item["mag_x"], raw_y - item["mag_y"])
+                if d < item["mag_radius"] and d < min_dist:
+                    min_dist = d
+                    best_icon = item
+            if best_icon is not None:
+                if self.magnifier_selected_target != best_icon:
+                    self.magnifier_selected_target = best_icon
+                    self.magnifier_dwell_start = now
+                elif self.magnifier_dwell_start is not None and now - self.magnifier_dwell_start >= self.dwell_time_sec:
+                    cx = int(best_icon["orig_x"])
+                    cy = int(best_icon["orig_y"])
+                    self.deactivate_magnifier()
+                    if self.enable_control:
+                        self.user32.SetCursorPos(cx, cy)
+                        self.trigger_left_click()
+                    return False, (float(cx), float(cy))
+                return True, (best_icon["mag_x"], best_icon["mag_y"])
+            else:
+                self.magnifier_selected_target = None
+                self.magnifier_dwell_start = None
+                return True, None
+
     def move_cursor(self, target_x: float, target_y: float, variance: Optional[float] = None) -> Tuple[int, int]:
+        mag_active, mag_pos = self.check_taskbar_magnifier(target_x, target_y)
+        if mag_active:
+            if mag_pos is not None:
+                cx = int(max(0, min(self.screen_w - 1, round(mag_pos[0]))))
+                cy = int(max(0, min(self.screen_h - 1, round(mag_pos[1]))))
+            else:
+                cx = int(max(0, min(self.screen_w - 1, round(target_x))))
+                cy = int(max(0, min(self.screen_h - 1, round(target_y))))
+            self.last_pos = (float(cx), float(cy))
+            if self.enable_control:
+                self.user32.SetCursorPos(cx, cy)
+            return cx, cy
         snapped_x, snapped_y = self.apply_magnetic_attractor(target_x, target_y, variance=variance)
         cx = int(max(0, min(self.screen_w - 1, round(snapped_x))))
         cy = int(max(0, min(self.screen_h - 1, round(snapped_y))))

@@ -904,7 +904,10 @@ class GazeMainWindow(QMainWindow):
         hp = telem.get("head_pitch_deg", 0.0); hy = telem.get("head_yaw_deg", 0.0)
         self.val_head.setText(f"Pitch: {hp:+.1f} deg | Yaw: {hy:+.1f} deg")
         self.val_screen.setText(f"X: {int(filt_pt[0])} px | Y: {int(filt_pt[1])} px")
-        if self.calibration.is_calibrated:
+        if self.cursor_ctrl.is_magnifier_active:
+            self.val_calib_status.setText("Two-Stage Taskbar Magnifier [Active]")
+            self.val_calib_status.setStyleSheet("color: #ec4899; font-weight: bold;")
+        elif self.calibration.is_calibrated:
             self.val_calib_status.setText(f"Calibrated (R2={self.calibration.r2_score:.2f}, Offset: {self.calibration.offset_x:+.0f},{self.calibration.offset_y:+.0f})")
             self.val_calib_status.setStyleSheet("color: #10b981;")
         else:
