@@ -1,0 +1,474 @@
+ADAPTING APPEARANCE-BASED GAZE ESTIMA TION TO NARROW-RANGE,
+LONG-DURA TION SCREEN VIEWING
+Jordan Prescott∗1 , Kleanthis Avramidis ∗1 , Shrikanth Narayanan 1
+1 Signal Analysis and Interpretation Lab, University of Southern California
+ABSTRACT
+Appearance-based gaze estimation offers a low-cost alternative to
+infrared eye tracking for screen-based behavioral and clinical ap-
+plications, however existing models are typically developed for
+wide ranges of gaze angle and head pose. Prolonged screen view-
+ing presents a distinct regime in which gaze remains near the screen
+center, head motion is limited, and calibration drift accumulates over
+time. In this work, we benchmark six published estimators along
+with a proposed differential-gaze model on 140 long-duration facial
+video recordings with synchronized eye tracking under subject-
+disjoint evaluation and a common budget of calibration frames.
+Differential estimation was the only static method that significantly
+improved upon a baseline predictor of each recording’s mean gaze,
+and was further boosted by addition of temporal context. It also
+yielded the strongest agreement with reference fixations and sac-
+cades, demonstrating that low angular error alone could not validate
+eye movement reconstruction. These findings establish differential
+estimation as a promising foundation for reliable gaze tracking in
+long-duration, narrow-range settings.
+Index Terms—Gaze Estimation, Eye Tracking, Differential
+Regression, Subject-specific Calibration, Temporal Context
+1. INTRODUCTION
+Appearance-based gaze estimation, in which eye movements are in-
+ferred from camera recordings of the face, has been adopted as a low-
+cost and unobtrusive alternative to infrared eye tracking for screen-
+based behavioral and clinical analysis [1, 2], such as for example in
+studies of reading [3] and visual attention [4]. The most effective
+current systems are based on convolutional and transformer models
+trained on curated datasets that span wide ranges of head pose and
+gaze angle [5, 6, 7, 8, 9]. Model accuracy for this task is typically
+reported as the mean angular error over those ranges.
+Many clinical studies that would benefit from appearance-based
+gaze estimation involve prolonged screen viewing [3, 4], where the
+gaze range is narrow and concentrated near the screen center, the
+head is near-stationary, and the sessions extend long enough for the
+eye-tracker calibration to drift [10]. Such conditions are largely
+absent from the data on which current gaze estimation models are
+trained [5, 6], and hence their robustness in low-resource settings
+has been little examined. Moreover, the constant predictor, i.e., the
+per-recording mean gaze, is already accurate in narrow ranges, so a
+low mean angular error is not necessarily evidence of model robust-
+ness [11]. As a result, more descriptive metrics should be evaluated.
+∗Equal contribution.
+This study was supported in part by DARPA under cooperative agree-
+ment No. N660012324006 and in part by ARPA-H. The content of the infor-
+mation does not necessarily reflect the position or the policy of the Govern-
+ment, and no official endorsement should be inferred.
+In this study we investigate this regime as a case study on paired
+data of synchronized facial video and high-fidelity eye tracking as
+ground truth, from a long-duration screen-viewing task. Published
+appearance-based gaze models, combined with a lightweight subject
+adaptation, were evaluated under a common subject-independent
+protocol, together with behaviorally-grounded metrics defined at the
+level of fixations and saccades. A custom model based on differen-
+tial gaze estimation was the only frame-wise system to significantly
+outperform the constant predictor, while significantly improving
+gaze metrics. Our contributions are summarized as follows:
+• We introduce a benchmark for appearance-based gaze esti-
+mation under narrow-range screen viewing, built on synchro-
+nized facial video and high-fidelity eye tracking.
+• We also contribute a suite of behaviorally-grounded evalu-
+ation metrics including per-recording fixation and saccade-
+level angle agreement to complement angular error.
+• We show that published models, evaluated under a subject-
+independent protocol, barely exceed the per-recording con-
+stant predictor after anchor-based calibration.
+• We demonstrate that a model trained on differential gaze es-
+timation and conditioned on temporal context yields substan-
+tial improvements in gaze metrics of narrow-range viewing.
+2. DA TASET
+Our gaze estimation benchmark uses paired facial video and high-
+fidelity eye tracking recordings from the PRECOG project [10, 12],
+a multimodal study investigating the neural and cognitive mecha-
+nisms underlying depression and suicidal ideation. The original data
+collection included 146 college-aged adults who completed two cog-
+nitive tasks while neural, physiological and behavioral signals were
+recorded [10]. For the purpose of this study we use facial video
+acquired at 195 Hz with a monochrome Teledyne FLIR Blackfly S
+camera and gaze data acquired at 250 Hz with an EyeLink 1000 Plus
+tracker. The resulting dataset contains an average of 75 minutes of
+paired recordings per participant, totaling 190 hours.
+Both tasks were administered using the same camera configura-
+tion and a 1920×1080 display measuring 510×286 mm, viewed
+from a distance of 862.7 mm and subtending 33° horizontally and
+18.8° vertically. Participants completed either a fast-paced Stroop
+task comprising 480 trials interleaved with brief rest periods or a
+longer sentence-processing task interleaved with free-viewing in-
+tervals [10]. Despite differing in cognitive demand, both tasks ex-
+hibit the challenging viewing regime considered here: gaze remained
+predominantly near the screen center, head movement was limited,
+and sessions lasted long enough for participant pose and eye-tracker
+calibration to potentially drift. Annotations from the EyeLink eye
+tracker were additionally used as reference intervals for model esti-
+mates of fixations, saccades, and blinks.
+arXiv:2610.11036v1  [eess.IV]  8 Oct 2026Fig. 1.Differential gaze estimation. Two eye crops from the same recording are encoded by a weight-shared ResNet-18 into embeddings
+ei ande j, and a bias-free MLP head maps their difference to a two-dimensional gaze displacement, drawn at right as the vector between the
+two gaze points. Absolute gaze is recovered by adding the predicted displacement to a labeled anchor from the same recording.
+3. METHODS
+3.1. Benchmark Models
+To evaluate appearance-based gaze estimation in our setting we
+benchmarked six published model configurations spanning full-face
+and eye-region inputs, convolutional and transformer architectures,
+and static and temporal prediction. Each model was retrained on the
+common PRECOG dataset while retaining its native input represen-
+tation, gaze parameterization, and training procedure. Predictions
+were converted to a common yaw–pitch representation before cali-
+bration and evaluation. We additionally implemented two matched
+custom systems: a custom CNN trained to regress absolute gaze and
+a differential estimator trained to predict gaze changes.
+Full-face 448:The model of Zhang et al. [8] directly regresses
+gaze from a normalized448×448facial image. Its AlexNet-based
+architecture applies a learned spatial weighting map to the final con-
+volutional features, allowing regions informative of eye and head
+orientation to contribute selectively to the prediction.
+RT-GENE[7] estimates gaze from normalized crops of the left
+and right eyes together with head pose. The two eye streams are
+encoded separately before being combined with the pose represen-
+tation for angular regression, making the contributions of ocular ap-
+pearance and head orientation explicit.
+ETH-XGaze.We use the baseline model [6], which applies a
+residual convolutional network to a normalized full-face image and
+predicts gaze pitch and yaw. ETH-XGaze was developed for large
+variations in camera viewpoint, head pose, and gaze direction, pro-
+viding a useful contrast to the regime considered here.
+GazeTR[9] combines convolutional feature extraction with
+transformer-based self-attention. Its hybrid variant first produces a
+spatial feature map using ResNet-18 and models global relationships
+with a transformer encoder before regressing gaze direction.
+Gaze360[5] was developed for unconstrained gaze estimation
+across wide variations in pose, viewing distance, and context. A
+ResNet-18 encodes a normalized head crop, and the temporal model
+aggregates consecutive embeddings using a bidirectional LSTM. We
+evaluate both the single-frame backbone and its temporal model to
+assess the contribution of temporal context.
+Direct CNN:As a baseline control, we trained an ImageNet [13]-
+initialized ResNet-18 [14] on the same binocular crops used by our
+differential model. The network encodes each crop independently
+and directly predicts absolute yaw and pitch from a single frame.
+The differential gaze estimator is built on top of this baseline.
+3.2. Differential Gaze Estimator
+Our custom model of gaze estimation is motivated by the fact that the
+mapping from eye appearance to gaze direction contains participant-
+and session-specific terms, including eye shape, camera geometry,
+and seating position [15]. All previous models must learn these nui-
+sance factors together with the eye movements of interest. Differen-
+tial estimation instead predicts the change between two observations,
+allowing additive recording-specific offsets to cancel from the train-
+ing target [16]. We adapt that formulation to our setting by encoding
+two random crops from the same recording with a weight-shared
+Direct CNN. A two-layer head maps the difference between their
+embeddings,e i ande j, to gaze displacement:
+∆ˆgij =h(e i−e j).(1)
+The head has no bias, ensuringh(0) = 0. At inference, the absolute
+gaze for queryqis reconstructed relative to a labeled anchora:
+ˆg(q|a) =g a +h(e q−e a),(2)
+and predictions are averaged across all anchors. Distributing anchors
+throughout a recording limits the one-sided temporal extrapolation
+associated with calibration performed only at session onset. For a
+temporal variant, we replaced the single crop with a window of 5
+frames spanning either 3.2 or 6.4 s, whose embeddings were con-
+textualized by a one-layer bidirectional GRU [17] with 128 hidden
+units; its center step was then passed to the differential head.
+4. EXPERIMENTAL SETUP
+4.1. Pre-processing
+Pairing the two modalities required a temporal alignment estimated
+per recording, since the camera and the eye tracker operated on in-
+dependent clocks. Linear drift from the camera clock was estimated
+relative to the nominal 195 fps rate and then removed, whereas the
+residual offset was quantified and corrected through blink alignment,
+allowing a maximum measured discrepancy of 31 ms. Thirteen par-
+ticipants were excluded because of unreliable EyeLink recordings
+and 33 because their video and gaze signals could not be reliably
+aligned. The finalized dataset comprised 140 recordings from 100
+participants, totaling approximately 115 hours, or 80.4 million video
+frames, with an average of 70 minutes per participant.
+Facial landmarks were detected using MediaPipe [18] and used
+to extract the face, head, and eye-region inputs required by eachmodel. The differential and Direct CNN systems received80×224
+binocular eye crops, while the published models retained their native
+input regions and resolutions. Where required by the pipeline, inputs
+were mapped to a normalized camera space using a perspective-
+warping procedure [19] that standardizes camera distance, scale,
+and in-plane rotation. EyeLink screen coordinates were projected
+into three-dimensional camera coordinates using the known display
+geometry and viewing distance, then expressed as yaw and pitch.
+Model outputs represented as three-dimensional gaze vectors were
+converted to the same angular convention.
+For evaluation, the 195 Hz video was first decimated to a com-
+mon 65 Hz clip index and then sampled at 5 Hz for analysis. Frames
+occurring during EyeLink-annotated blinks were excluded from cal-
+ibration and evaluation but retained during training. The 100 partic-
+ipants were divided into five subject-disjoint folds, with three folds
+used for training, one for validation, and one for testing in each rota-
+tion. After excluding recordings with fewer than 250 eligible evalu-
+ation samples, the common test set comprised 144,743 samples from
+105 recordings and 76 participants in total.
+4.2. Training Protocol
+The differential encoder was initialized from an ImageNet-pretrained
+ResNet-18 and produced a 256-dimensional embedding. It was
+trained for 4 epochs from a single seed using AdamW [20], with
+a batch size of 256, learning rate of8×10 −4, weight decay 0.01,
+and dropout 0.2. The learning rate followed two epochs of linear
+warm-up and subsequent cosine decay. A smooth-L 1 displacement
+loss was supplemented by a unit-weighted amplitude penalty. The
+published models were retrained on the same subject partitions using
+their respective training objectives and implementation procedures.
+The temporal arms followed the same recipe with the batch reduced
+to 96 due to memory capacity; thematchedstatic arm of Table 2
+was retrained under that same schedule to avoid confounds.
+4.3. Test-time Calibration
+Every model received a common set of 20 labeled calibration frames
+per recording, distributed approximately uniformly across the valid
+frames of the session. Each query was required to lie at least 325
+frames in the 65 Hz clip, corresponding nominally to 5 s, from ev-
+ery anchor. Because anchors were distributed across the full record-
+ing and could occur later than the reconstructed query, our primary
+protocol targets offline reconstruction, or online gaze tracking with
+assumed distributed calibration phases. For each axis, we fitted an
+affine correction and clipped its least-squares slope to[0.5,2.0]to
+prevent unstable scaling from anchors spanning a narrow gaze range.
+For the differential model, each anchor was reconstructed us-
+ing only the other 19 anchors before the affine correction was fitted,
+because allowing an anchor to reconstruct itself would leak its la-
+bel into its own prediction. The resulting 20 leave-one-anchor-out
+(LOO) predictions were paired with their labels to fit the per-axis
+correction. The published models required no such exclusion be-
+cause their raw anchor predictions were independent of the labels.
+4.4. Evaluation protocol
+Frame-level accuracy was measured as the great-circle angle be-
+tween the predicted and reference gaze directions. We additionally
+report within-recording Pearson correlations for yaw and pitch. An-
+gular error was evaluated relative to a label-informed constant pre-
+dictor, i.e., the mean reference gaze of each recording. To assess
+whether a model follows eye movements rather than remaining near
+the center of the observed gaze distribution, we also evaluated fine-
+grained fixation- and saccade-level agreement, where the respective
+System Error(°)↓YawrPitchr
+Full-face 448 1.808±.1070.370±.0290.291±.028
+RT-GENE 1.784±.1070.436±.0340.337±.030
+ETH-XGaze 1.786±.1000.452±.0270.330±.025
+GazeTR 1.815±.1050.490±.0280.314±.023
+Gaze360-static 1.772±.1020.525±.0270.414±.024
+Differential, static1.616±.098 † 0.636±.0270.447±.030
+Table 1. Recording-macro gaze performance with the 20 anchors
+and LOO calibration, over 105 sessions from 76 participants. Values
+are means with the half-width of a 95% percentile bootstrap interval
+over recordings, with 10,000 resamples.†denotes error significantly
+below the baseline of constantly predicting the recording mean.
+System Error(°)↓YawrPitchr
+Gaze360-LSTM 1.698±.0980.546±.0290.455±.024
+Differential, matched 1.626±.0980.640±.0250.428±.033
+Differential, 3.2 s win 1.616±.1000.630±.0250.459±.030
+Differential, 6.4 s win1.598±.098 † 0.646±.0260.452±.031
+Table 2. Temporal gaze estimation over the same 105 recordings as
+Table 1. Values are means with the half-width of a 95% percentile
+bootstrap interval over recordings.†denotes error significantly be-
+low the static baseline ofDifferential-matched.
+annotations were obtained directly from the EyeLink event stream.
+Model predictions were averaged within each labeled fixation, while
+saccades were represented as displacements between two adjacent
+fixations, retaining only those of at least 1° for analysis. We report
+the median angular difference between predicted and reference dis-
+placement and the within-recording correlation between predicted
+and reference displacement amplitude. Recordings containing fewer
+than 20 eligible saccades were excluded from this analysis.
+All tables report recording-macro averages of the per-recording
+metrics. For statistical inference, each participant’s differences
+across their one or two recordings were first averaged. Confidence
+intervals were then obtained using percentile bootstrap resampling
+over participant recordings with 10,000 iterations. Pairwise model
+comparisons used Wilcoxon signed-rank tests, comparisons against
+the constant predictor used sign-flip tests, whereas FDR correction
+was used to control for multiple comparisons.
+5. RESULTS & DISCUSSION
+5.1. Performance under narrow-range viewing
+Table 1 compares the static prediction models under the common
+20-anchor protocol. The published estimators remain close to the
+label-informed recording mean (1.780°) with error ratios between
+0.995 and 1.019, despite exhibiting moderate within-recording cor-
+relations with the ground-truth gaze. This effect illustrates the lim-
+itation of angular error metrics in evaluating fine-grained gaze es-
+timation in narrow viewing settings. The differential estimator is
+the only static one to exceed this baseline, reducing angular error
+to 1.616°. It also achieves the strongest yaw and pitch correlations,
+at 0.636 and 0.447, respectively. In paired participant-level com-
+parisons, its angular error is lower and its yaw correlation higher
+than those of every published comparator after FDR correction (all
+p <0.001). Its improvement over the constant predictor is also sig-
+nificant (sign-flipp <0.001), indicating that the reduction in error
+reflects genuine within-recording gaze tracking.Fig. 2. Event-level analysis of the differential model.(a,b)Predicted
+fixation position, centered per recording, so the dashed horizontal
+line is the constant predictor.(c)Predicted against reference saccade
+amplitude. Saccades of less than 1° were discarded.(d)Distribution
+of the angle between predicted and reference displacement.
+System Anchor use Error (°)↓
+Direct CNN
+none 2.991±.195
+reconstruction 2.107±.126
+affine 1.894±.114
+affine, LOO 1.891±.114
+Differential reconstruction 1.765±.106
+reconstruction, affine, LOO1.616±.100
+Table 3.Matched-budget anchor benchmark: every model re-
+ceives the same 20 frames per session. Recording-macro mean an-
+gular error over the 105 recordings for which both absolute and dif-
+ferential systems produce predictions, with the half-width of a 95%
+percentile bootstrap interval over recordings.
+Temporal context improves both model families, but does not
+remove the advantage of differential estimation (Table 2). Gaze360-
+LSTM, trained on a range of 7 frames, reduces its error ratio to 0.954
+to now significantly outperform the constant predictor. Differential
+estimation, trained on windows of 3.2 and 6.4 s, performs better at
+every tested temporal extent, with the 6.4 s model achieving the low-
+est angular error and highest yaw correlation, both significantly im-
+proved over the matched static counterpart (FDRp <0.003). Tem-
+poral aggregation thus provides a measurable benefit, whereas dif-
+ferential prediction accounts for most of the observed improvement.
+5.2. Matched-budget anchor comparison
+Table 3 holds the labeled-frame budget, raw-frame identities, data
+partitions, and held-out participants fixed, while comparing how the
+two custom pipelines used the same 20 anchors. Without anchors,
+Direct CNN produced an angular error of 2.991°. Anchor-based re-
+construction reduced it to 2.107°, while affine calibration lowered
+it further to 1.894°. The differential model was more accurate, even
+without affine correction, reaching 1.765° using anchor-based recon-
+struction alone and 1.616° after calibration, which corresponds to a
+participant-level reduction of 0.275° relative to the CNN. With front-
+loaded anchors, average error across all systems increased by 32.1%.
+FixationrSaccade
+System Yaw Pitch Amp.rDir .(°)
+Full-face 448 0.430 0.343 0.313 48.4
+RT-GENE 0.517 0.413 0.415 43.5
+ETH-XGaze 0.541 0.404 0.415 44.4
+GazeTR 0.570 0.389 0.434 40.4
+Gaze360-static 0.622 0.513 0.501 39.3
+Gaze360-LSTM 0.629 0.533 0.522 35.5
+Differential, static 0.7150.548 0.59731.2
+Differential, 6.4 s win.0.7170.536 0.58930.7
+Table 4.Event-level agreementover annotated fixations and sac-
+cades, averaged across the 103 recordings with at least 20 saccades.
+Saccade columns give the within-recording correlation of predicted
+with reference amplitude and the median angle between predicted
+and reference displacement. Bootstrap 95% half-widths are near
+±0.03 on the correlations and±3° on direction for every system.
+5.3. Alignment to event annotations
+Mean angular error can measure absolute proximity to the reference
+gaze but does not directly establish whether a model followed eye
+movements or regressed to the session mean. We therefore eval-
+uated video grounding at the level of EyeLink-annotated fixations
+and saccades. The event-level analysis retained all recordings that
+contained at least 20 eligible saccades, yielding 69,754 fixations and
+15,111 saccades of at least 1°. Figure 2 illustrates the (static) dif-
+ferential model’s predictions for fixation position, saccade ampli-
+tude, and saccade direction. As we show in Table 4, the published
+models differ more significantly on movement-level measures than
+on frame-level angular error. Gaze360-LSTM is the strongest pub-
+lished comparator, reaching fixation correlations of 0.629 in yaw and
+0.533 in pitch, a saccade-amplitude correlation of 0.522, and a me-
+dian directional error of 35.5°. The single-frame differential model
+improves these values to 0.715, 0.548, 0.597, and 31.2°, respectively.
+With 6.4 s of temporal context, it further reduces directional error to
+30.7°. Paired comparisons on both saccade endpoints remain signif-
+icant against all published configurations (all correctedp <0.01).
+Frame-level and movement-level evaluation therefore capture
+different aspects of model sensitivity. Across the published config-
+urations, the rankings produced by angular error and saccade agree-
+ment were only weakly aligned. GazeTR, for example, had the
+largest frame-level angular error but substantially better directional
+agreement than that error would suggest for other backbones. Re-
+porting movement-level agreement alongside angular error therefore
+distinguishes models that track the eye from those that merely drift
+to the center of its observed range.
+6. CONCLUSION
+We evaluated appearance-based gaze estimation under narrow-range
+screen viewing using a subject-disjoint protocol. Published models
+remained close to a recording-mean predictor, whereas differential
+estimation achieved the lowest angular error and strongest fixation-
+and saccade-level agreement, with further gains from provided tem-
+poral context. Relative to the uncalibrated direct regressor, the com-
+plete differential pipeline reduced error by 46% in total. These find-
+ings support differential estimation for reliable gaze reconstruction
+in constrained viewing settings. Generalization remains nevertheless
+limited by the college-aged cohort of our dataset, the single camera
+geometry of our setup, and the offline calibration.7. COMPLIANCE WITH ETHICAL STANDARDS
+This work is an analysis of previously collected human-subject data.
+The original study received institutional review board approval, and
+all participants provided written informed consent, as described
+in [10]. No new data were collected for this work.
+8. REFERENCES
+[1] Alexandra Papoutsaki, “Scalable webcam eye tracking by
+learning from user interactions,” inProceedings of the 33rd
+Annual ACM Conference Extended Abstracts on Human Fac-
+tors in Computing Systems, 2015, pp. 219–222.
+[2] Kilian Semmelmann and Sarah Weigelt, “Online webcam-
+based eye tracking in cognitive science: A first look,”Behavior
+research methods, vol. 50, no. 2, pp. 451–465, 2018.
+[3] Stephen Hutt, Aaron Wong, Alexandra Papoutsaki, Ryan S
+Baker, Joshua I Gold, and Caitlin Mills, “Webcam-based eye
+tracking to detect mind wandering and comprehension errors,”
+Behavior Research Methods, vol. 56, no. 1, pp. 1–17, 2024.
+[4] Pingmei Xu, Krista A Ehinger, Yinda Zhang, Adam Finkel-
+stein, Sanjeev R Kulkarni, and Jianxiong Xiao, “Turkergaze:
+Crowdsourcing saliency with webcam based eye tracking,”
+arXiv preprint arXiv:1504.06755, 2015.
+[5] Petr Kellnhofer, Adria Recasens, Simon Stent, Wojciech Ma-
+tusik, and Antonio Torralba, “Gaze360: Physically uncon-
+strained gaze estimation in the wild,” inProc. IEEE/CVF In-
+ternational Conference on Computer Vision (ICCV), 2019, pp.
+6912–6921.
+[6] Xucong Zhang, Seonwook Park, Thabo Beeler, Derek Bradley,
+Siyu Tang, and Otmar Hilliges, “ETH-XGaze: A large scale
+dataset for gaze estimation under extreme head pose and gaze
+variation,” inProc. European Conference on Computer Vision
+(ECCV), 2020, pp. 365–381.
+[7] Tobias Fischer, Hyung Jin Chang, and Yiannis Demiris, “Rt-
+gene: Real-time eye gaze estimation in natural environments,”
+inProceedings of the European Conference on Computer Vi-
+sion (ECCV), September 2018.
+[8] Xucong Zhang, Yusuke Sugano, Mario Fritz, and Andreas
+Bulling, “It’s written all over your face: Full-face appearance-
+based gaze estimation,” in2017 IEEE conference on computer
+vision and pattern recognition workshops (CVPRW). IEEE,
+2017, pp. 2299–2308.
+[9] Yihua Cheng and Feng Lu, “Gaze estimation using trans-
+former,” in2022 26th International Conference on Pattern
+Recognition (ICPR). IEEE, 2022, pp. 3341–3347.
+[10] M. Hughes, C. McDaniel, T. Medani, et al., “PRECOG: Com-
+prehensive Experimental Design and Stimuli Protocol for In-
+vestigating Depression and Suicidal Ideation,”Open Science
+Framework, 2025.
+[11] Zhaokang Chen and Bertram Shi, “Offset calibration for
+appearance-based gaze estimation via gaze decomposition,” in
+Proceedings of the IEEE/CVF winter conference on applica-
+tions of computer vision, 2020, pp. 270–279.
+[12] K. Avramidis, Woojae W. Jeong, A. Kommineni, et al.,
+“Deep learning characterizes depression and suicidal ideation
+in young adults from eye movements,”npj Digital Medicine,
+2026.
+[13] Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and
+Li Fei-Fei, “Imagenet: A large-scale hierarchical image
+database,” in2009 IEEE Conference on Computer Vision and
+Pattern Recognition, 2009, pp. 248–255.
+[14] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun,
+“Deep residual learning for image recognition,” inProceed-
+ings of the IEEE conference on computer vision and pattern
+recognition, 2016, pp. 770–778.
+[15] Seonwook Park, Shalini De Mello, Pavlo Molchanov, Umar
+Iqbal, Otmar Hilliges, and Jan Kautz, “Few-shot adaptive gaze
+estimation,” inProceedings of the IEEE/CVF international
+conference on computer vision, 2019, pp. 9368–9377.
+[16] Gang Liu, Yu Yu, Kenneth A Funes Mora, and Jean-Marc
+Odobez, “A differential approach for gaze estimation,”IEEE
+transactions on pattern analysis and machine intelligence, vol.
+43, no. 3, pp. 1092–1099, 2019.
+[17] Junyoung Chung, Caglar Gulcehre, KyungHyun Cho, and
+Yoshua Bengio, “Empirical evaluation of gated recurrent
+neural networks on sequence modeling,”arXiv preprint
+arXiv:1412.3555, 2014.
+[18] Camillo Lugaresi, Jiuqiang Tang, Hadon Nash, Chris Mc-
+Clanahan, Esha Uboweja, Michael Hays, Fan Zhang, Chuo-
+Ling Chang, Ming Guang Yong, Juhyun Lee, et al., “Medi-
+apipe: A framework for building perception pipelines,”arXiv
+preprint arXiv:1906.08172, 2019.
+[19] Xucong Zhang, Yusuke Sugano, and Andreas Bulling, “Re-
+visiting data normalization for appearance-based gaze estima-
+tion,” inProceedings of the 2018 ACM Symposium on Eye
+Tracking Research & Applications. 2018, ETRA ’18, Associa-
+tion for Computing Machinery.
+[20] Ilya Loshchilov and Frank Hutter, “Decoupled weight decay
+regularization,” inInternational Conference on Learning Rep-
+resentations, 2019.

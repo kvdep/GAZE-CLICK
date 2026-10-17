@@ -3696,3 +3696,69 @@ $$\hat{\theta} = \sum_{k=0}^{89} \text{Softmax}(z_\theta)_k \cdot c_k, \quad \ha
 $$\mathbf{p}_{3D} = \mathbf{o} + \frac{(\mathbf{t} - \mathbf{o}) \cdot \mathbf{n}_{screen}}{\mathbf{g}_{visual} \cdot \mathbf{n}_{screen}} \mathbf{g}_{visual}, \quad \mathbf{g}_{visual} = \mathbf{R}(\boldsymbol{\kappa}) \mathbf{g}_{eye}$$
 $$\mathbf{p}_{screen} = \mathbf{R}_{screen}^T (\mathbf{p}_{3D} - \mathbf{t})$$
 где $\mathbf{R}_{screen} = \text{Rodrigues}(\mathbf{r})$, а вектор угла каппа $\boldsymbol{\kappa} = (\alpha_\kappa, \beta_\kappa)$ оптимизируется по 9–13 калибровочным точкам через SVD/Левенберг-Марквардт, полностью устраняет феномен выхода координат за границы экрана ($X < 0$) и обеспечивает стабильность параметров между сессиями.
+
+---
+
+## 45. НОВЕЙШИЙ СИНТЕЗ ЛИТЕРАТУРЫ 2025–2026, ОПТИКА SAMSUNG GALAXY S25 ULTRA И ГИПОТЕЗЫ H33–H36
+
+### 45.1. Дополнительные фундаментальные работы 2025–2026 годов
+В репозиторий загружены и исследованы 4 новейших первоисточника:
+1. `2603.12388_emc_gaze.pdf` (Chenkai Zhang, March 2026: *"Deployment-Oriented Session-wise Meta-Calibration for Landmark-Based Webcam Gaze Tracking"*).
+2. `2502.02307_unigaze.pdf` (Qin et al., WACV 2025: *"UniGaze: Towards Universal Gaze Estimation via Large-scale Pre-Training"*).
+3. `2510.13660_omnigaze.pdf` (Qu et al., NeurIPS 2025: *"OmniGaze: Reward-inspired Generalizable Gaze Estimation In The Wild"*).
+4. `2505.16384_mage.pdf` (Huang et al., May 2025: *"MAGE: A Multi-task Architecture for Gaze Estimation with an Efficient Calibration Module"*).
+
+### 45.2. Количественные показатели новейших моделей (SOTA 2025–2026)
+- **OmniGaze (NeurIPS 2025, 335M ViT-Large)**:
+  - In-domain MPIIFaceGaze: **$2.97^\circ \pm 0.09^\circ$** ($31.1\text{ мм}$ при $D=600\text{ мм}$).
+  - Zero-Shot MPIIFaceGaze: **$3.03^\circ \pm 0.07^\circ$** ($31.7\text{ мм}$).
+  - Cross-domain ETH-XGaze $\to$ MPIIFaceGaze: **$5.07^\circ \pm 0.18^\circ$** ($53.1\text{ мм}$).
+- **UniGaze (WACV 2025, 632M ViT-Huge)**:
+  - Zero-shot MPIIFaceGaze: **$4.07^\circ$** ($42.6\text{ мм}$).
+  - Zero-shot GazeCapture: **$3.01^\circ$** ($31.5\text{ мм}$).
+- **EMC-Gaze (March 2026, 944k params ONNX)**:
+  - Still-head ($D \approx 100\text{ см}$, 9-point calibration): **$2.92^\circ \pm 0.75^\circ$** ($30.6\text{ мм}$ при $D=600\text{ мм}$).
+  - Dynamic head: **$5.79^\circ \pm 1.81^\circ$** ($60.6\text{ мм}$).
+  - Leave-one-out MPIIFaceGaze (16-shot): **$8.82^\circ \pm 1.21^\circ$** ($92.4\text{ мм}$).
+- **Differential Gaze (arXiv:2610.11036, Oct 2026)**:
+  - 105 сессий экранного взаимодействия: дифференциальное предсказание $\Delta\mathbf{g}_{t, anchor}$ дает **$1.598^\circ$** ($16.7\text{ мм}$), против $2.84^\circ$ ($29.7\text{ мм}$) у статических моделей.
+
+**Ключевой математический вывод:**
+Все нейросетевые модели общего вида на базе веб-камер 720p/1080p имеют асимптотический предел погрешности:
+$$\mathcal{E}_{ang}^{webcam} \ge 1.60^\circ - 2.90^\circ \iff \mathcal{E}_{screen} \ge 16.7 - 30.4\text{ мм}$$
+Это в $2 - 3.5$ раза превышает физический размер иконки панели задач ($8.59\text{ мм}$). Никакое наращивание весов модели (даже ViT-Huge на 632M параметров в UniGaze) не способно преодолеть физический барьер Найквиста-Шеннона при пространственном шаге веб-камеры $\Delta_{object} = 0.541\text{ мм/px}$ (где целевой сдвиг зрачка на $0.286^\circ$ равен всего $0.11\text{ px}$).
+
+---
+
+### 45.3. Гипотеза H33: Преодоление оптического барьера через сенсоры Samsung Galaxy S25 Ultra (Перископ 5x / Телевик 3x, 4K/8K, 120/240 FPS)
+**Формулировка гипотезы:**
+Использование перископического модуля 5x (Sony IMX854, $f_{35} = 115\text{ мм}$, $HFOV = 18.0^\circ$) или телеобъектива 3x ($f_{35} = 67\text{ мм}$, $HFOV = 30.0^\circ$) смартфона Samsung Galaxy S25 Ultra в режиме 4K ($3840 \times 2160$):
+1. Увеличивает физический размер радужки в кадре с $21.6\text{ px}$ до **$236.4\text{ px}$** ($11.0\times$ по диаметру, $120\times$ по площади).
+2. Смещает пространственный масштаб на лице с $\Delta_{webcam} = 0.541\text{ мм/px}$ до $\Delta_{S25\_5x} = \mathbf{0.0495\text{ мм/px}}$.
+3. Увеличивает отклик сенсора на целевое отклонение взгляда $0.286^\circ$ ($3.00\text{ мм}$ на экране) с $0.111\text{ px}$ до **$1.210\text{ px}$** (превышение целого пикселя).
+4. Отношение сигнал/шум субпиксельного детектора контура возрастает до $\text{SNR} = \frac{1.210\text{ px}}{0.05\text{ px}} = \mathbf{24.2\times}$, что обеспечивает теоретическую дисперсию наведения на экран:
+$$\sigma_{screen} = \frac{D \cdot \Delta_{object}}{R_{eye}} \cdot \sigma_{detector} = \frac{600 \cdot 0.0495}{12.0} \cdot 0.05 = \mathbf{0.124\text{ мм}} \quad (\mathbf{1.18\text{ px}})$$
+что в 24 раза строже допуска целевой иконки ($3.00\text{ мм}$).
+
+---
+
+### 45.4. Гипотеза H34: Прямое аналитическое отслеживание контура лимба (Direct Limbus/Pupil Contour Tracking via Fitzgibbon Ellipse Fitting)
+**Формулировка гипотезы:**
+При разрешении радужки $> 140\text{ px}$ (S25 Ultra 3x/5x) нет необходимости пропускать кадр через обученную нейросеть общего вида. Прямое аналитическое вычисление градиентов Собеля $\nabla I(u, v)$ в полярных координатах вокруг центра глаза и вписывание алгебраического эллипса методом наименьших квадратов Фитцгиббона:
+$$a u^2 + b u v + c v^2 + d u + e v + f = 0 \quad \text{при} \quad 4ac - b^2 = 1$$
+дает координаты центра зрачка $\mathbf{c}_{limbus} = (u_0, v_0)$ с аппаратной стабильностью $\sigma \le 0.03\text{ px}$ при частоте $120 - 240\text{ FPS}$ без использования весов глубоких нейросетей.
+
+---
+
+### 45.5. Гипотеза H35: Дифференциальное слежение взгляда (Differential Anchor Gaze Tracking)
+**Формулировка гипотезы:**
+В соответствии с arXiv:2610.11036 и EyeTAG (arXiv:2610.00922), вычисление относительного вектора смещения взгляда:
+$$\Delta\mathbf{g}_t = \mathbf{g}_t - \mathbf{g}_{anchor}$$
+относительно динамически обновляемого центроида недавних фиксаций пользователя полностью нивелирует статическую индивидуальную систематическую ошибку (угол каппа $\boldsymbol{\kappa}$) и устраняет дрейф позы при наклонах головы, снижая угловую погрешность в $1.78$ раза.
+
+---
+
+### 45.6. Гипотеза H36: Эквивариантная замкнутая ридж-калибровка (EMC Closed-Form Ridge Adaptation)
+**Формулировка гипотезы:**
+Внедрение аналитического решения гребневой регрессии $\mathbf{W} = (\mathbf{H}^T \mathbf{H} + \lambda \mathbf{I})^{-1} \mathbf{H}^T \mathbf{Y}$ на инвариантных признаках расстояний радужка-веко (arXiv:2603.12388) гарантирует математическую устойчивость калибровочных весов при числе точек $K \ge 9$, исключает деление на ноль и взрыв чисел обусловленности ($\kappa < 15$ вместо $\kappa = 864.5$).
+

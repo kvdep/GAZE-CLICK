@@ -1,0 +1,1215 @@
+arXiv:2505.22769v3  [cs.HC]  5 Jun 2025
+MAC-G AZE : M OTION -AWARE CONTINUAL CALIBRATION FOR
+MOBILE GAZE TRACKING
+A PREPRINT
+Yaxiong Lei
+University of St Andrews
+St Andrews, Fife, UK, KY16 9SX
+yl212@st-andrews.ac.uk
+Mingyue Zhao
+University of St Andrews
+St Andrews, UK, KY16 9SX
+mz201@st-andrews.ac.uk
+Yuheng Wang
+University of St Andrews
+St Andrews, UK, KY16 9SX
+yw99@st-andrews.ac.uk
+Shijing He
+King’s College London
+London, UK
+shijing.he@kcl.ac.uk
+Yusuke Sugano
+University of Tokyo
+Tokyo, Japan
+sugano@iis.u-tokyo.ac.jp
+Mohamed Khamis
+University of Glasgow
+Glasgow, UK
+mohamed.khamis@glasgow.ac.uk
+Juan Ye
+University of St Andrews
+St Andrews, Fife, UK, KY16 9SX
+jy31@st-andrews.ac.uk
+May 28, 2025
+ABSTRACT
+Mobile gaze tracking faces a fundamental challenge: maintaining accuracy as users naturally change
+their postures and device orientations. Traditional calibration approaches, like one-off, fail to adapt
+to these dynamic conditions, leading to degraded performance over time. We present MAC-Gaze,
+a Motion-Aware continual Calibration approach that leverages smartphone Inertial measurement
+unit (IMU) sensors and continual learning techniques to automatically detect changes in user motion
+states and update the gaze tracking model accordingly. Our system integrates a pre-trained visual
+gaze estimator and an IMU-based activity recognition model with a clustering-based hybrid decision-
+making mechanism that triggers recalibration when motion patterns deviate significantly from
+previously encountered states. To enable accumulative learning of new motion conditions while
+mitigating catastrophic forgetting, we employ replay-based continual learning, allowing the model
+to maintain performance across previously encountered motion conditions. We evaluate our system
+through extensive experiments on the publicly available RGBDGaze dataset and our own 10-hour
+multimodal MotionGaze dataset (481K+ images, 800K+ IMU readings), encompassing a wide range
+of postures under various motion conditions including sitting, standing, lying, and walking. Results
+demonstrate that our method reduces gaze estimation error by 19.9% on RGBDGaze (from 1.73
+cm to 1.41 cm) and by 31.7% on MotionGaze (from 2.81 cm to 1.92 cm) compared to traditional
+calibration approaches. Our framework provides a robust solution for maintaining gaze estimation
+accuracy in mobile scenarios.
+Keywords Gaze Estimation· Mobile Gaze Tracking· Continue Learning· Calibration· Smartphones· Mobile Devices·
+IMU Sensors
+1 Introduction
+Real-time gaze tracking and interaction on mobile devices is attracting increasing attention from academics and industry,
+which is to infer point of gaze (PoG) to the screen from facial images captured by the device’s front camera. This isMotion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+often referred to as appearance-based gaze tracking [16], or mobile gaze tracking. This research topic is driven by the
+high-resolution (HR) cameras and powerful computing processors in smartphones. The HR cameras allow for capturing
+detailed facial and eye images, leading to improved precision of gaze estimation. The computing process makes it
+possible to perform real-time data processing and run deep learning models, contributing to a responsive and seamless
+user experience when interacting with gaze. These technological advancements make it possible for real-time gaze
+interaction, which is inspiring many applications [38] to facilitate user interactions with devices.
+One key element in appearance-based gaze tracking is to learn inherent mapping between facial images and gaze
+directions, which is regulated by the relative spatial relationships between head, eyes and camera as depicted in Figure 1.
+Traditionally, gaze tracking systems adopt a classic one-off calibration approach; that is, for each user, at the beginning
+of the use, the system will initiate a calibration process to collect ground truth gaze data; for example, using smooth
+pursuit to guide users’ gaze on dots moving around the boundary of a screen [40]. With the collected data, a light-weight
+machine learning model will be trained as a calibrator in order to adjust gaze prediction for the target users [62, 35].
+Once calibrated, the system will continue with the same calibrator for future use. If such mapping keeps stable, the
+gaze tracking can achieve a good level of precision [38, 9, 29].
+However, this practice does not suit mobile gaze tracking, due to the high DoF and motion-caused input uncertainty in
+the relative spatial relationship of head, eye, and camera [72]. In mobile gaze tracking, the head and device each has
+6-DoF (degrees of freedom), involving 3 translation (x, y, z) and 3 rotational (pitch, yaw, roll) movements, and the
+eyes have 3 rotational movements. The degrees of freedom are much higher than AR/VR/glasses gaze tracking where
+the relative spatial relationship between head and device is fixed and desktop-based gaze tracking where the camera
+position is fixed. The high DoF makes appearance-based gaze tracking susceptible to changes in user’s motion state,
+their head movements, the way they hold their devices, and the device to head moving speed [39]. All these factors lead
+to degraded accuracy over time [34, 40, 32], which is the main obstacle for wider adoption of mobile gaze tracking.
+Figure 1: Head-eye-camera configurations in handheld systems that consist of up to 15-DoF from head, eye, and device
+movements.
+To directly tackle this challenge, we present MAC-Gaze, a Motion-Aware continual Calibration approach and address
+two key questions underlying mobile gaze calibration: when to trigger calibration; that is, detecting the moment when
+the recalibration is needed to maintain the high precision of gaze tracking; and how to recalibrate; that is, not just for
+the current motion condition, but incrementally adapting to a diverse range of conditions with the goal of eventually
+reducing recalibration frequency.
+For the when question, we leverage the IMU sensors in modern mobile devices. These sensors including accelerometers,
+gyroscopes, and magnetometers provide rich information about device motion and orientation. Previous studies have
+utilized IMU data to enhance activity recognition and context-aware applications on mobile devices [22, 10]. However,
+the integration of IMU sensors to trigger automatic recalibration in mobile gaze tracking remains underexplored. In
+2Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+MAC-Gaze we leverage IMU signals to automatically identify when the user’s motion state changes (e.g., transitioning
+from sitting to standing) and monitor fine-grained motion pattern changes (such as subtle variations in device holding
+posture) that may impact gaze estimation accuracy. We develop a hybrid detection mechanism that combines supervised
+classification with unsupervised clustering to trigger recalibration accordingly.
+For the question on how to update, we employ continual learning techniques with a memory buffer to store calibrated
+data for future update, which helps to reduce catastrophic forgetting of previously encountered motion conditions. Our
+approach aims to not only improve gaze prediction accuracy but also enhance the user experience by reducing the need
+for frequent manual recalibrations.
+Our work addresses a fundamental challenge in mobile gaze tracking; i.e., the dynamic user-device interaction caused
+calibration distortion, through an innovative combination of motion sensing, hybrid activity recognition, and continual
+learning. The resulting system advances the state of the art in mobile gaze estimation, bringing robust gaze tracking
+closer to widespread adoption in everyday mobile interactions. Our main contributions are listed below:
+1. We introduce the first multi-modal continual calibration approach (motion and vision) tailored for mobile
+gaze tracking. By leveraging real-time motion data, our MAC-Gaze method can autonomously identify when
+recalibration is needed.
+2. We implement a replay-based continual learning mechanism that enables incremental adaptation to evolving
+motion conditions while preventing catastrophic forgetting of previously encountered states.
+3. We validate our approach through extensive experiments covering diverse motion conditions. Our method
+demonstrates significant improvements over traditional one-off calibration, reducing error by 19.9% on
+RGBDGaze (from 1.73 cm to 1.41 cm) and 31.7% on MotionGaze (from 2.81 cm to 1.92 cm).
+2 Related Work
+In this section, we have reviewed the relevant techniques in gaze estimation with a particular focus on appearance-based
+gaze estimation, calibration, and human activity recognition.
+2.1 Gaze Estimation across Devices
+The key impact factor of gaze estimation performance is the spatial relationship between the eye, cameras and target
+plane. This relationship varies significantly depending on device context, creating distinct challenges and constraining
+the degrees of freedom (DoF) within the head-eye-camera system.
+Head-mounted systems (e.g., VR/AR/MR headsets, eye-tracking glasses) offer the most stable conditions, with eye-
+tracking cameras rigidly fixed relative to the eyes, yielding a 3-DoF scenario limited primarily to eye rotations [17, 61].
+This configuration enables high accuracy with minimal calibration drift [56], supporting commercial implementations
+in platforms such as Apple Vision Pro, HTC Vive Pro, and Meta Quest Pro.
+Desktop-based systems typically fix cameras on top of stationary monitors. In these contexts, the user’s head moves
+freely (6-DoF) relative to the stationary sensor, while eyes contribute an additional 3-DoF of rotational movement.
+Researchers have addressed this variability through head pose estimation methods [70, 41], physical constraints (e.g.,
+chin rests), dual-camera setups [15], and online head-pose clustering [59, 57].
+Handheld mobile devices present the most challenging scenarios for eye tracking due to unconstrained and independent
+movement of both device and user. This highly dynamic head-eye-camera relationship comprises up to 15-DoF:
+6-DoF from head (three translational, three rotational), 6-DoF from device during hand holding, and 3-DoF from
+eyes. Despite extensive research efforts, including large-scale datasets such as GazeCapture [35], TabletGaze [28], and
+RGBDGaze [2], mobile systems remain particularly vulnerable to domain shifts induced by postural changes.
+2.2 Gaze Estimation Techniques
+Gaze estimation methodology broadly divides into model-based and appearance-based approaches [ 20, 23, 16, 38].
+Model-based methods rely on geometric eye models and optical principles, utilizing specialized hardware such as
+infrared illuminators to capture corneal reflections and pupil centers [ 20]. While achieving high accuracy under
+controlled conditions [61], these methods are limited by their dependence on structured lighting and calibrated hardware,
+restricting deployment across commodity devices.
+Appearance-based methods employ data-driven techniques to learn the mapping from input images to gaze direction or
+points without explicit geometric modelling. These approaches leverage deep neural networks, such as CNNs [35, 5,
+3Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+62, 29] and Vision Transformers (ViT) [14], demonstrating promising performance across diverse users and real-world
+environments [71, 13]. Appearance-based techniques can be further grouped into 2D and 3D gaze estimation methods.
+2D gaze estimation directly maps input images to screen coordinates [35, 29, 62], offering computational efficiency for
+mobile platforms. However, these approaches often entangle head pose with eye movements, limiting generalizability
+across varying viewing conditions, particularly when motion introduces additional variability. 3D gaze estimation
+decouples head pose from eye rotation by predicting 3D gaze vectors in camera coordinate systems [ 70]. While
+providing greater flexibility across hardware setups, these methods require precise camera-to-screen calibration and
+geometric modelling, presenting additional computational challenges.
+In this work, we focus on 2D gaze estimation due to the prevalence of 2D mobile gaze estimation datasets such as
+GazeCapture [35] and RGBDGaze [2]. Several architectures have advanced this field in recent years. iTracker [35]
+serves as a foundational model for mobile environments, employing a multi-stream CNN architecture that processes
+face, eye regions, and face position grid to directly map visual features to screen coordinates. Valliappan et al. [62]
+have proposed a computationally efficient approach using only eye patches as input, coupled with a lightweight SVR
+calibration model to enable on-device inference with reduced latency. AFF-Net [ 5] is an adaptive feature fusion
+technique within a multi-stream CNN framework to leverage structural similarities between eyes and their relationship
+to facial landmarks, thereby enhancing prediction accuracy.
+More recent advancements include iMon [29], which incorporates an image enhancement module to refine visual details
+prior to gaze estimation and implements a specialized calibration scheme to address kappa angle errors. GazeTR [14]
+applies vision transformer (ViT) as backbone into the gaze estimation domain and achieves better performance compared
+to CNN backbones. Driven by the superior performance of vision transformer [ 16], we adapt the efficient-oriented
+MobileViT-v2 [48] architecture to maintain transformer advantages while optimizing for mobile deployment.
+2.3 Calibration in Gaze Tracking
+Calibration is fundamental to gaze estimation accuracy across methodological approaches. Traditional eye trackers
+typically employ one-time static calibration procedures before system operation [ 20, 56], requiring users to fixate
+on predefined targets often arranged in a grid pattern. This establishes personalized mappings between unique eye
+characteristics and specific screen coordinates or gaze directions. However, such calibration inherently assumes
+relatively fixed head-eye-camera geometry, an assumption frequently violated in mobile scenarios [39].
+To mitigate reliance on rigid calibration, researchers have explored adaptive [27, 42, 15], online [58], and calibration-free
+approaches. Adaptive techniques continuously update gaze models during use, leveraging implicit signals from user
+behaviours or contextual cues. For instance, Sugano et al. [59] have employed mouse-click events as weak supervision
+for dynamic model updates, while Huang et al. [27] build personalized gaze models from interaction histories. Other
+approaches have utilized implicit saliency information [68], reading behaviours [42], and touch interactions [9] for
+calibration, though the latter cannot address scenarios without touch events.
+In addition, research has explored low-complexity or few-shot calibration techniques [ 52]. Chen and Shi [ 11, 12]
+decompose gaze prediction into subject-independent components inferred from images and subject-dependent bias
+terms, enabling efficient calibration with minimal targets. Meta-learning approaches like FAZE [52] train networks for
+rapid adaptation with limited samples, while generative methods using GANs [3] augment sparse calibration datasets to
+improve robustness across diverse conditions.
+However, few projects have looked into triggering calibration via IMU sensors nor applying continual learning to
+incrementally learn and maintain the knowledge on a diverse range of motion conditions over time to reduce the need to
+calibrate whenever there is a change.
+2.4 Human Activity Recognition
+IMU sensors have become fundamental within mobile and wearable computing, enabling human activity recognition
+(HAR), context inference, and health monitoring [4, 22]. IMU-based HAR can detect common activities; e.g., sitting,
+walking, lying down, using acceleration and angular velocity signals. HAR has evolved from traditional feature
+engineering with classical machine learning algorithms [8] to deep learning architectures, including CNNs [67], RNNs,
+hybrid CNN-LSTM models [69], attention mechanisms [49, 21], and transformers [45]. These advancements have
+significantly improved performance across benchmark datasets such as WISDM [36, 64] and HHAR [55].
+Within eye tracking, IMUs are underutilized. Some studies have employed IMUs for coarse-grained pose estimation [43,
+19] or eye movement prediction [53], but few have integrated IMU-based HAR directly into gaze-tracking pipelines to
+4Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+enhance robustness under diverse motion conditions. This represents a critical research gap for mobile eye tracking in
+terms of how they challenge the precision of gaze tracking over time.
+Recent advancements in HAR have leveraged sophisticated deep learning architectures to improve recognition accu-
+racy [22, 37]. Singh et al. [54] have incorporated self-attention mechanisms into sensor stream analysis, outperforming
+conventional approaches with 90.41% accuracy on the WISDM dataset. This attention-based approach enables the
+model to focus on temporally significant segments within sensor data streams, enhancing feature discrimination.
+Autoencoder-based architectures have emerged as effective solutions for handling noisy sensor streams in activity
+recognition tasks. Thakur et al. [60] combine convolutional autoencoders with LSTM networks for smartphone-based
+activity recognition, achieving 98.14% accuracy on the UCI-HAR dataset with a 400-length sliding window. Similarly,
+An et al. [ 1] develop an autoencoder with self-attention (SAE-SA) that reached 95.76% accuracy on WISDM and
+97.60% on PAMAP2 datasets. These approaches demonstrate the robustness of autoencoder architectures in extracting
+effective representations from noisy IMU signals.
+Beyond supervised methods, unsupervised clustering approaches address challenges associated with manual sensor
+data annotation. Ma et al. [46] proposed a framework utilizing autoencoders for latent feature extraction followed by
+k-means clustering to generate pseudo-labels, achieving 55.0 Normalized Mutual Information (NMI) and 0.65 F1 score
+on HHAR dataset [55]. Extending this approach, Mahon et al. [ 47] combine encoder-generated latent features with
+uniform manifold approximation for dimensionality reduction and Hidden Markov Models (HMM) for pseudo-label
+generation, improving performance to 67.9 NMI and 0.59 F1 score on HHAR. These unsupervised methods offer
+promising avenues for automatic motion pattern discovery without extensive manual annotation requirements.
+Despite the significant potential of IMU sensors to complement visual signals in mobile gaze tracking, particularly for
+detecting calibration distortion induced by motion, existing adaptive and online methods [27, 59, 72] have not been
+extensively optimized for mobile settings.
+2.5 Research Gaps
+Recent work shows progress in gaze estimation, calibration, and human activity recognition. However, robust mobile
+gaze tracking in real-world interactions remains challenging. User motion and device handling create dynamic physical
+motion conditions that degrade mobile gaze tracking performance. This degradation, for example, impacts how users
+interact with on-screen content in daily applications, such as gaze-assisted reading [40], target selection [50, 51, 9], and
+gaze-hand multimodal inputs [34]. We identify several research gaps related to these calibration issues:
+First, how on-device motion sensors (IMUs) can properly trigger recalibration is underexplored. Current adaptive
+methods often fail to pinpoint the optimal recalibration moment using dynamic motion data. Second, systems must adapt
+to varied user motion. Traditional calibration often fails to learn new conditions without catastrophic forgetting. Robust
+continual learning strategies are thus needed to learn from diverse motion contexts without losing prior knowledge.
+Finally, few holistic frameworks integrate motion sensing with continual learning for mobile gaze tracking. Such
+an integrated approach offers the potential to maintain accuracy in real-world mobile use. Addressing these gaps is
+essential for practical mobile gaze tracking. Our work proposes a motion-aware continual calibration approach to tackle
+these challenges to enable gaze tracking robustness across realistic mobile environments.
+3 Proposed Approach
+We introduce MAC-Gaze, a continual calibration technique for mobile gaze tracking that leverages both visual and
+motion information to adapt to dynamic user conditions. Our approach integrates a backbone gaze estimation model
+with an IMU feature extractor for HAR and employs continual learning to update the calibrator as users transition
+between different activities. Our proposed system consists of the following components:
+• Backbone gaze estimation modelMV : an appearance-based gaze estimation model that processes image input
+for point of gaze prediction and extracts latent visual features for the continual calibration module;
+• Motion-aware DetectorMI: a human activity recognition model that processes IMU sensor data to extract
+motion features representing different motion conditions and classifies broader user activities;
+• Calibration Trigger: A hybrid decision-making mechanism that determines precisely when to initiate recali-
+bration ofMC. It utilizes supervised activity classifications from the Motion-aware Detector (MI) to identify
+significant changes in user state, complemented by unsupervised clustering techniques applied to raw IMU
+data to detect novel, fine-grained motion patterns not previously encountered;
+5Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+• Continual Calibration ModuleMC: a calibrator that takes visual features fromMV to produce personalised
+gaze predictions. MC is continually updated, when prompted by the Calibration Trigger, to account for
+dynamic and diverse motion conditions. Compared toMV ,MC is typically a smaller machine learning model,
+trained on a much smaller, user- and device-specific gaze dataset.
+In general,MV can be trained on independent, large gaze datasets that consist of a large number of facial images from
+many participants and gaze points as labels.MV forms the backbone model and it often leads to low accuracy of gaze
+prediction when directly applied to a target user. To tackle the problem, a gaze-tracking system launches the following
+calibration process. It collects a small set of gaze data on the target user, including facial images and gaze ground truth.
+The facial images will be passed throughMV to generate visual features, which along with gaze ground truth will be
+used to train a machine learning modelMC to better adjust gaze prediction. In our system, the key novelty is to use
+IMU data in a mobile device, processed byMI and the Calibration Trigger, to detect changes in motion states, launch
+the calibration when necessary, and continuously update the calibratorMC to maintain accuracy across various motion
+states. The overview of the system workflow is presented in Figure 2 and we will illustrate each component in more
+details.
+Memory Buffer 
+(Replay Samples)
+Calibration Trigger
+Visual Features 
+( x v)
+Motion Features 
+( x m )
+Backbone Gaze 
+Estimation Model
+( M V)
+Motion-aware 
+Detector
+( M I)
+Image
+Face/Eyes
+IMU
+Sensor Stream
+Motion States
+Sitting
+Standing
+Lying
+Walking
+...
+Detection Methods
+Supervised Activity Detection
+              -  Classifier
+Unsupervised Motion Pattern
+              -  Clustering
+Temporal Majority Voting
+Continual 
+Calibration Module 
+( M C)
+(X,Y)
+R ecalibration 
+Triggered
+Section 1
+Figure 2: Workflow of Motion-Aware Continual Learning Calibration for Mobile Gaze Tracking
+3.1 Backbone gaze estimation model
+The backbone gaze estimation model ( MV ) serves as the foundation for our motion-aware continual calibration
+framework, extracting discriminative features from visual inputs. Following state-of-the-art methodologies, we first
+detect and crop the face and eye regions via Google’s ML kit, resizing them to 224× 224 and 112× 112, respectively.
+We also generate a 25× 25 binary mask via Dlib [33] as a face grid, which indicates the head position in the original
+image and provides information about the distance between the face and camera. These facial and eye patches, along
+with the face grid, are subsequently processed through a deep neural network for gaze estimation.
+We adopt the MobileViT-v2 architecture [48] to extract 256-dimensional visual features independently from three input
+images: the full face and two eye patches. MobileViT-v2 is chosen for its efficient architecture, which combines the
+lightweight characteristics of MobileNet with the global context modelling capabilities of Vision Transformers. This
+balance between computational efficiency and representational power makes it possible to deploy our mobile gaze
+tracking system to mobile devices in the future.
+The face grid is processed through two fully connected layers with 256 and 128 neurons, respectively. The resulting
+feature vectors, consisting of three from visual inputs (256*3) and one from face grid (128), are concatenated into a
+single vector of 896 dimensions. This combined vector will be passed through three fully connected layers (896→ 256
+→ 128→ 2) to regress the 2D gaze point.
+We use the MobileViT-v2 model pre-trained on ImageNet from the timm library [65] and finetune it on the GazeCapture
+dataset [35], containing 1.4M gaze-annotated images collected on mobile devices. After training, we freeze the model
+weights for directly inference and use the output from the third-to-last layer as visual features for the calibrator.
+6Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+3.2 Motion-aware Detector
+In mobile gaze estimation, accuracy is significantly impacted by user movements and varying phone holding pos-
+tures [40], leading to performance degradation. To address this challenge, our system incorporates a dedicated
+Motion-aware Detector (MI). This component processes data from the device’s IMU sensors, such as the accelerometer
+and gyroscope, capture the phone’s dynamic movement and rotation. The core function ofMI is to learn robust motion
+features from these IMU signals and to classify the user’s broader activity or current motion state. The insights derived
+fromMI, specifically the extracted features and activity classifications, are subsequently utilized by the Calibration
+Trigger (detailed in Section 3.4) to inform decisions about when automatic recalibration of the gaze model is necessary.
+Building upon the recent literature in HAR in Section 2, we employ an encoder-decoder architecture with an additional
+classification head. Specifically, we adopt Supervised Autoencoder with Self-Attention (SAE-SA) [1] and enhance it
+with Squeeze-and-Excitation blocks [25] for more effective IMU feature extraction in short sliding window and fewer
+sensors. The encoder begins with a 1D convolutional layer (kernel size of 7) that extracts initial temporal features from
+the accelerometer signals. This is followed by three residual blocks with increasing dilation rates (1→ 2→ 4) and
+channel dimensions (64→ 128→ 256) that capture both local and increasingly global motion patterns. Each residual
+block incorporates SE attention that adaptively recalibrates channel-wise feature responses, emphasizing relevant
+motion components. A self-attention module is then applied to model temporal dependencies across the entire sequence,
+allowing the network to correlate motion patterns regardless of their temporal distance.
+The encoded latent representation zm is processed through two parallel pathways: (1) a classification branch with fully
+connected layers (256→ 512) that predicts the activity class, and (2) a reconstruction branch that reconstructs the
+input signal through transposed convolutions. This dual-task learning approach forces the model to learn meaningful
+representations that preserve both discriminative features for classification and structural information for reconstruction.
+During training, we employ a weighted loss function that balances reconstruction error (r = 0.3) and classification
+accuracy (1−r = 0.7).
+zm = Encode(xm), ˆxm = Decode(zm), ˆyactivity = Classify(zm),
+L = 1
+|D|
+X
+(xm,yactivity)∈D
+
+r·∥ xm− ˆxm∥2
+2 + (1−r)· CE(yactivity, ˆyactivity)
+
+,
+where xm∈ RT×M represents the IMU input, whereT is the temporal window length (e.g., 200 frames) andM is the
+number of IMU measurement dimensions (e.g., 3-axes accelerometer readings).D represents the training dataset, CE
+denotes cross-entropy loss, andr balances reconstruction and classification objectives.
+3.3 Continual Calibration
+Adapted from a class-incremental learning problem [7], we first formulate continual calibration as follows. The model
+MC undergoes training with a sequence of tasksT = [t1,t 2,...,t N], where each taskti(i∈ [1,N ]) corresponds to a
+continuous time-series gaze datasetDi ={(x(i,j)
+v , x(i,j)
+m , x(i,j))}J
+j=1. Here, x(i,j)
+v represents facial images of a certain
+resolution, while x(i,j)
+m ∈ RT×M represents IMU sensor data in dimension ofM collected over a window length ofT .
+y(i,j) denotes the 2D gaze point coordinates as ground truth. Unlike traditional tasks having different sets of classes,
+eachDi is characterized by a unique distribution of motion features representing a different activity or device holding
+posture. The objective is to accurately predict gaze for all data whose motion characteristics align with the data up to
+taski.
+A critical challenge in this process is to prevent catastrophic forgetting (CF); that is, the tendency of neural networks to
+lose performance on previously learned tasks when fine-tuned on new data. In our context, naively fine-tuning MC
+on new calibration data would optimize it for the current motion state but potentially degrade performance when the
+user returns to previously encountered postures. To address CF, three types of continual learning techniques have been
+identified [63, 18]. Regularization-based techniques incorporate regularisation terms to penalise large updates to model
+weights. Replay-based techniques select a small subset of informative samples from previous tasks and leverage them
+to update the model with new task data. This helps reinforce the learned knowledge and prevent the degradation of
+performance on earlier tasks. Dynamic architecture-based techniques extend the model’s architecture to increase its
+capacity of learning more knowledge. A recent survey [30] shows that replay-based techniques can work well for a
+relative small number of tasks while maintaining low computational cost.
+In our setting, we adopt a replay approach, storing a representative subset of examples from previously encountered
+motion states in a memory buffer; that is,B ={(x(i)
+v ,x (i)
+m,y (i))}i=NB
+i=1 , whereNB is the size of the memory buffer
+7Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+and each entry (x(i)
+v ,x (i)
+m,y (i))) is downsampled from the observed tasks’ datasets. When updating MC, we use the
+buffer data{(x(i)
+v ,y (i)}i=NB
+i=1 and the current calibration data{(x(i)
+v ,y (i))}i=J
+i=1 , where facial imagesx(i)
+v will be fed to
+the backbone gaze estimation model MV to extract visual features, as input to the calibrator MC. MC optimizes a
+combined loss function:
+LC =
+JX
+j=1
+Lcalibration(y(j), ˆy(j)) +α
+NBX
+k=1
+Lreplay(y(k)
+buffer, ˆy(k)
+buffer), (1)
+whereLcalibration represents the error on new calibration data,Lreplay maintains performance on replay samples from
+previous tasks, andα balances adaptation versus retention. This approach enables MC to progressively adapt to diverse
+motion contexts while maintaining accuracy across the full range of user activities.
+3.4 Calibration Trigger
+A key challenge in continual calibration is determining when recalibration is needed. Intuitively, we can start with a
+supervised approach where our HAR model MI is trained in a supervised manner on an independent HAR dataset
+covering a wide range of activity classes. IfMI detects a new activity that has not been observed from previous tasks,
+then we trigger the calibration process. However, this approach might not be able to capture fine-grained device-holding
+postures when the user stays with the same activity. On the other hand, we can adopt an unsupervised approach which
+characterises motion features and assesses whether the current motion features significantly deviate from the observed
+features. This approach can potentially capture finer-grained posture variance, but its performance is generally lower
+than the supervised techniques.
+To leverage the advantages of both supervised and unsupervised approach, we design a hybrid motion-aware calibration
+strategy that combines higher accuracy of supervised classification with the adaptability of unsupervised clustering.
+This approach where we first use the supervised classifier to detect significant motion transitions, and then apply
+unsupervised clustering to determine whether the new motion pattern warrants calibration.
+Supervised activity recognition: We use the classification head of SEAR-Net to identify transitions between predefined
+activities (e.g., sitting to standing to sitting). To prevent spurious triggering from momentary misclassification, we
+implement a temporal majority voting algorithm where to assess the consistency score [66] in a temporal window.
+Let a window of raw IMU data accumulated over a consensus window size of c up to a timestamp t be Xt =
+[xt−c+1
+r ,..., xt
+r], where xj
+r∈ R1×M (j∈ [t−c + 1,t ]). The above supervised classifier will perform activity recogni-
+tion over eachT -length IMU input xj
+m = [xj
+r, xj+1
+r ,..., xj+T−1
+r ] and derive activity predictions Yt = [ˆyt−c+1,..., ˆyt],
+where ˆyj =Classify (Encoder(xj
+m)). Then a majority voting is conducted on Yt to find the most frequently inferred
+activity labels and see if the frequency is above a certain threshold so as to be considered as a stable classification:
+|{∀y∈ Yt :y = mode(Yt)}|
+|Yt| ≥τ,
+where mode(Yt) is the function to find the most frequent element in an array andτ is the consensus ratio threshold.
+If the inferred activity is stable and different from the current activity, then we move to the next step for fine-grained
+motion pattern recognition.
+Fine-grained Motion Pattern Discovery via ClusteringOur next objective is to determine whether the incoming sequence
+of IMU readings constitutes a novel, fine-grained motion pattern not adequately captured by the broader activity class.
+To this end, we maintain a compact memory buffer containing representative raw IMU samples from previously
+encountered tasks. These stored readings are then clustered using a Gaussian Mixture Model (GMM) to characterise
+the distribution of known fine-grained motion patterns.
+Initially, we considered using the latent features (zm) extracted by our SEAR-Net IMU encoder for clustering fine-
+grained motion patterns. The SEAR-Net encoder is optimized to produce representations that are discriminative for
+broad activity classes (e.g., sitting, walking) over 200-sample windows. However, this optimization process, which
+includes convolutional layers and self-attention mechanisms designed to capture class-relevant temporal dependencies,
+inherently leads to a degree of feature smoothing. As visualized using t-SNE, Figure 3a, these window-level latent
+features formed a dense, largely overlapping cluster, from which GMM struggled to discern more than one or two
+indistinct motion states within a broader activity class. This suggests that the subtle, rapid postural shifts and micro-
+movements critical for triggering fine-grained recalibration may be averaged out or abstracted away in these higher-level
+latent representations.
+To capture these finer variations, we opted to perform GMM clustering directly on the individual raw IMU measurement
+vectors (xr∈ R1×M from the incoming sequence). As shown in Figure 3b, this approach yielded a clearer separation
+8Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+into multiple distinct clusters (e.g., 10 clusters identified). While raw IMU data is inherently noisier and more susceptible
+to spurious changes, potentially leading to over-triggering, we mitigate this through the temporal majority voting
+mechanism for broad activity changes and careful threshold selection for outlier detection in the GMM likelihood
+stage. The direct use of raw IMU data for fine-grained pattern discovery, despite its noise sensitivity, was thus deemed
+more effective for detecting subtle deviations that might necessitate recalibration, which might otherwise be missed
+by clustering on the smoothed latent features designed for broader activity classification. Future work could explore
+hierarchical clustering approaches or modified encoder architectures that better preserve both coarse and fine-grained
+motion details.
+30
+ 20
+ 10
+ 0 10 20 30 40
+Component 1
+40
+30
+20
+10
+0
+10
+20
+30
+Component 2
+Cluster
+0
+(a) GMM clustering on latent features from SEAR-Net
+60
+ 40
+ 20
+ 0 20 40 60
+Component 1
+60
+40
+20
+0
+20
+40
+60
+Component 2
+p11-GMM Clustering
+Cluster
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9 (b) GMM clustering on raw IMU sensor readings
+Figure 3: Comparison of feature representations for GMM clustering of fine-grained motion patterns, visualized via
+t-SNE using a series of calibration sets from Participant 11. (a) t-SNE visualization of latent features extracted by
+SEAR-Net, showing poor cluster separation with only one identified cluster. (b) t-SNE visualization of raw IMU sensor
+readings, revealing distinct and well-separated clusters.
+The new motion pattern detection is to assess whether the majority of collected new data in Xt conforms to the
+probability density estimated by the GMM learned on the buffer dataB. That is,∀xr∈ Xt, we evaluate its highest
+likelihood of belonging to any component of the GMM:
+pr = max
+k
+
+πkN (xr|µk, Σk)
+
+,
+where{πk,µ k, Σk}K
+k=1 are the mixture weights, means, and covariances for each of the K Gaussian components
+(indexed byk) learned from the stored data.
+If the likelihood is less than a thresholdτi (e.g., 0.95), then we considerxr as an outlier. We calculate the outlier ratio
+among Xt as
+rt =|{i|pr(i)<τ i}|
+c .
+If the outlier ratio exceeds a threshold (e.g., 0.75), we conclude that the majority of Xt does not conform to any
+previously observed motion pattern. Therefore, Xt is likely to correspond to a new, fine-grained motion pattern and
+trigger recalibration. Then we will downsample Xt along with their corresponding visual and ground truth data and
+merge with the bufferB, upon which we will run GMM on the IMU input for future new motion pattern discovery. The
+specific values for these various thresholds and parameters within the hybrid triggering strategy (e.g., temporal majority
+voting window size c, GMM component selection, likelihood threshold τi, and outlier ratio rt) were determined
+empirically based on performance on a held-out validation subset of our training data, aiming to balance trigger
+sensitivity with the prevention of excessive recalibrations.
+4 Experiment Setup
+The main objective of our work is to present a continual calibration framework that can automatically trigger recalibration
+and allows incremental calibration to adapt to a wide range and speed move of head-eye-camera variations. Towards
+this objective, we design the following experiment and evaluation methodology.
+9Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+4.1 Datasets
+In our system, the backbone gaze estimation model MV and activity recognition model MI are pre-trained on the
+publicly available datasets.
+4.1.1 HAR Datasets for Training MI
+There are various HAR datasets available and our selection criteria is that (1) the dataset is collected on smart phones
+or watches; (2) it includes activities similar to our motion conditions; and (3) it contains a large set of samples to
+learn effective motion features. Based on these criteria, we have selected Heterogeneity Human Activity Recognition
+(HHAR) dataset [6], which contains accelerometer and gyroscope data from smartphones and smartwatches across six
+activities: biking, sitting, standing, walking, stair up, and stair down. HHAR is collected from 9 participants and totally
+including 14M samples, and 11M from phone and 3M from watch. We only use the phone data to train our supervised
+IMU modelMI; that is, 1.8M in biking, 2M in sitting, 1.6M in stair down, 1.78M in stair up, 1.8M in standing and
+2.2M in walking.
+4.1.2 Motion-aware Gaze Datasets for Calibration (MotionGaze)
+Our continual calibration technique requires the mobile gaze datasets that have collected continuous IMU sensor
+readings along with facial images and gaze ground truth, ideally across multiple motion conditions. As the use of IMU
+in mobile gaze estimation is still a new topic, there only exist a few datasets; e.g., RGBDGaze [2]. This dataset contains
+synchronized RGB images, depth maps, and IMU sensor data from 45 participants performing gaze estimation tasks in
+four distinct postures: sitting, standing, lying down, and walking. After our initial investigation, the RGBDGaze dataset
+exhibits the following limitations: (1) no natural transitions between postures, (2) restricted device handling, and (3) a
+much narrow range of dynamic movements. To tackle these limitations, we collect our own dataset to better reflect
+more natural, varied motion conditions.
+Our dataset, called MotionGaze [39], was collected from 10 participants (4 females, 6 males, M = 26.4 years,
+SD = 3.14) using our prototype mobile gaze tracking system [39] within a large laboratory room (approximately 8m
+× 20m) configured for various activities. Participants performed tasks under five distinct motion conditions designed to
+simulate common daily scenarios: lying down, sitting, standing, walking in an open space, and walking while navigating
+a maze. Our data collection protocol aimed to capture not only the obvious transitions between these postures but also
+the natural micro-motions, subtle postural adjustments, and variations in device handling (e.g., subtle device movements
+occurring when shifting tasks, such as from a video call to news Browse, or minor adjustments in device angle) that
+users exhibit even when predominantly in one of these states; these subtle dynamics are crucial as they contribute to the
+overall ’motion’ profile from a sensor perspective. For the "walking in an open space" condition, participants walked at
+their natural, self-selected pace over varying distances within a designated clear area of the room (approximately 8m×
+10m), allowing for natural gait patterns and device sway. To elicit more complex and varied ambulatory movements,
+the "walking while navigating a maze" condition required participants to traverse a 5m× 10m concave-shaped maze,
+whose walking path was enclosed by soft cushions. In each condition, they completed two gaze tasks: (1) a pursuit task,
+in which they followed a dot moving along the screen’s boundary for 5 seconds per session, resulting in approximately
+125–150 ground truth gaze points; and (2) a fixation task, where participants fixated on a sequence of 9 dots appearing
+for 3 seconds each. The dots were uniformly distributed across the screen, and their presentation order was randomized.
+Each fixation session lasted 27 seconds, producing approximately 675–810 labelled gaze points. The participants were
+asked to perform these tasks as naturally as possible. This dataset, therefore, captures a wide range of real-world usage
+patterns, including natural variations in posture, diverse continuous and transitional movements, and varied device
+handling during gaze-based interaction. Consequently, it is structured to support detailed analyses of how gaze behavior
+is affected by, and can be adapted to, both continuous dynamic activities (like walking) and periods within, or transitions
+across, different, more stable postures. Each participant’s experiment took approximately 1.5 hours to complete, totally
+collecting 481K images with 803K IMU readings. Given the time and effort involved in conducting the study, we
+limited the sample to 10 participants. We use the data of the task (1) for training and calibration and the data of the task
+(2) for testing.
+4.1.3 Dataset Comparison
+To better understand motion patterns in both datasets, we examined the distribution of tri-axial accelerometer readings
+(X, Y , Z) across postural conditions. As shown in Figure 4, the RGBDGaze dataset exhibits relatively constrained
+acceleration ranges across all axes, with walking and standing showing modest variability and lying showing tight
+distributions particularly in the Z-axis, where values remain near 0.5∼ 1.0 g. In contrast, MotionGaze demonstrates
+10Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+significantly broader acceleration ranges, especially under dynamic conditions. More specifically, walking and walking
+in maze produce larger variances and outliers, with Z-axis values spanning approximately from−2 g to over 6 g.
+RGBDGazeMotionGaze
+Acceleration X                                                                                 Acceleration Y                                                                                   Acceleration Z
+Acceleration X                                                                                 Acceleration Y                                                                                   Acceleration Z
+Figure 4: Comparison of acceleration ranges between RGBDGaze and MotionGaze in box plots
+To quantitatively validate these observed differences, we conducted statistical analyses comparing the accelerometer data
+between the two datasets. One-way ANOV A tests revealed highly significant differences across all three axes: X-axis
+(F = 59.70,p< 0.0001), Y-axis (F = 300821.80,p< 0.0001), and Z-axis (F = 68288.30,p< 0.0001). Subsequent
+t-tests confirmed these disparities with large effect sizes: X-axis ( t =−8.74,p < 0.0001), Y-axis (t =−604.64,
+p< 0.0001), and Z-axis (t =−262.59,p< 0.0001). These statistical findings provide evidence that our MotionGaze
+dataset captures significantly more diverse motion conditions than RGBDGaze, particularly in the Y and Z dimensions
+where the differences are the largest. Such variability emphasizes the importance of motion-aware calibration techniques
+for robust mobile gaze tracking in unconstrained, real-world settings.
+4.2 Evaluation Metrics
+We evaluate the gaze estimation accuracy using the Euclidean distance between the predicted and true gaze points:
+Error2D = 1
+N
+NX
+i=1
+||pi− ˆpi||, (2)
+where pi is the true gaze point and ˆpi is the predicted gaze point.
+4.3 Evaluation Procedures
+To comprehensively evaluate the performance of our continual calibration approach, we designed systematic procedures
+for both the RGBDGaze dataset and our MotionGaze dataset. These procedures were designed to assess how well our
+system adapts to different posture transitions and evolves over time as it encounters new motion contexts.
+For the backbone gaze estimation modelMV and the HAR modelMI, we initially trained using publicly available
+datasets: GazeCapture for gaze estimation and HHAR for HAR. We then fine-tuned the models on smaller subsets of the
+RGBDGaze and MotionGaze datasets, respectively, to adapt it to the specific device and conditions of each target dataset
+prior to its use as a feature extractor for calibration. This fine-tuning step is necessary because the visual and motion
+data distributions in RGBDGaze and MotionGaze differ significantly from those in GazeCapture and HHAR, making
+adaptation essential for achieving reasonable performance. To ensure subject independence and realistic evaluation, we
+split both RGBDGaze and MotionGaze datasets based on participants. Specifically, for RGBDGaze, we used data from
+9 participants for training and 36 for testing. For MotionGaze, we used 3 participants for training and 7 for testing.
+11Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+The calibration model’s performance was evaluated using data from each participant in the test sets of both datasets.
+We defined each motion condition (e.g., lying, sitting, walking) as a separate task and generated multiple evaluation
+sequences by systematically varying the initial task, ensuring each condition served as a starting point (e.g., Lying
+→ Sitting→ Standing→ Walking; Sitting→ Standing→ Walking→ Lying; etc.). The underlying data for these
+evaluations was gathered with participants consistently instructed to maintain a natural vertical phone grip and screen
+visibility, which allowed this approach to assess the impact of different starting points and transition orders on calibration
+performance.
+For each participant, we first initialized our continual calibrator using 10% of the data (approximately 90-105 frames)
+from their initial posture. We then tested the calibrated model on the remaining 90% of data from all the motions. When
+our motion detector identified a change in posture, we triggered recalibration using 10% of the data from the newly
+detected motion. After each recalibration, we evaluated performance across all motion conditions to assess how the
+calibrator performs on all the observed conditions. This process continued until all conditions in the sequence had been
+processed. We repeated this procedure for all the test participants and averaged the results to ensure robust evaluation.
+4.4 Implementation Details
+We implemented our system using PyTorch 2.4.1, CUDA 12.4, AMD EPYC 7282, 256 GB RAM, and NVIDIA A100
+GPU.
+4.4.1 Backbone Gaze Estimation Model
+The backbone gaze estimation model (MV ) was trained using hyperparameters including a batch size of 256, an initial
+10−4 learning rate, L1 loss, 0.1 weight decay, and up to 120 epochs with early stopping. After its initial pre-training on
+the GazeCapture dataset,MV achieved a 1.57 cm mean error on the GazeCapture phone test set. The trained model then
+yielded a 2.45 cm mean error when directly evaluated on the RGBDGaze dataset, as shown in Table 1 under "Direct".
+Further fine-tuningMV on a 9-participant subset of RGBDGaze (from its 45 total participants) reduced the mean error
+on the remaining RGBDGaze test participants to 1.76 cm overall, with all motion conditions achieving errors below 2
+cm, under "Fine-tuned" for RGBDGaze in Table 1. This adaptedMV was thus considered suitable as a base model and
+feature extractor for the subsequent continual calibration evaluations.
+Motion GazeCapture (Phone) RGBDGaze (Phone)
+Direct Fine-tuned
+Lying – 2.17 1.80 ↓
+Sitting – 2.36 1.76 ↓
+Standing – 2.41 1.70 ↓
+Walking – 2.42 1.77 ↓
+Overall 1.57 2.45 1.76 ↓
+Table 1: Mean Euclidean errors (cm) of the MV gaze estimation model on GazeCapture (Phone) and RGBDGaze
+(Phone) datasets. ’Direct’ denotes testing on the full RGBDGaze dataset; ’Fine-tune’ denotes results after fine-tuning
+on a 9-participant subset and testing on the remaining 36.
+4.4.2 HAR Model Implementation and Selection
+For SEAR-Net’s implementation and optimization, we first preprocess the IMU sensor data by segmenting it into sliding
+windows of 200 timestamps with 75% overlap and applying z-normalization to each sensor channel for standardization.
+Through extensive grid search for hyperparameter tuning, we determined the optimal architecture configuration: ReLU
+activation functions with dropout (rate=0.1) between convolutional layers to mitigate overfitting. The training process
+utilized the Adam optimizer with an initial learning rate of1×10−4 and a learning rate scheduler that reduced the rate by
+a factor of 0.1 when validation loss plateaued for 10 epochs. We use a batch size of 256, and 200 epochs. Additionally,
+we implemented an early stopping strategy (patience=10, min_delta=0.001) to prevent overfitting, preserving the model
+weights that achieved optimal performance on the validation set.
+To make sure the performance of our HAR models good enough for motion detection, we perform the following
+evaluation. We evaluate the activity recognition and clustering performance on both HHAR [55] and RGBDGaze. For
+12Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+the classification task, we measure the performance in F1-scores and compare with two commonly used baselines
+such as 1DCNN [69] and SAE-SA [1]. We also compare with clustering techniques such as Deep Clustering [47] and
+VaDE (variational deep embedding) [31] to see if they can reliably detect motion patterns. For the clustering task, we
+employ normalized mutual information (NMI) to measure the agreement between the true and predicted clusters with
+normalization to account for different sizes of clusters.
+NMI(Y,C ) = 2×I(Y ;C)
+H(Y ) +H(C) (3)
+whereI(Y ;C) is the mutual information between true labelsY and predicted clustersC, andH(·) is the entropy.
+Dataset Supervised Classifier Unsupervised Clustering
+1DCNN SAE-SA SEAR-NET(Ours) VaDE-HAR DeepClustering
+HHAR 0.73 0.89 0.93 0.44 (0.10) 0.47 (0.10)
+RGBDGaze 0.64 0.77 0.80 0.23 (0.07) 0.26 (0.08)
+Table 2: Motion detection performance (F1-scores, with NMI in brackets for clustering methods) on HHAR and
+RGBDGaze datasets using accelerometer data (window size 200 samples, 3 axes, 50% overlap).
+For all the techniques, we train on HHAR and finetune on RGBDGaze’s training data, whose results are reported
+in Table 2. Our proposed SEAR-Net outperforms the other two comparison techniques, reaching an F1 score of
+0.93 on HHAR and 0.80 on RGBDGaze. Compared to supervised classifiers, unsupervised detection exhibits much
+lower accuracy. On HHAR, VaDE-HAR achieves an F1 of 0.44, whereas Deep Clustering improves this to 0.47. On
+RGBDGaze, VaDE-HAR yields 0.23 F1, while Deep Clustering reaches 0.26. This is significantly below the best
+classification results (0.80 F1 for SEAR-Net on RGBDGaze), so we cannot rely on the unsupervised techniques for
+motion detection, which will generate too many false positives.
+4.4.3 Calibrator
+The continual calibration module (MC) was implemented as a 2-layer MLP (256→ 128→ 2) for all experiments. We
+conduct grid search on the two thresholds for outlier detectionτ andρ within the range [0.75, 0.95] with a step size of
+0.05 and select the best setting. We have experimented with regularization-based continual learning techniques such as
+knowledge distillation (KD) [24] along with replay, but KD does not improve the performance and adds overhead in
+memory and computation time. Therefore, we only opt for replay-based technique.
+5 Results
+5.1 Overall Performance of Continual Calibration
+Our main research question is whether continual calibration improves precision of gaze prediction. To answer this
+question, we compare our continual calibration with the following settings:
+1. No Calibration: This configuration uses the output from the fine-tuned gaze estimation model (MV ) directly,
+serving as the baseline to evaluate the fundamental capability of the neural network on handheld devices. This
+represents the lower bound of performance in our evaluation.
+2. One-off Calibration: This involves an explicit calibration process performed once before usage, representing
+the state-of-the-art calibration practice. On RGBDGaze, we selected 10% of data from each participant in a
+single motion condition for calibration, and then applied the adjusted model on all motions of that participant.
+On MotionGaze, participants performed an explicit 9-point calibration process once at the beginning, and the
+calibrated model was used throughout the session.
+3. Oracle Motion-Aware Calibration: This represents an ideal but impractical approach that assumes perfect
+knowledge of motion changes, with recalibration occurring immediately upon each motion transition. For
+each participant, we train a calibration model for each motion using 10% of their respective data and use the
+corresponding model for each testing motion. This represents the upper bound of what can be achieved with
+perfect motion detection.
+4. MAC-Gaze-Classifier: This uses SEAR-Net’s classifier (MI) to detect motion transitions and trigger calibration.
+The calibration model (MC) is updated incrementally with new calibration data while preserving performance
+13Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+on previously seen motions through replay-based continual learning. For the memory buffer, we maintained a
+balanced mixture of data from all observed motions.
+Method Lying Sitting Standing Walking Average
+No Calibration 1.80 (1.12) 1.76 (1.07) 1.70 (0.99) 1.77 (1.07) 1.76 (1.06)
+One-off Calibration 1.75 (0.96) 1.72 (0.97) 1.72 (0.92) 1.74 (0.95) 1.74 (0.96)
+Oracle Motion-Aware 1.53 (0.62) 1.45 (0.65) 1.52 (0.60) 1.64 (0.62) 1.54 (0.65)
+MAC-Gaze-Classifier 1.55 (0.79) 1.56 (0.75) 1.59 (0.76) 1.63 (0.75) 1.58 (0.79)
+MAC-Gaze 1.33 (0.69) 1.37 (0.63) 1.43 (0.62) 1.49 (0.65) 1.41 (0.69)
+(a) RGBDGaze
+Method Lying Sitting Standing Walking Walking (Maze) Average
+No Calibration 2.67 (1.94) 2.78 (1.87) 2.76 (1.80) 2.88 (1.88) 2.94 (1.98) 2.81 (2.01)
+One-off Calibration 2.47 (2.22) 2.61 (2.18) 2.65 (2.13) 2.82 (2.12) 2.88 (2.30) 2.69 (2.19)
+Oracle Motion-Aware 1.62 (1.51) 2.04 (1.45) 2.26 (1.53) 2.53 (1.60) 2.69 (1.73) 2.23 (1.69)
+MAC-Gaze-Classifier 2.20 (1.73) 2.33 (1.66) 2.51 (1.67) 2.65 (1.74) 2.72 (1.85) 2.48 (1.73)
+MAC-Gaze 1.58 (1.54) 1.72 (1.55) 1.87 (1.61) 2.11 (1.60) 2.30 (1.62) 1.92 (1.58)
+(b) MotionGaze
+Table 3: Comparison of mean Euclidean errors (in cm) and standard deviations across different postures for baseline
+and proposed calibration strategies. Best results are highlighted in bold.
+Table 3 compares the overall performance between the above baselines and our method on RGBDGaze and MotionGaze
+datasets respectively. The performance is recorded in the mean and standard deviation (in brackets) of Euclidean error
+in cm. The results demonstrate that motion-aware continual calibration substantially outperforms traditional one-off
+calibration, particularly for motions that differ significantly from the calibration motion.
+MAC-Gaze approach outperforms all the other methods. On RGBDGaze, MAC-Gaze reduces average error from
+1.76 cm (no calibration) to 1.41 cm (average across postures), a 19.9% improvement and on MotionGaze, it reduces
+error from 2.81 cm to 1.92 cm (31.7% reduction). We observe that the performance of MAC-Gaze is more advantageous
+in more dynamic conditions (walking and walking maze), where posture variations are greatest. This highlights the
+value of our hybrid approach in real-world mobile scenarios where users naturally shift between different postures and
+movement patterns. The errors of MAC-Gaze are lower than MAC-Gaze-Classifier (reducing 0.17 cm on RGBDGaze
+and 0.56 cm on MotionGaze), indicating that finer-grained motion patterns play a role in maintaining the precision of
+gaze tracking.
+MAC-Gaze-Classifier performs similar with Oracle Motion-Aware Calibrator on RGBDGaze as their recalibration
+trigger is similar; i.e., based on activity change, and RGBDGaze dataset has stable, well-distinguishable distributions
+between motion conditions (see in Figure 4). However, on MotionGaze, Oracle Motion-Aware Calibrator performs
+much better (2.23 cm vs 2.48 cm), suggesting that when the dataset exhibits a higher variety of motion distributions, the
+performance of gaze tracking is subject to the accuracy of the activity classifier. We will explain it more with concrete
+examples in the next sections.
+No Calibration and One-off Calibration are the worst, with One-off Calibration being marginally better. This shows
+the importance of continual calibration. To further understand why continual calibration is necessary, we dive deeper
+on One-off Calibration practice. Table 4 compares training motion vs. testing motion for one-off calibration. On
+the diagonal entries which represent scenarios where training and testing motion match, the one-off calibrator yields
+the lowest error of 1.54 cm on average, confirming the importance of motion-specific calibration. In contrast, off-
+diagonal entries, the one-off calibrator exhibits increased errors up to 1.80 cm, highlighting significant performance
+degradation when calibration and usage motion differ. These results reinforce the necessity of continual calibration
+methods for dynamically addressing changes in head-eye-device spatial relationships encountered during realistic
+mobile interactions.
+5.2 Analysis of Calibration Trigger Frequency
+We conduct an analysis of calibration trigger frequency across both datasets. Table 5 summarizes the number of
+calibration events triggered for each participant in RGBDGaze and MotionGaze datasets, alongside the data length per
+participant. The results reveal significant differences in calibration patterns between the two datasets. For RGBDGaze,
+MAC-Gaze triggered between 4 and 9 calibrations per participant, with an average of 5.61 calibrations. This roughly
+14Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+Testing Lying Sitting Standing Walking
+Lying 1.53 (0.62) 1.85 (1.10) 1.83 (1.08) 1.86 (1.09)
+Sitting 1.80 (1.12) 1.45 (0.65) 1.73 (1.01) 1.76 (1.07)
+Standing 1.79 (0.99) 1.75 (1.03) 1.52 (0.60) 1.71 (0.99)
+Walking 1.87 (1.09) 1.82 (1.08) 1.77 (1.00) 1.64 (0.62)
+Average 1.75 (0.96) 1.72 (0.97) 1.72 (0.92) 1.74 (0.95)
+Table 4: One-off calibration results showing the mean Euclidean error (in cm, with std in brackets) across different
+testing motions on RGBDGaze, when training on one motion (column) and testing on others (row).
+matches with the expected calibration frequency, as RGBDGaze has 4 motion conditions and is expected to be
+recalibrated 3 times. In contrast, MotionGaze participants experienced substantially more calibration events, ranging
+from 10 to 31 with an average of 19.60 calibrations. This is much higher than the expected calibration frequency on
+MotionGaze, which has 5 motion conditions. However, the difference is because the MotionGaze dataset captures more
+diverse and natural movements, as shown in Figure 4. In the following, we will dive into the change detection in more
+details.
+Dataset Data Length Participants Min Max Mean Median
+RGBDGaze 3,869 36 4 9 5.61 5
+MotionGaze 17,521 10 10 31 19.60 19
+Table 5: MAC-Gaze calibration trigger events across datasets. Data Length indicates the average number of frames per
+participant across all postures. Min, Max, Mean, and Median represent the distribution of calibration events triggered
+per participant during evaluation
+5.3 Change Detection
+As mentioned before, one of the key questions in continual calibration is to detect when to trigger the calibration, with
+the goal to balance the number of calibrations and the performance. We examine how calibration triggers evolve over
+time. Figure 5 shows a representative session in RGBDGaze with transitions (e.g., from lying to walking). The4-second
+majority-voting window suppresses false triggers during momentary posture shifts. We tested shorter windows (2 s) and
+longer (6–8 s); 4 s best balanced stability with responsiveness.
+Figure 61 shows these patterns for one exemplar session on MotionGaze. Compared to RGBDGaze, we observe
+more frequent and irregular motion change detection, reflecting more dynamic and natural interaction in real-world
+usage. Among motion conditions, two walking conditions are often undistinguishable, and sitting, standing, and lying
+are sometimes misclassified between each other. Despite this increased complexity, the 4-second majority voting
+mechanism still effectively prevents spurious triggers during brief postural adjustments.
+The high misclassification rate helps explain why the MAC-Gaze-Classifier calibrator performs poorly on MotionGaze.
+If recalibration is triggered solely based on the detection of a new activity, misclassifications early in the sequence can
+prevent recalibration when it is actually needed. For example, in the initial tasks such as sitting, standing, and walking,
+the HAR model may incorrectly classify several motion conditions due to confusion among similar activities. This
+can lead the system to prematurely mark all motion conditions as observed. In one case, during the second task; i.e.,
+standing, the HAR model misclassified some samples as lying, which falsely triggered a recalibration. Later, when
+actual lying samples were presented, the system assumed this condition had already been handled and therefore did not
+trigger a new recalibration. As a result, the system was calibrated on incorrect (misclassified) lying samples, leading to
+degraded performance on the actual lying condition.
+MAC-Gaze addresses this challenge by modifying how activity change is detected. Instead of using the HAR model to
+identify whether a newly predicted activity has never been seen before, it simply checks whether the current prediction
+differs from the previous one. This reduces reliance on accurate activity classification. To further improve robustness,
+1Unlike Figure 5, which shows ground truth vs. classifier predictions on RGBDGaze, because MotionGaze’s greater length and
+motion diversity result in less direct alignment between HAR predictions and broad activity labels. The 4-second voting window in
+MAC-Gaze helps stabilize these initial HAR predictions for noisy datasets like MotionGaze.
+15Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+IMU StreamMotion-Aware DetectorCalibration Trigger
+X
+Y
+Z
+True Label
+Weak Label
+True Label
+Weak Label
+Walking
+Standing
+Sitting
+Lying
+Walking
+Standing
+Sitting
+Lying
+Figure 5: Temporal visualization of calibration trigger events on the RGBDGaze dataset for a participant. The upper
+graph shows tri-axial accelerometer data over time. The middle graph displays ground truth labels (blue) versus
+classifier predictions (red). The bottom graph shows calibration triggers aligned with motion detection. Blue segments
+indicate active motion states, while vertical red lines mark calibration events.
+MAC-Gaze applies a clustering algorithm to analyze fine-grained motion patterns. Recalibration is then triggered
+based on whether the current motion samples deviate significantly from previously observed clusters. For instance,
+in the earlier example, even if the lying activity has already been marked as observed, MAC-Gaze will still trigger
+recalibration if GMM detects that the current lying samples differ substantially from those seen before.
+System Configuration Mean Error (cm)
+Full MAC-Gaze System (MV +MI + Replay + Hybrid Trigger) 1.41 (0.69)
+Without Hybrid Trigger (MV +MI + Replay +MI Classifier Only) 1.58 (0.79)
+Without Replay (MV +MI + Hybrid Trigger) 1.73 (1.19)
+Without Motion-based Trigger (MV + Time-based Replay every 30s) 1.71 (1.46)
+Table 6: Ablation study results on the RGBDGaze dataset, showing the impact of removing key components from
+the full MAC-Gaze system. Error values represent mean Euclidean error (cm) with standard deviation in parentheses,
+averaged across all postures. The "Hybrid Trigger" combinesMI’s classifier output with GMM clustering; "Without
+Hybrid Trigger" relies solely onMI’s classifier.
+To understand the contribution of each component, we conducted ablation studies by selectively replacing or removing
+components of our system. Table 6 quantifies the impact of different system configurations on overall performance.
+The Without Replay condition removes the memory buffer for continual learning, showing a significant performance
+16Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+IMU Stream
+X
+Y
+Z
+Sitting
+Standing
+Walking
+Walking(Maze)
+Lying
+Sitting
+Standing
+Walking
+Walking(Maze)
+Lying
+Filtering
+Sitting Standing Walking Walking(Maze)Lying
+Figure 6: Temporal visualization of calibration trigger events for a participant in the MotionGaze dataset (Lying First
+sequence). The upper graph shows tri-axial accelerometer data displaying significantly more varied motion patterns.
+The middle graph shows detected postures across the sessions, with coloured bands indicating detected states and
+vertical red lines marking calibration events. The bottom graph displays calibration trigger timing. Compared to
+RGBDGaze (Figure 5), this natural scenario exhibits more frequent and irregular motion changes.
+drop; that is, the error increases from 1.41 cm to 1.73 cm. This demonstrates the importance of replay-based learning in
+mitigating catastrophic forgetting. The Without Motion Detection condition applies calibration at fixed time intervals
+rather than based on detected motion changes. To ensure a fair comparison, we implemented a heuristic approach where
+each participant received the same number of calibrations as they would have with MAC-Gaze, but distributed at regular
+intervals throughout their session. For example, if a participant experienced 5 recalibrations with MAC-Gaze during a
+15-minute session, the Without Motion Detection condition would trigger recalibrations every 3 minutes regardless of
+the participant’s actual movements or posture changes. Despite having the same number of calibration, the time-based
+approach showed the worst performance (1.71 cm vs. 1.41 cm), which highlights that when calibration occurs is just as
+important as how frequently it occurs.
+5.4 Replay Ratio Impact
+We further test the impact of different replay ratios on RGBDGaze in Table 7. The replay ratio of 70% yields the
+lowest average error (1.59 cm) across all initial postures, with particularly strong performance (1.56 cm) when starting
+from standing or walking. We observe that very low replay ratios (10%) provide insufficient memory of previous
+tasks, leading to catastrophic forgetting, particularly evident in Lying First and Standing First conditions. High replay
+ratios (80-90%) over-represent previous tasks at the expense of adapting to new postures, resulting in degraded overall
+performance.
+Our analysis also reveals consistent performance across different task sequence orderings. Examining the initialization
+conditions across columns in Table 7, we observe similar mean errors across all starting conditions: Lying First
+(M = 1.63 cm,SD = 0.068 cm), Sitting First (M = 1.65 cm,SD = 0.058 cm), Standing First (M = 1.66 cm,
+SD = 0.076 cm), and Walking First (M = 1.64 cm,SD = 0.061 cm). One-way ANOV A confirms no significant
+difference between these sequence orders (F = 0.36,p = 0.782), indicating that MAC-Gaze maintains consistent
+performance regardless of the initial posture. This robustness to starting conditions suggests that our approach effectively
+adapts to various motion patterns, regardless of their order of occurrence.
+5.5 Generalisation to Different Base Gaze Models
+Our technique allows plug-and-play integration with different base gaze estimation models. Table 8 presents results
+with iTracker [35], a well-established mobile gaze estimation model. The results demonstrate that MAC-Gaze maintains
+its effectiveness when applied to iTracker, despite its generally higher baseline error rates. On RGBDGaze, MAC-Gaze
+reduces iTracker’s error from 2.77 cm to 2.16 cm (22.0% improvement), comparable to the 19.9% reduction with
+MViTGaze. On MotionGaze, MAC-Gaze achieves a 40.1% reduction (4.49 cm to 2.69 cm).
+17Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+Replay Ratio Lying First Sitting First Standing First Walking First Average
+10% 1.69 1.59 1.67 1.70 1.66
+20% 1.60 1.71 1.69 1.59 1.65
+30% 1.59 1.73 1.57 1.72 1.65
+40% 1.64 1.59 1.65 1.68 1.64
+50% 1.61 1.64 1.61 1.64 1.62
+60% 1.56 1.63 1.63 1.70 1.63
+70% 1.59 1.63 1.56 1.56 1.59
+80% 1.59 1.62 1.74 1.59 1.64
+90% 1.78 1.74 1.79 1.58 1.72
+Average 1.63 (0.068) 1.65 (0.058) 1.66 (0.076) 1.64 (0.061) -
+Table 7: Effect of different replay ratios on mean Euclidean error (cm) for MAC-Gaze on RGBDGaze, showing errors
+for different initial calibration postures and their sequences. Colour gradient from green (lower error) to red (higher
+error) visualizes performance differences.
+MAC-Gaze with iTracker outperforms the Oracle Motion-Aware approach (2.16 cm vs. 2.48 cm) on RGBDGaze and it
+shows the largest improvements in dynamic conditions; for example, on RGBDGaze, the error for walking is reduced
+from 2.79 cm to 2.27 cm, leading to 18.6% improvement. The consistent performance improvements across both base
+models highlight the generalizability of our continual calibration approach, suggesting our method can enhance a
+wide range of existing gaze estimation systems without requiring fundamental architectural changes. Furthermore,
+MAC-Gaze outperforms MAC-Gaze-Classifier by a larger margin when applied to iTracker (16.6% improvement on
+RGBDGaze) compared to MViTGaze (10.8% improvement), suggesting that fine-grained motion pattern detection
+becomes increasingly valuable for models with higher baseline error. This may be because iTracker’s representations
+are less robust to posture variations, making it particularly beneficial to precisely identify when recalibration is needed
+and adapt to subtle changes in head-eye-camera relationships.
+Method Lying Sitting Standing Walking Average
+No Calibration (iTracker) 2.85 (2.77) 2.66 (2.76) 2.78 (2.74) 2.79 (2.82) 2.77 (2.81)
+One-Off Calibration (iTracker) 2.83 (2.53) 2.61 (2.59) 2.70 (2.67) 2.84 (2.66) 2.74 (2.64)
+Oracle Motion-Aware (iTracker) 2.42 (1.93) 2.37 (1.95) 2.52 (2.13) 2.62 (2.13) 2.48 (1.98)
+MAC-Gaze-Classifier (iTracker) 2.44 (2.13) 2.46 (2.18) 2.59 (2.27) 2.72 (2.25) 2.59 (2.24)
+MAC-Gaze (iTracker) 2.03 (1.33) 2.16 (1.38) 2.19 (1.37) 2.27 (1.45) 2.16 (1.44)
+(a) RGBDGaze Dataset Performance (with iTracker)
+Method Lying Sitting Standing Walking Walking (Maze) Average
+No Calibration (iTracker) 4.12 (2.99) 4.41 (2.77) 4.48 (2.94) 4.54 (3.06) 4.88 (3.23) 4.49 (3.27)
+One-Off Calibration (iTracker) 3.53 (2.18) 3.08 (1.98) 3.25 (2.09) 3.56 (2.30) 3.79 (2.44) 3.45 (2.19)
+Oracle Motion-Aware (iTracker) 2.38 (2.12) 2.31 (1.99) 2.77 (2.09) 3.18 (2.20) 3.37 (2.45) 2.86 (2.42)
+MAC-Gaze-Classifier (iTracker) 2.49 (2.01) 2.46 (2.05) 2.78 (2.35) 3.26 (2.46) 3.44 (2.19) 2.90 (2.15)
+MAC-Gaze (iTracker) 2.31 (1.97) 2.22 (1.99) 2.59 (2.11) 3.00 (2.14) 3.32 (2.05) 2.69 (2.06)
+(b) MotionGaze Dataset Performance (with iTracker)
+Table 8: Mean Euclidean error (cm) using iTracker as the base model, with standard deviations in parentheses, across
+different postures for baseline and proposed calibration strategies. Best results are highlighted in bold.
+6 Discussion
+6.1 Key Findings and Implications
+Our experimental results confirm that MAC-Gaze effectively address the calibration distortion problem in mobile gaze
+tracking and provides highly accurate gaze tracking on handheld mobile devices. MAC-Gaze outperforms the Oracle
+Motion-Aware approach on RGBDGaze (1.41 cm vs. 1.54 cm) and the fixed time interval calibration on RGBDGaze
+(1.41 cm vs. 1.71 cm), despite the Oracle method having priori knowledge of posture transitions and the fixed time
+calibration has multiple recalibration times. This suggests that our fine-grained motion pattern detection captures more
+nuanced variations in head-eye-camera and the motion-caused input uncertainty during user-device interaction than
+discrete activity classes alone.
+18Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+The ablation studies validate each component’s importance in our system. Removing the hybrid clustering component
+increases error by 17.4%, while eliminating replay-based continual learning degrades performance by 22.7%. This
+indicates that both accurate motion detection and effective knowledge retention are critical to the system’s success.
+The one-off calibration results (Table 4) empirically confirm our hypothesis that changes in the spatial relationship
+between head, eyes, and camera significantly impact calibrated gaze estimation accuracy. When calibration and current
+motion does not match, errors increase by 17.1% on average (1.54 cm to 1.80 cm), which provides the empirical
+evidence on detecting motion changes is crucial for accuracy and important for timely recalibration.
+6.2 Effectiveness of Change Detection
+The superior performance of our hybrid approach over purely supervised methods stems from its ability to detect
+both coarse-grained activity transitions and fine-grained variations within activities. The comparison of clustering
+approaches in Figure 3 reveals that raw IMU signals provide better discrimination of motion patterns than latent features
+from the encoder. While the encoder excels at activity classification, it may compress subtle variations that impact
+gaze estimation. By operating directly on raw sensor readings, our clustering approach preserves these fine-grained
+distinctions.
+The temporal analysis of calibration triggers (Figures 5 and 6) demonstrates the effectiveness of our 4-second majority
+voting mechanism in suppressing spurious triggers while maintaining responsiveness to genuine transitions. The
+decreasing trigger frequency over time indicates the system’s ability to accumulate knowledge about diverse motion
+conditions, reducing the need for frequent recalibration.
+1 2 3 4 5 6 7 8
+T est Segment Index
+1.0
+1.5
+2.0
+2.5
+3.0MSE(cm)
+Participant ID
+p11
+p12
+p13
+p17
+p20
+p5
+Figure 7: Temporal visualization of gaze estimation performance across test segments for multiple participants on the
+RGBDGaze dataset using MAC-Gaze. Each test segment represents the sequential order of recalibration events.
+Figure 7 illustrates the progressive performance of MAC-Gaze across multiple recalibration cycles for several par-
+ticipants from the RGBDGaze dataset. Each point on the graph represents the mean squared error (MSE) measured
+during a test segment—the period following a calibration event where the newly updated model is applied for gaze
+estimation before the next recalibration occurs. For most participants (e.g., p5, p12, and p20), we observe a general
+trend of decreasing error as the system accumulates knowledge through successive recalibrations, demonstrating the
+effectiveness of our continual learning approach. However, participants p11 and p17 exhibit notable fluctuations in
+error rates, with occasional increases following recalibration. Upon analysing their motion data, we discovered that
+these participants demonstrated more frequent and abrupt changes in device handling compared to others. This creates
+a temporal mismatch between motion detection and model updating; by the time the system completes recalibration,
+their motion state has already transitioned to a new pattern not represented in the calibration data. This observation
+19Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+highlights a challenge in real-world deployments where users with highly dynamic interaction patterns may require
+more responsive calibration mechanisms or predictive motion modelling.
+6.3 Limitations and Future Directions
+Despite its effectiveness, MAC-Gaze faces several practical challenges. First of all, we have observed high calibration
+frequency on MotionGaze in Table 5, which can cause disruption to user experience. There are several reasons behind
+the high frequency. First of all, when we collect the data, we encourage participants to change their device holding
+posture naturally. We hope the short-term data can represent the long-term data in real-world scenarios. That’s why our
+MotionGaze data incurs diverse motion distribution than RGBDGaze, and leads to much higher calibration frequency.
+Secondly, our motion detection algorithm needs improvement. Constrained by the number of calibration and replay
+samples, we have tried temporal voting to suppress the spurious motion detection and GMM to detect finer-grained
+motion change, which works to a certain degree. In the future, we need to look into more advanced techniques to
+improve HAR accuracy; for example, mixup [44] or unsupervised domain adaptation [26] to enable more accurate
+adaptation to the new dataset. Thirdly, the HAR model trained on HHAR dataset which only have 6 activities, which
+maybe limit the pattern’s recognition. In the following research, the activity classifier could be plug-and-play adapted
+various architectures and trained on the merged dataset based on various open-source datasets to make the activity
+recognition more fine-course.
+The computational overhead of continuous motion monitoring may impact battery life on mobile devices, necessitating
+more efficient implementations. Our reliance on explicit calibration when motion changes are detected interrupts the
+user experience, suggesting integration with implicit calibration, such as mouse click events on desktop [56], and touch
+events in mobile device [9] methods as a valuable future direction.
+7 Conclusion
+This paper has presented MAC-Gaze, a novel motion-aware continual calibration approach for mobile gaze tracking that
+addresses the fundamental challenge of maintaining gaze estimation accuracy amid dynamic user-device interactions.
+By leveraging IMU sensors to detect changes in motion states and employing continual learning techniques to adapt
+to evolving conditions, our approach significantly improves gaze tracking performance across static and dynamic
+scenarios. The experimental results demonstrate substantial improvements over traditional one-off calibration methods,
+with error reductions of 19.9% on RGBDGaze and 31.7% on MotionGaze datasets. Our ablation studies further validate
+the importance of each component, with the hybrid decision-making approach and replay-based continual learning
+proving essential to the system’s success. The demonstrated generalizability of MAC-Gaze across different backbone
+models confirms its potential as a universal enhancement for appearance-based gaze estimation systems, with this
+adaptability being particularly valuable for deployment across various device configurations and application contexts.
+Our analysis of replay ratios provides practical guidance for implementing similar systems, with the 70% ratio offering
+optimal balance between retaining previous knowledge and adapting to new conditions. Despite these advances, several
+challenges remain for future work: the computational overhead of continuous motion monitoring necessitates more
+efficient implementations for resource-constrained mobile devices; the current reliance on explicit calibration interrupts
+the user experience, suggesting integration with implicit calibration methods as a valuable direction; and exploring
+more sophisticated continual learning techniques with smaller memory footprints, incorporating additional sensing
+modalities, and developing personalization approaches that adapt to individual users’ behaviour patterns over time could
+further enhance performance and usability. In conclusion, MAC-Gaze represents a step towards robust, adaptive gaze
+tracking on mobile devices, addressing a critical obstacle to wider adoption of this technology in everyday interactions
+and bringing the potential of gaze-based interfaces closer to practical reality.
+Acknowledgements
+We thank Dr. Yafei Wang and Dr. Kaixing Zhao for their valuable feedback on the paper revision.
+References
+[1] AN, J., K WON , Y., AND CHO, Y.-S. A supervised autoencoder for human activity recognition with inertial
+sensors. In 2023 IEEE International Conference on Big Data (BigData) (2023), IEEE, pp. 1–5.
+[2] ARAKAWA , R., G OEL , M., H ARRISON , C., AND AHUJA , K. Rgbdgaze: Gaze tracking on smartphones with
+rgb and depth data. In Proceedings of the 2022 International Conference on Multimodal Interaction (2022),
+pp. 329–336.
+20Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+[3] ARANJUELO , N., H UANG , S., A RGANDA -CARRERAS , I., U NZUETA , L., O TAEGUI , O., P FISTER , H., AND
+WEI, D. Learning gaze-aware compositional gan from limited annotations. Proceedings of the ACM on Computer
+Graphics and Interactive Techniques 7, 2 (2024), 1–17.
+[4] BANJAREY , K., S AHU , S. P., AND DEWANGAN , D. K. A survey on human activity recognition using sensors and
+deep learning methods. In 2021 5th international conference on computing methodologies and communication
+(ICCMC) (2021), IEEE, pp. 1610–1617.
+[5] BAO, Y., C HENG , Y., L IU, Y., AND LU, F. Adaptive feature fusion network for gaze tracking in mobile tablets.
+In 2020 25th International Conference on Pattern Recognition (ICPR)(2021), IEEE, pp. 9936–9943.
+[6] BLUNCK , H., B HATTACHARYA , S., P RENTOW , T., K JRGAARD , M., AND DEY, A. Heterogeneity activity
+recognition. UCI Machine Learning Repository, 2015. DOI: https://doi.org/10.24432/C5689X.
+[7] BOSCHINI , M., B ONICELLI , L., B UZZEGA , P., P ORRELLO , A., AND CALDERARA , S. Class-incremental
+continual learning into the extended der-verse. IEEE transactions on pattern analysis and machine intelligence
+45, 5 (2022), 5497–5512.
+[8] BULLING , A., B LANKE , U., AND SCHIELE , B. A tutorial on human activity recognition using body-worn
+inertial sensors. ACM Computing Surveys (CSUR) 46, 3 (2014), 1–33.
+[9] CAI, Z., H ONG , J., W ANG , Z., AND LU, F. Gazeswipe: Enhancing mobile touchscreen reachability through
+seamless gaze and finger-swipe integration. arXiv preprint arXiv:2503.21094 (2025).
+[10] CAO, L., W ANG , Y., Z HANG , B., J IN, Q., AND VASILAKOS , A. V. Gchar: An efficient group-based con-
+text—aware human activity recognition on smartphone. Journal of Parallel and Distributed Computing 118
+(2018), 67–80.
+[11] CHEN , Z., AND SHI, B. Offset calibration for appearance-based gaze estimation via gaze decomposition. In
+Proceedings of the IEEE/CVF winter conference on applications of computer vision (2020), pp. 270–279.
+[12] CHEN , Z., AND SHI, B. E. Towards high performance low complexity calibration in appearance based gaze
+estimation. IEEE transactions on pattern analysis and machine intelligence 45, 1 (2022), 1174–1188.
+[13] CHENG , Y., B AO, Y., AND LU, F. Puregaze: Purifying gaze feature for generalizable gaze estimation. In
+Proceedings of the AAAI Conference on Artificial Intelligence (2022), vol. 36, pp. 436–443.
+[14] CHENG , Y., AND LU, F. Gaze estimation using transformer. In 2022 26th International Conference on Pattern
+Recognition (ICPR) (2022), IEEE, pp. 3341–3347.
+[15] CHENG , Y., AND LU, F. Dvgaze: Dual-view gaze estimation. In Proceedings of the IEEE/CVF International
+Conference on Computer Vision (2023), pp. 20632–20641.
+[16] CHENG , Y., WANG , H., B AO, Y., AND LU, F. Appearance-based gaze estimation with deep learning: A review
+and benchmark. IEEE Transactions on Pattern Analysis and Machine Intelligence(2024).
+[17] COGNOLATO , M., A TZORI , M., AND MÜLLER , H. Head-mounted eye gaze tracking devices: An overview of
+modern devices and recent advances. Journal of rehabilitation and assistive technologies engineering 5 (2018),
+2055668318773991.
+[18] DE LANGE , M., A LJUNDI , R., M ASANA , M., P ARISOT , S., J IA, X., L EONARDIS , A., S LABAUGH , G., AND
+TUYTELAARS , T. A continual learning survey: Defying forgetting in classification tasks. IEEE transactions on
+pattern analysis and machine intelligence 44, 7 (2021), 3366–3385.
+[19] DE MARCHI , M., T URETTA , C., P RAVADELLI , G., AND BOMBIERI , N. Combining 3d human pose estimation
+and imu sensors for human identification and tracking in multi-person environments. IEEE Sensors Letters (2024).
+[20] DUCHOWSKI , A. T., AND DUCHOWSKI , A. T. Eye tracking methodology: Theory and practice. Springer, 2017.
+[21] EK, S., P ORTET , F., AND LALANDA , P. Lightweight transformers for human activity recognition on mobile
+devices. arXiv preprint arXiv:2209.11750 (2022).
+[22] GU, F., C HUNG , M.-H., C HIGNELL , M., V ALAEE , S., Z HOU , B., AND LIU, X. A survey on deep learning for
+human activity recognition. ACM Computing Surveys (CSUR) 54, 8 (2021), 1–34.
+[23] HANSEN , D. W., AND JI, Q. In the eye of the beholder: A survey of models for eyes and gaze. IEEE transactions
+on pattern analysis and machine intelligence 32, 3 (2009), 478–500.
+[24] H INTON , G. Distilling the knowledge in a neural network. arXiv preprint arXiv:1503.02531 (2015).
+[25] HU, J., S HEN , L., AND SUN, G. Squeeze-and-excitation networks. In Proceedings of the IEEE conference on
+computer vision and pattern recognition (2018), pp. 7132–7141.
+21Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+[26] HU, R., C HEN , L., M IAO, S., AND TANG , X. Swl-adapt: An unsupervised domain adaptation model with sample
+weight learning for cross-user wearable human activity recognition. In Proceedings of the AAAI Conference on
+artificial intelligence (2023), vol. 37, pp. 6012–6020.
+[27] HUANG , M. X., K WOK , T. C., N GAI , G., C HAN , S. C., AND LEONG , H. V. Building a personalized, auto-
+calibrating eye tracker from user interactions. In Proceedings of the 2016 CHI conference on human factors in
+computing systems (2016), pp. 5169–5179.
+[28] HUANG , Q., V EERARAGHAVAN , A., AND SABHARWAL , A. Tabletgaze: dataset and analysis for unconstrained
+appearance-based gaze estimation in mobile tablets. Machine Vision and Applications 28, 5 (2017), 445–461.
+[29] HUYNH , S., B ALAN , R. K., AND KO, J. imon: Appearance-based gaze tracking system on mobile devices. Proc.
+ACM Interact. Mob. Wearable Ubiquitous Technol. 5, 4 (dec 2022).
+[30] JHA, S., S CHIEMER , M., Z AMBONELLI , F., AND YE, J. Continual learning in sensor-based human activity
+recognition: An empirical benchmark analysis. Information Sciences 575 (2021), 1–21.
+[31] JIANG , Z., Z HENG , Y., TAN, H., T ANG , B., AND ZHOU , H. Variational deep embedding: An unsupervised and
+generative approach to clustering. arXiv preprint arXiv:1611.05148 (2016).
+[32] KHAMIS , M., B AIER , A., H ENZE , N., A LT, F., AND BULLING , A. Understanding face and eye visibility in
+front-facing cameras of smartphones used in the wild. In CHI ’18 (2018), ACM, p. 1–12.
+[33] KING , D. E. Dlib-ml: A machine learning toolkit. The Journal of Machine Learning Research 10 (2009),
+1755–1758.
+[34] KONG , A., A HUJA , K., G OEL , M., AND HARRISON , C. Eyemu interactions: Gaze+ imu gestures on mobile
+devices. In Proceedings of the 2021 International Conference on Multimodal Interaction (2021), pp. 577–585.
+[35] KRAFKA , K., K HOSLA , A., K ELLNHOFER , P., K ANNAN , H., B HANDARKAR , S., M ATUSIK , W., AND
+TORRALBA , A. Eye tracking for everyone. In Proceedings of the IEEE conference on computer vision and
+pattern recognition (2016), pp. 2176–2184.
+[36] KWAPISZ , J. R., W EISS , G. M., AND MOORE , S. A. Activity recognition using cell phone accelerometers. ACM
+SigKDD Explorations Newsletter 12, 2 (2011), 74–82.
+[37] LARA , O. D., AND LABRADOR , M. A. A survey on human activity recognition using wearable sensors. IEEE
+communications surveys & tutorials 15, 3 (2012), 1192–1209.
+[38] LEI, Y., H E, S., K HAMIS , M., AND YE, J. An end-to-end review of gaze estimation and its interactive
+applications on handheld mobile devices. ACM Comput. Surv. 56, 2 (sep 2023).
+[39] LEI, Y., WANG , Y., B UCHANAN , F., Z HAO, M., S UGANO , Y., H E, S., K HAMIS , M., AND YE, J. Quantifying
+the impact of motion on 2d gaze estimation in real-world mobile interactions. arXiv preprint arXiv:2502.10570
+(2025).
+[40] LEI, Y., WANG , Y., C ASLIN , T., W ISOWATY, A., Z HU, X., K HAMIS , M., AND YE, J. Dynamicread: Exploring
+robust gaze interaction methods for reading on handheld mobile devices under dynamic conditions. Proceedings
+of the ACM on Human-Computer Interaction 7, ETRA23 (5 2023), 17.
+[41] LEPETIT , V., M ORENO -N OGUER , F., AND FUA, P. Ep n p: An accurate o (n) solution to the p n p problem.
+International journal of computer vision 81 (2009), 155–166.
+[42] LIU, C., Y U, C., W ANG , X., J IANG , J., Y ANG , T., TANG , B., S HI, Y., L IANG , C., AND SHI, Y. Calibread:
+Unobtrusive eye tracking calibration from natural reading behavior. Proceedings of the ACM on Interactive,
+Mobile, Wearable and Ubiquitous Technologies 8, 4 (2024), 1–30.
+[43] LIU, L., Y ANG , J., L IN, Y., Z HANG , P., AND ZHANG , L. 3d human pose estimation with single image and
+inertial measurement unit (imu) sequence. Pattern Recognition 149 (2024), 110175.
+[44] LU, W., WANG , J., C HEN , Y., PAN, S. J., H U, C., AND QIN, X. Semantic-discriminative mixup for generalizable
+sensor-based cross-domain activity recognition. Proceedings of the ACM on Interactive, Mobile, Wearable and
+Ubiquitous Technologies 6, 2 (2022), 1–19.
+[45] LUO, F., L I, A., K HAN , S., W U, K., AND WANG , L. Bi-deepvit: Binarized transformer for efficient sensor-based
+human activity recognition. IEEE Transactions on Mobile Computing (2025).
+[46] MA, H., Z HANG , Z., L I, W., AND LU, S. Unsupervised human activity representation learning with multi-task
+deep clustering. Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies 5, 1
+(2021), 1–25.
+[47] MAHON , L., AND LUKASIEWICZ , T. Efficient deep clustering of human activities and how to improve evaluation.
+In Asian Conference on Machine Learning (2023), PMLR, pp. 722–737.
+22Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+[48] MEHTA, S., AND RASTEGARI , M. Separable self-attention for mobile vision transformers. arXiv preprint
+arXiv:2206.02680 (2022).
+[49] MURAHARI , V. S., AND PLÖTZ , T. On attention models for human activity recognition. In Proceedings of the
+2018 ACM international symposium on wearable computers (2018), pp. 100–103.
+[50] NAMNAKANI , O., A BDRABOU , Y., G RIZOU , J., E STEVES , A., AND KHAMIS , M. Comparing dwell time,
+pursuits and gaze gestures for gaze interaction on handheld mobile devices. In Proceedings of the 2023 CHI
+Conference on Human Factors in Computing Systems (2023), pp. 1–17.
+[51] NAMNAKANI , O., A BDRABOU , Y., G RIZOU , J., AND KHAMIS , M. Stretch gaze targets out: Experimenting
+with target sizes for gaze-enabled interfaces on mobile devices. In Proceedings of the 2025 CHI Conference on
+Human Factors in Computing Systems (2025), pp. 1–16.
+[52] PARK , S., M ELLO , S. D., M OLCHANOV , P., I QBAL , U., H ILLIGES , O., AND KAUTZ , J. Few-shot adaptive gaze
+estimation. In Proceedings of the IEEE/CVF international conference on computer vision (2019), pp. 9368–9377.
+[53] SATRIAWAN , A., H ERMAWAN , A. A., L UCKYARNO , Y. F., AND YUN, J.-H. Predicting future eye gaze using
+inertial sensors. IEEE Access 11 (2023), 67482–67497.
+[54] SINGH , S. P., S HARMA , M. K., L AY-E KUAKILLE , A., G ANGWAR , D., AND GUPTA, S. Deep convlstm with
+self-attention for human activity decoding using wearable sensors. IEEE Sensors Journal 21, 6 (2020), 8575–8582.
+[55] STISEN , A., B LUNCK , H., B HATTACHARYA , S., P RENTOW , T. S., K JÆRGAARD , M. B., D EY, A., S ONNE , T.,
+AND JENSEN , M. M. Smart devices are different: Assessing and mitigatingmobile sensing heterogeneities for
+activity recognition. In Proceedings of the 13th ACM conference on embedded networked sensor systems (2015),
+pp. 127–140.
+[56] SUGANO , Y., AND BULLING , A. Self-calibrating head-mounted eye trackers using egocentric visual saliency. In
+Proceedings of the 28th Annual ACM Symposium on User Interface Software & Technology(2015), pp. 363–372.
+[57] SUGANO , Y., M ATSUSHITA , Y., AND SATO, Y. Learning-by-synthesis for appearance-based 3d gaze estimation.
+In Proceedings of the IEEE conference on computer vision and pattern recognition(2014), pp. 1821–1828.
+[58] SUGANO , Y., M ATSUSHITA , Y., S ATO, Y., AND KOIKE , H. An incremental learning method for unconstrained
+gaze estimation. In Computer Vision–ECCV 2008: 10th European Conference on Computer Vision, Marseille,
+France, October 12-18, 2008, Proceedings, Part III 10(2008), Springer, pp. 656–667.
+[59] SUGANO , Y., M ATSUSHITA , Y., S ATO, Y., AND KOIKE , H. Appearance-based gaze estimation with online
+calibration from mouse operations. IEEE Transactions on Human-Machine Systems 45, 6 (2015), 750–760.
+[60] THAKUR , D., B ISWAS , S., H O, E. S., AND CHATTOPADHYAY , S. Convae-lstm: Convolutional autoencoder
+long short-term memory network for smartphone-based human activity recognition. IEEE Access 10 (2022),
+4137–4156.
+[61] TONSEN , M., S TEIL , J., S UGANO , Y., AND BULLING , A. Invisibleeye: Mobile eye tracking using multiple
+low-resolution cameras and learning-based gaze estimation. Proceedings of the ACM on Interactive, Mobile,
+Wearable and Ubiquitous Technologies 1, 3 (2017), 1–21.
+[62] VALLIAPPAN , N., D AI, N., S TEINBERG , E., H E, J., R OGERS , K., R AMACHANDRAN , V., X U, P., S HO-
+JAEIZADEH , M., G UO, L., K OHLHOFF , K., ET AL . Accelerating eye movement research via accurate and
+affordable smartphone eye tracking. Nature communications 11, 1 (2020), 4553.
+[63] WANG , L., Z HANG , X., S U, H., AND ZHU, J. A comprehensive survey of continual learning: Theory, method
+and application. IEEE Transactions on Pattern Analysis &amp; Machine Intelligence, 01 (feb 5555), 1–20.
+[64] WEISS , G. M. Wisdm smartphone and smartwatch activity and biometrics dataset. UCI Machine Learning
+Repository: WISDM Smartphone and Smartwatch Activity and Biometrics Dataset Data Set 7, 133190-133202
+(2019), 5.
+[65] WIGHTMAN , R. Pytorch image models. https://github.com/rwightman/pytorch-image-models , 2019.
+[66] XIA, Q., M ORALES , J., H UANG , Y., H ARA , T., W U, K., O SHIMA , H., F UKUDA , M., N AMIOKA , Y., AND
+MAEKAWA , T. Self-supervised learning for complex activity recognition through motif identification learning.
+IEEE Transactions on Mobile Computing (2024).
+[67] YANG , J., N GUYEN , M. N., S AN, P. P., L I, X., AND KRISHNASWAMY , S. Deep convolutional neural networks
+on multichannel time series for human activity recognition. In Ijcai (2015), vol. 15, Buenos Aires, Argentina,
+pp. 3995–4001.
+[68] YANG , S., H E, Y., AND JIN, M. vgaze: Implicit saliency-aware calibration for continuous gaze tracking on
+mobile devices. In IEEE INFOCOM 2021 - IEEE Conference on Computer Communications (2021), pp. 1–10.
+23Motion-Aware Continual Calibration for Mobile Gaze Tracking A PREPRINT
+[69] ZENG , M., N GUYEN , L. T., Y U, B., M ENGSHOEL , O. J., Z HU, J., W U, P., AND ZHANG , J. Convolutional
+neural networks for human activity recognition using mobile sensors. In 6th international conference on mobile
+computing, applications and services (2014), IEEE, pp. 197–205.
+[70] ZHANG , X., S UGANO , Y., AND BULLING , A. Revisiting data normalization for appearance-based gaze estimation.
+In Proceedings of the 2018 ACM Symposium on Eye Tracking Research & Applications(New York, NY , USA,
+2018), ETRA ’18, Association for Computing Machinery.
+[71] ZHANG , X., S UGANO , Y., F RITZ , M., AND BULLING , A. Appearance-based gaze estimation in the wild. In
+CVPR ’15 (June 2015), IEEE, pp. 4511–4520.
+[72] ZHONG , W., X IA, C., Z HANG , D., AND HAN, J. Uncertainty modeling for gaze estimation. IEEE Transactions
+on Image Processing (2024).
+24

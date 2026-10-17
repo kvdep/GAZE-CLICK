@@ -1,0 +1,761 @@
+MAGE: A Multi-task Architecture for Gaze Estimation
+with an Efficient Calibration Module
+Haoming Huang, Musen Zhang, Jianxin Yang, Zhen Li, Jinkai Li, Yao Guo, Member, IEEE
+Abstract— Eye gaze can provide rich information on human
+psychological activities, and has garnered significant attention
+in the field of Human-Robot Interaction (HRI). However,
+existing gaze estimation methods merely predict either the gaze
+direction or the Point-of-Gaze (PoG) on the screen, failing to
+provide sufficient information for a comprehensive six Degree-
+of-Freedom (DoF) gaze analysis in 3D space. Moreover, the
+variations of eye shape and structure among individuals also
+impede the generalization capability of these methods. In this
+study, we propose MAGE, a Multi-task Architecture for Gaze
+Estimation with an efficient calibration module, to predict
+the 6-DoF gaze information that is applicable for the real-
+word HRI. Our basic model encodes both the directional
+and positional features from facial images, and predicts gaze
+results with dedicated information flow and multiple decoders.
+To reduce the impact of individual variations, we propose a
+novel calibration module, namely Easy-Calibration, to fine-tune
+the basic model with subject-specific data, which is efficient
+to implement without the need of a screen. Experimental
+results demonstrate that our method achieves state-of-the-art
+performance on the public MPIIFaceGaze, EYEDIAP, and our
+built IMRGaze datasets.
+I. I NTRODUCTION
+Recent advancements of intelligent robotics have ex-
+panded their applications from industrial settings to critical
+healthcare sectors [1], [2]. Social robots, in particular, have
+gained increasing attention for their role in diagnosis, early
+intervention, and rehabilitation of individuals with neurolog-
+ical disorders. These applications heavily rely on robust yet
+accurate Human-Robot Interaction (HRI) capable of inter-
+preting human behavioral cues to aid decision-making [3],
+[4]. Among various HRI interfaces, eye gaze stands out as a
+pivotal modality. The gaze direction and movement patterns
+convey rich information about attention, cognitive states and
+neurological conditions [5]. Therefore, the estimation of
+human gaze is crucial for robots to effectively understand
+and respond to their intentions, where most recent works
+focus on developing vision-based gaze estimation methods
+that can be easily applied in real-world scenarios.
+Currently, non-contact gaze estimation primarily relies
+on analyzing facial and eye images captured from external
+This work was supported by National Natural and Science Foundation of
+China under grant 62203296, the Shanghai Jiao Tong University Medicine-
+Engineering Interdisciplinary Center Project, the Shanghai Pilot Program for
+Basic Research - Shanghai Jiao Tong University (No. 21TQ1400203), and
+the Science and Technology Commission of Shanghai Municipality under
+Grant 20DZ2220400. ( Corresponding authors: Jinkai Li, Yao Guo )
+H. Huang, M. Zhang, J. Yang, J. Li, Y . Guo are with the Institute of
+Medical Robotics, School of Biomedical Engineering, Shanghai Jiao Tong
+University, Shanghai, China. ( {huanghaoming2004, musen zhang,
+jianxinyang, lijinkai, yao.guo }@sjtu.edu.cn).
+Z. Li is with Chinese University of Hong Kong (Shenzhen), China.
+(lizhen@cuhk.edu.cn)
+viewpoints. Based on the output format of gaze estimation,
+existing methods can be divided into two categories [6]: gaze
+direction prediction and Point-of-Gaze (PoG) prediction.
+1) Gaze direction prediction . These methods generate a
+3D vector originating from the ocular center to the fixation
+target, indicating the gaze direction. Existing approaches [7]–
+[9] typically take facial or eye images as input, employ deep
+neural networks to extract gaze-related features and directly
+predict the 3D gaze vector. For continuous gaze tracking,
+some studies [10], [11] leveraged temporal module to exploit
+continuity constraints for gaze direction estimation. However,
+these methods are facing two major challenges: First, data-
+driven deep learning approaches impose strict requirements
+both on data quantity and quality, thus necessitating data
+normalization to mitigate confounding factors such as head
+pose and illumination variation. This requires precise head
+pose and depth information, limiting use in RGB-only cam-
+era systems. Second, while a 3D line requires six Degrees
+of Freedom (6-DoF) for complete positional and directional
+information, these methods only estimate the directional
+component of gaze, resulting in incomplete representations
+and inadequate performance in HRI.
+2) PoG prediction . These approaches use deep neural
+networks to determine the 2D coordinates of PoG on a
+fixation target plane (typically a screen). [12] introduced a
+large-scale 2D gaze dataset GazeCapture for model training,
+and proposed the use of face grid to encode head location
+information. [13] used an adaptive feature fusion network
+that integrates features from both facial and eye images
+for PoG estimation, and achieved state-of-the-art (SOTA)
+performance on MPIIFaceGaze dataset [14]. However, these
+methods provide only 2D positional information of gaze.
+Furthermore, parameter variations across different devices
+necessitate the retraining of models, limiting their applica-
+bility in natural scenes.
+In addition, individual differences in eye anatomy, partic-
+ularly discrepancies of kappa angle (i.e., the angle between
+the visual axis and the optical axis) introduce significant
+challenges like high variance, instability, and domain shifts
+in gaze estimation. While calibrations are used in existing
+studies [15]–[17] to address this challenge, the dependence
+of the interaction screen and the need for manual annota-
+tions further impede their real-world applicability, and can
+compromise the estimation accuracy.
+To address the aforementioned challenges, we propose
+MAGE, a Multi-task Architecture for Gaze Estimation with
+an efficient calibration module. Our method takes an RGB
+image with facial bounding box as input, to predict the 6-
+arXiv:2505.16384v1  [cs.CV]  22 May 2025
+PoGz Decoder
+Normalized
+Image
+( 𝒙𝒔, 𝒚𝒔, 𝑳𝒔 )
+Facial 
+Bounding Box
+𝒓𝒐𝒏 Decoder
+Fusion
+Block
+Box
+Encoder
+𝑶𝐟𝐚𝐜𝐞 Decoder
+Gaze Direction Info.MAGE
+Pose
+Encoder
+Gaze 
+Encoder
+Easy-
+Calibration
+Calibration Data
+Image & Gaze
+Fine-tuned
+ModelNormalized Space
+Easy-Norm
+ 𝒈𝒏 Decoder
+𝒈𝒐 Decoder
+Gaze Position Info.
+PoGz
+𝒈𝒏
+𝒈𝒐
+Gaze Origin
+Easy-Norm Params
+: Concatenate
+Fig. 1. The overview of MAGE, our proposed multi-task network architecture for human gaze estimation. The model takes the normalized RGB image
+with facial bounding box provided by the Easy-Norm module as input, and predicts the 6-DoF gaze with complete directional and positional information.
+The Easy-Calibration module efficiently supplies calibration data for fine-tuning MAGE.
+DoF gaze in the Camera Coordinate System (CCS). Firstly,
+we introduce a simplified data normalization method for gaze
+estimation task, namely Easy-Norm, which only requires the
+facial bounding box information. Our basic model utilizes
+the normalized facial image to produce multi-task outputs,
+including the 3D gaze vector and the gaze point on the XY -
+plane of CCS (denoted as PoGz), which respectively describe
+the directional and positional information of human gaze.
+To enhance the gaze estimation performance on different
+subjects, we propose a novel calibration module, namely
+Easy-Calibration, which is efficient to apply without the
+need of a screen. The calibration data are utilized to fine-
+tune our basic model and mitigate the domain shift problem.
+Experimental results demonstrate the superior performance
+of our method against the SOTA gaze estimation methods.
+To sum up, the contributions of this paper are three folds:
+1) We propose a novel multi-task architecture, i.e., MAGE,
+for human gaze estimation, which predicts the complete
+6-DoF gaze with directional and positional attributes.
+2) We propose an efficient calibration module that is easy
+to implement without the need of a screen. This mod-
+ule fine-tunes MAGE with the calibration data, hence
+adapting the model to the individual variations.
+3) Experimental results demonstrate the SOTA perfor-
+mance of our method on both the gaze direction pre-
+diction and the PoG prediction tasks.
+II. M ETHODOLOGY
+In this section, we introduce our proposed gaze estimation
+method, MAGE, which is composed of a multi-task network
+architecture, a simplified data normalization module named
+Easy-Norm, and an efficient calibration module named Easy-
+Calibration, as illustrated in Fig. 1. Our method utilizes the
+RGB image with facial bounding box as input to simulta-
+neously predict the gaze vector in the CCS and the point-
+of-gaze on the XY -plane of CCS, denoted as PoGz. Addi-
+tionally, our method also outputs the position of gaze origin
+(defined as face center in this study) and the parameters for
+gaze data normalization.
+𝒛𝒐
+ 𝒛𝒏
+(𝒙𝒔, 𝒚𝒔, 𝑳𝒔)
+Rotate the CCS
+Normalized Image
+𝒈𝒐
+𝒈𝒐
+𝒈𝒏
+Normalized Parameter Space：
+𝒇𝒐 𝒇𝒔
+(𝑯𝒐, 𝑾𝒐)
+Normalized Gaze
+𝒈𝒏
+Standardized Facial Box(𝒙𝒐, 𝒚𝒐, 𝑳𝒐)
+𝒇𝒔 ,  𝒛𝒏 ,  (𝑯𝒏, 𝑾𝒏)
+(𝑯𝒏, 𝑾𝒏)
+(𝑯𝒔, 𝑾𝒔)
+Fig. 2. The pipeline of Easy-Norm, involving two steps: (1) Standardize
+the camera parameters, and transform the image and facial bounding box
+accordingly. (2) Aligning the oCCS by rotating the z-axis toward the face
+center ; gn is derived by inversely rotating the go accordingly.
+A. Gaze Data Normalization
+As described in [18], the most commonly used method of
+gaze data normalization requires the accurate head pose and
+depth information, making it difficult to apply in the scenar-
+ios with only an RGB camera. In this study, we introduce the
+Easy-Norm, a simplified normalization method using only
+the facial bounding box on the image, as illustrated in Fig.
+2. The Easy-Norm involves the following 2 steps:
+Step 1. Standardize the camera intrinsic parameters into
+focus lengthfs, with the principal point on the image center,
+and resize the image into Hs×Ws. The facial bounding box
+(xo,y o,L o) is converted into (xs,y s,L s). It should be noted
+that, in this step, the original CCS (denoted as oCCS) is not
+changed, as well as the original gaze vector go.
+Step 2. The facial region within the bounding box is
+cropped and converted into a fixed size Hn×Wn for model
+input. The optical axis zo of the camera is aligned from the
+principal point (xp,y p) to the face center (xs,y s), resulting
+in the normalized CCS (denoted as nCCS). The rotation
+vector rn
+o = θ· r for transforming the oCCS into nCCS
+can be derived by:
+
+
+
+r = zo× zn
+θ = arccos(zo· zn)
+zn = zs
+∥zs∥
+zs = [xs−xp,y s−yp,f s]T
+zo = [0, 0, 1]T
+, (1)
+where zn and zo denote the Z-axis of the nCCS and oCCS,
+respectively. The normalized gaze vector gn is:
+gn = Rn
+o· go , (2)
+where Rn
+o is the rotation matrix derived from rn
+o .
+B. Model Architecture
+The architecture of our model, MAGE, is illustrated in
+Figure 1. The main idea of the structure is to extract the
+comprehensive gaze information, including both position
+and direction, from the normalized image along with the
+bounding box given by the Easy-Norm module.
+Consequently, the encoding phase of our model can be
+viewed as comprising two main branches. The first branch
+involves the normalized image being fed into the Gaze
+Encoder, which is specifically designed to extract features re-
+lated to the eye region, thereby providing the directional gaze
+information. The second branch consists of the normalized
+image being input into the Pose Encoder and the bounding
+box being input into the Box Encoder. The Pose Encoder
+is responsible for extracting implicit spatial information
+regarding the head pose, while the Box Encoder directly
+supplies information related to the position of face center and
+the rotation of coordinate system during the normalization
+process. The Fusion Block combines these two parts and
+provides positional information regarding the gaze origin.
+In the decoding phase of the model, the directional in-
+formation from the Gaze Encoder is directly decoded to
+yield the normalized gaze gn. Apart from the directional
+information, the prediction of the original gaze go requires
+the information related to the rotation of coordinate sys-
+tem, and the PoGz (described in Section II-C) necessitates
+positional information. Hence, their decoders concatenate
+the features from both input branches to produce the final
+outputs. The above decoders provide the complete gaze
+information we require. Additionally, the model outputs the
+coordinates of face center and the parameters used for data
+normalization, explicitly constraining the model to achieve
+accurate positional information extraction. In our model, the
+Gaze and Pose Encoders utilize ResNet-18 [19], while the
+remaining components consist of a combination of multiple
+linear layers.
+C. Definition of PoGz
+As show in Fig. 3, we define the PoGz as the intersection
+point of the original gaze vector go and the XY -plane of
+oCCS. The PoGz is jointly determined by both the gaze
+direction and the position of gaze origin. Therefore, the pre-
+diction of PoGz combines information from the normalized
+image and the facial box bounding, which offers the follow-
+ing two main benefits. On one hand, the PoGz provides the
+positional information of human gaze in the 3D space, which
+is absent in the common task of gaze direction estimation.
+On the other hand, compared with the traditional PoG, our
+defined PoGz is a device-independent representation of gaze,
+which can enable unified model training on different datasets,
+and enhance the scalability and generalization capability of
+𝒚
+𝒙
+𝒈𝒐
+𝒛
+CCS-to-SCS
+Lens
+Center      
+CCS SCS
+PoGz PoG
+𝒚
+𝒙
+𝒛
+Fig. 3. The definition of PoGz is the intersection point of the gaze vector
+go and the XY -plane of the CCS. Then, the coordinates of PoG in the SCS
+can be derived from PoGz.
+the model. In addition, PoG and PoGz can be converted into
+each other. Let β be the XY -plane of the screen coordinate
+system (SCS), Rs
+c and ts
+c be the known rotation matrix and
+translation vector between the oCCS and the SCS, we can
+derive PoG by:
+
+
+
+Os
+PoGz = Rs
+c·OPoGz + ts
+c
+gs = Rs
+c· go + ts
+c
+ls =Os
+PoGz +λ· gs, where λ∈ R
+PoG =ls∩β
+, (3)
+whereOPoGz andOs
+PoGz are the coordinates of PoGz in the
+oCCS and SCS, respectively. The gs is the gaze vector in the
+SCS, and ls refers to the gaze line in the SCS represented
+by parametric equation.
+D. Multi-task Output
+1) Prediction of Gaze: As mentioned in Section II-B, our
+model outputs gaze information including gn, go and PoGz.
+For gn and go prediction, the vectors are normalized to unit
+vectors and then projected into 2D Euler angle representation
+formulated as g2d = (ϕyaw,θ pitch), where ϕyaw and θpitch
+denote the horizontal and vertical gaze angles, respectively.
+These tasks are supervised by the mean absolute error (MAE)
+loss function:
+Lg =∥g2d− ˆg2d∥1 , (4)
+where ˆg2d is prediction and g2d is ground truth. The PoGz
+estimation task is supervised by:
+LPoGz =∥OPoGz− ˆOPoGz∥1 . (5)
+Since PoGz is a point on the XY -plane of the oCCS, we
+drop the constant zero z-component in practical application.
+The same treatment is applied to PoG.
+2) Prediction of Normalization Parameter and Gaze Ori-
+gin: In addition to the gaze part we need, the model also
+outputs the rotation vector rn
+o for Easy-Norm and the gaze
+origin Oface, both requiring the positional information. For
+the gaze origin, our model first predicts its depth value, and
+then calculate the complete coordinates with the face center
+on the image. We employ the following constraints to assist
+the model in better encoding the positional information:
+(
+Lrno =∥rn
+o− ˆrn
+o∥1
+Lface =∥Oface− ˆOface∥1
+. (6)
+Pixel Coordinate 
+System (PCS)
+Lens Center  
+(0, 0, 0) in CCS
+𝑓𝑠
+Face Center Proj.
+𝑔𝑜
+Data Normalization
+𝑔𝑜, 𝑔𝑛
+ො𝑔𝑜, ො𝑔𝑛
+Fine-tuned 
+Model
+Principal Point
+MAGE
+Move Head Freely
+Ground Truth
+Supervision
+𝒚
+𝒙
+Fig. 4. The pipeline of the Easy-Calibration module. Subjects gaze at the
+camera lens center and move their head to capture multi-angle images. The
+ground truth of gaze vector go on these images can be derived as the unit
+vector pointing from the face center projection to the lens center in the
+CCS, which is then utilized to fine-tune the basic model.
+Since the self-rotation component of oCCS around the optical
+axis zo is always zero in the Easy-Norm, we drop the z-
+component thus rn
+o becomes a 2D output.
+3) Multi-task Constraints: With the outputs described
+above, we construct the overall constraints for the model
+to predict the complete gaze information more precisely:
+L =λgnLgn +λgoLgo +λPoGzLPoGz+λrnoLrno +λfaceLface ,
+(7)
+where λgn, λgo, λPoGz, λrno and λface are the weights of
+different constraints.
+E. Easy-Calibration Module
+Existing calibration methods for human gaze estimation
+are typically screen-based ones [15], [16], which are not
+applicable in real-world scenarios, e.g., interacting with some
+physical objects. In this work, we propose a novel calibration
+module, namely Easy-Calibration, by extending our method
+in [20] to mitigate the domain shift problem and enhance the
+gaze estimation performance of the basic model.
+As shown in Fig. 4, the collection of the calibration data
+requires the subjects gaze at the camera lens center, i.e., the
+origin of the CCS, and move their head freely, which is
+efficient to apply. At the same time, the frames captured by
+the camera are collected as the calibration images of each
+subject. The ground-truth of gaze vector go on these images
+can be derived by:
+
+
+
+go =−[xc
+s,y c
+s,f s]T
+xc
+s = (xs−xp)·k
+yc
+s = (ys−yp)·k
+, (8)
+where (xs,y s) and (xp,y p) denote the face center projection
+and the principal point on the standardized image, k is the
+pixel-to-millimeter conversion factor, and fs is the focus
+length of the camera. The (xc
+s,y c
+s,f s) is the coordinate of
+face center projection in the CCS, which is on the gaze line
+when the subject gazes at the lens center, as shown in Fig. 4.
+Static - Middle Static - Left Static - Right Free Movement(a)
+(b)
+Fig. 5. Illustration of IMRGaze dataset. (a) General data in IMRGaze are
+collected under three static head poses (middle, left, and right) and free
+movement. (b) Calibration data in IMRGaze, in which the subjects gaze at
+camera lens center while moving the head freely.
+TABLE I
+DISTRIBUTION OF GAZE DIRECTION AND HEAD POSE IN IMRG AZE
+GENERAL DATA .
+Attribute (rad) Range Mean Std
+Gaze Yaw [-0.86, 0.97] 0.01 0.27
+Gaze Pitch [-0.69, 0.84] -0.01 0.23
+Head Pose Yaw [-1.45, 1.12] 0.03 0.29
+Head Pose Pitch [-0.77, 0.72] -0.01 0.12
+Then, the ground-truth of gaze vector go can be derived as
+Eq. 8. The calibration data are utilized to fine-tune our basic
+model for each subject, which can improve the accuracy
+of gaze estimation and adapt the model to the individual
+variations.
+III. E XPERIMENTS
+A. Dataset
+We select the public datasets EYEDIAP [24] and MPI-
+IFaceGaze [8] to compare the performance of our method
+with the existing ones. We additionally build a new dataset
+named IMRGaze to validate the effectiveness of our model
+with the Easy-Calibration module. The details of datasets are
+as follows.
+EYEDIAP. This dataset consists of continuous video
+recordings from 16 subjects, which is categorized into
+2 subsets based on the gaze targets: 3D floating targets
+(denoted as EYEDIAP-Float) and 2D screen targets (de-
+noted as EYEDIAP-Screen). We sample one image per 10
+frames from the videos, resulting in ∼30K images (10K
+from EYEDIAP-Float and 20K from EYEDIAP-Screen) with
+640× 480 resolution. To enable the conversion between
+PoG and PoGz, we derive the CCS-to-SCS transformation
+parameters according to the given 3D coordinates of gaze
+targets in the EYEDIAP-Screen subset.
+MPIIFaceGaze. This dataset contains data from 15 sub-
+jects in natural environments, with an average of 2,500
+images per subject. The images are collected by laptops in
+daily life, and the CCS-to-SCS transformation parameters are
+provided, which is required to derive the PoG.
+IMRGaze. Our IMRGaze dataset consists of video data
+collected from 12 subjects. The dataset is divided into two
+parts: General data for training and evaluating the model;
+Calibration data for validating the effectiveness of the Easy-
+Calibration module on improving model performance.
+General data: The collection process follows EYEDIAP’s
+floating target scenario. Subjects gaze at a floating ball while
+TABLE II
+COMPARISON OF GAZE DIRECTION AND POG ESTIMATION ON THREE PUBLICLY AVAILABLE DATASETS
+Model Gaze Dir. Pred. PoG Pred. MPIIFaceGaze EYEDIAP-Screen EYEDIAP-Float
+Gaze Dir. (°) PoG (mm) Gaze Dir. (°) PoG (mm) Gaze Dir. (°)
+iTracker [12] ✓ N/A 76.70 N/A 101.30 N/A
+AFF-Net [13] ✓ N/A 42.10 N/A 92.50 N/A
+GazeTR [21] ✓ 4.00 N/A 5.17 N/A 6.23
+AGE-Net [22] ✓ 3.82 N/A 4.86 N/A 5.57
+RCNN [10] ✓ 4.10 N/A 5.31 N/A 5.19
+L2CS-Net [23] ✓ 3.92 N/A 5.57 N/A 6.68
+MAGE (ours) ✓ ✓ 3.54 32.73 4.64 73.07 5.11
+maintaining static head poses or free head movements. An
+RGB-D camera (Intel® RealSense™ LiDAR Camera L515)
+captures the RGB and depth videos at 30 fps, with resolution
+of 640× 480 for RGB and 320× 240 for depth, which
+provides real-time 3D information of both facial features and
+target positions for head pose and gaze vector computation.
+The videos undergo identical processing as EYEDIAP, with
+MediaPipe [25] for facial landmark detection and manual
+verification by experienced annotators. This yields ∼10K
+normalized images, as shown in Fig. 5(a). The distribution
+of gaze direction and head pose is presented in Table I.
+Calibration data: The collection process of calibration data
+is illustrated in Fig. 4, which contains rich facial and gaze-
+related information. Labels are generated according to Eq.
+8. The calibration videos undergo identical preprocessing as
+EYEDIAP, resulting in an average of 100 calibration images
+per subject, as demonstrated in Fig. 5(b). All the subjects
+have signed an informed consent about the experiments be-
+fore they participate in. This study has been approved by the
+Institutional Review Board for Human Research Protections
+of Shanghai Jiao Tong University (No. B20240244I).
+B. Evaluation Metrics
+For the gaze direction go and gn, we adopt the angle error
+as the evaluation metric. Let g denote the ground truth, and
+ˆg denote the prediction. The angular error can be calculated
+as:
+E(g, ˆg) = arccos g· ˆg
+∥g∥∥ˆg∥ (9)
+For the PoG, we use the Euclidean distance between the
+ground truth O and the prediction ˆO on the target plane as
+the evaluation metric.
+E(O, ˆO) =
+p
+(x− ˆx)2 + (y− ˆy)2 (10)
+where the (x,y ) is the 2D coordinates of the PoG.
+C. Training Configuration
+For EYEDIAP, we set the loss weights as λgn = 1 ,
+λgo =λrno = 0.5, λPoGz = 0.1, λface = 0.1. The model is
+trained on an NVIDIA 3080 Ti GPU with a batch size of
+128. We use the Adam optimizer with an initial learning
+rate of 0.0001. For MPIIFaceGaze, the loss weights follow
+those of EYEDIAP, but the batch size is 256 and the initial
+learning rate is 0.001. We conduct 4-fold cross-validation on
+EYEDIAP and leave-one-out on MPIIFaceGaze, following
+most studies [6].
+For IMRGaze, the training and validation configurations
+are consistent with those used on EYEDIAP. As for the cali-
+bration fine-tuning: First, we obtain the best validation model
+for each fold and save its parameters. Subsequently, we use
+50% and 100% of the calibration data (approximately 50 and
+100 images per subject on average) for personal calibration.
+We load the saved model parameters and fine-tune the model
+using the calibration data. The fine-tuning is conducted with
+an initial learning rate of 0.00001. Finally, the fine-tuned
+model is evaluated on the test set corresponding to that fold.
+D. Ablation Study
+To examine the contribution of different branches in
+the multi-task architecture, we perform ablation studies by
+removing specific branches, including the go and PoGz
+branches illustrated in Fig. 1 by setting the weights λgo = 0
+or λPoGz = 0 and freezing the corresponding decoders. We
+then compare the angular error of gn in these ablated models
+with our basic model (without Easy-Calibration) and the full
+model on EYEDIAP-Float and IMRGaze datasets.
+IV. R ESULTS AND ANALYSIS
+A. Comparison on Public Datasets
+We compare the performance of our basic model on
+the public datasets MPIIFaceGaze, EYEDIAP-Screen, and
+EYEDIAP-Float with the existing gaze estimation methods.
+We select GazeTR [21], AGE-Net [22], RCNN [10], L2CS-
+Net [23] that are proposed for the gaze direction prediction
+task, and iTracker [12], AFF-Net [13] that are proposed for
+the PoG prediction task. The results are presented in Table
+II. Since the lack of calibration data in these datasets, we can
+only present the results of our basic model without the Easy-
+Calibration module. For the methods [12], [13], we report the
+experimental results from the review paper [6].
+For the prediction of gaze direction, our proposed MAGE
+outperforms other existing methods across all the three
+datasets. Specifically, on the MPIIFaceGaze dataset, MAGE
+achieves the lowest angular error of 3.54°, superior to the
+second-best method, AGE-Net, by 7.33%. On the EYEDIAP-
+Screen and EYEDIAP-Float datasets, MAGE also outper-
+forms all the other methods with only 4.64° and 5.11°
+angular errors respectively, which suggests the effectiveness
+and robustness of our proposed model.
+Fig. 6. Qualitative results. The row 1-2, 3-4, 5-6 show the subjects and the predicted gaze directions from the MPIIFaceGaze, EYEDIAP and IMRGaze
+datasets, respectively. In each image, the arrow represents the gaze direction, and the sphere helps to better visualize the 3D effects.
+For the prediction of PoG, our MAGE also shows promis-
+ing results. On the MPIIFaceGaze dataset, it achieves an
+error of 32.73 mm, which is significantly better than the
+second-best method, AFF-Net, with a PoG error of 42.10
+mm. Similarly, on the EYEDIAP-Screen dataset, MAGE
+achieves a PoG error of 73.07 mm, outperforming other
+models, including AFF-Net (92.5 mm).
+Based on the results presented above, our method not
+only provides complete gaze information for practical appli-
+cations, but also outperforms specialized methods designed
+for predicting gaze direction or PoG, particularly for the
+latter one. This improvement can be attributed to our network
+architecture and the multi-task constraints, which effectively
+exploit the relationship between gaze direction and PoGz,
+thereby enhancing the overall performance.
+B. Comparison Results on IMRGaze Dataset
+We report the angular error of normalized gaze gn as
+the evaluation metric on IMRGaze, and assess our model
+MAGE with 50% and 100% calibration data, respectively.
+For comparison, we also evaluate GazeTR, AGE-Net, RCNN
+and L2CS-Net on the general data of IMRGaze. Results
+in Table III show that MAGE outperforms other methods,
+consistent with its performance on the public datasets.
+Our proposed Easy-Calibration module reduces gaze di-
+rection error by 0.23° (4.27%). Notably, MAGE-50% and
+MAGE-100% perform similarly, indicating that 50% calibra-
+TABLE III
+COMPARISON OF GAZE DIRECTION ESTIMATION ON IMRG AZE DATASET
+Model Input Gaze Dir. (°)
+GazeTR [21] Face 5.69
+AGE-Net [22] Eyes 8.29
+RCNN [10] Face & Eyes 6.71
+L2CS-Net [23] Face 6.22
+MAGE-50% (ours) Face 5.18
+MAGE-100% (ours) Face 5.15
+TABLE IV
+ABLATED RESULTS OF OUR PROPOSED MAGE
+Model EYEDIAP-Float (°) IMRGaze (°)
+w/o PoGz branch 5.29 5.83
+w/o go branch 5.19 5.58
+w/o Easy-Calibration 5.11 5.38
+MAGE (full) N/A 5.15
+tion data (approximately 50 images per subject) is sufficient
+for fine-tuning. For video data, sampling one frame per 10
+frames allows the calibration to be completed in roughly 17
+seconds, highlighting the efficiency of Easy-Calibration.
+C. Results of Ablation Study
+The results of the ablation study are presented in Table
+IV. The full MAGE demonstrates superior performance over
+its ablated variants on IMRGaze, achieving angular error
+reductions of 0.68° (11.66%) , 0.43° (7.70%) compared to the
+models without the PoGz branch and go branch, respectively.
+Similarly, on EYEDIAP-Float, the basic model exhibits
+improvements of 0.18° and 0.08° in angular error compared
+to the corresponding ablated versions. This highlights that the
+prediction of PoGz serves as a crucial source of information
+for gaze direction estimation, which indicates the rationality
+of our multi-task architecture design.
+D. Qualitative Results
+Fig. 6 visualizes the predicted gaze directions of our
+proposed MAGE for several subjects in three datasets. The
+row 1-2 show the results on the MPIIFaceGaze dataset,
+which is collected in natural environments with significant
+variations in lighting, background, and posture of subjects.
+The row 3-4 and 5-6 display the results from EYEDIAP and
+IMRGaze. These two datasets have relatively lower image
+quality as well as large variations in the head pose and
+gaze direction. In particular, we select a continuous series
+of images from two subjects in IMRGaze for demonstra-
+tion. Our MAGE achieves good performance across these
+datasets, highlighting its accuracy, generalization ability and
+robustness on gaze estimation tasks.
+V. C ONCLUSIONS
+In this paper, we propose MAGE, a multi-task architecture
+that extracts both the directional and positional gaze informa-
+tion from the RGB facial image, making it directly applicable
+to the real-word HRI scenarios. We introduce a simplified
+normalization approach named Easy-Norm to preprocess the
+input data. Our model mainly predicts 2 components: gaze
+direction and PoGz (gaze point on the XY -plane of CCS),
+which are combined to generate the complete 6-DoF gaze
+output. Furthermore, our Easy-Calibration module is efficient
+to implement without the need of a screen, which utilizes the
+calibration data to fine-tune our basic model and mitigate
+the problem of individual variations. Experimental results
+demonstrate the SOTA performance of our method on both
+the gaze direction prediction and the PoG prediction tasks. In
+the future, we will leverage the transformation relationships
+among the multi-task outputs to enhance the robustness of
+the model.
+REFERENCES
+[1] Y . Guo, W. Chen, J. Zhao, and G.-Z. Yang, “Medical robotics:
+opportunities in china,” Annual Review of Control, Robotics, and
+Autonomous Systems, vol. 5, no. 1, pp. 361–383, 2022.
+[2] L. Aymerich-Franch and I. Ferrer, “Socially assistive robots’ de-
+ployment in healthcare settings: a global perspective,” International
+Journal of Humanoid Robotics , vol. 20, no. 01, p. 2350002, 2023.
+[3] Y . Guo, X. Gu, and G.-Z. Yang, “Human–robot interaction for
+rehabilitation robotics,” Digitalization in Healthcare: Implementing
+Innovation and Artificial Intelligence , pp. 269–295, 2021.
+[4] Z. Zhang, J. Zheng, and N. Magnenat Thalmann, “Engagement esti-
+mation of the elderly from wild multiparty human–robot interaction,”
+Computer Animation and Virtual Worlds , vol. 33, no. 6, p. e2120,
+2022.
+[5] Y . Guo, D. Freer, F. Deligianni, and G.-Z. Yang, “Eye-tracking for
+performance evaluation and workload estimation in space telerobotic
+training,” IEEE Transactions on Human-Machine Systems , vol. 52,
+no. 1, pp. 1–11, 2021.
+[6] Y . Cheng, H. Wang, Y . Bao, and F. Lu, “Appearance-based gaze
+estimation with deep learning: A review and benchmark,” IEEE
+Transactions on Pattern Analysis and Machine Intelligence , 2024.
+[7] J. Li and S. Li, “Gaze estimation from color image based on the eye
+model with known head pose,” IEEE Transactions on Human-Machine
+Systems, vol. 46, no. 3, pp. 414–423, 2015.
+[8] X. Zhang, Y . Sugano, M. Fritz, and A. Bulling, “Mpiigaze: Real-
+world dataset and deep appearance-based gaze estimation,” IEEE
+transactions on pattern analysis and machine intelligence , vol. 41,
+no. 1, pp. 162–175, 2017.
+[9] Y . Cheng, F. Lu, and X. Zhang, “Appearance-based gaze estimation
+via evaluation-guided asymmetric regression,” in Proceedings of the
+European Conference on Computer Vision (ECCV) , September 2018.
+[10] C. Palmero, J. Selva, M. A. Bagheri, and S. Escalera, “Recurrent
+cnn for 3d gaze estimation using appearance and shape cues,” arXiv
+preprint arXiv:1805.03064, 2018.
+[11] S. Jindal, M. Yadav, and R. Manduchi, “Spatio-temporal attention and
+gaussian processes for personalized video gaze estimation,” in 2024
+IEEE/CVF Conference on Computer Vision and Pattern Recognition
+Workshops (CVPRW), 2024, pp. 604–614.
+[12] K. Krafka, A. Khosla, P. Kellnhofer, et al. , “Eye tracking for every-
+one,” in Proceedings of the IEEE Conference on Computer Vision and
+Pattern Recognition (CVPR), June 2016.
+[13] Y . Bao, Y . Cheng, Y . Liu, and F. Lu, “Adaptive feature fusion network
+for gaze tracking in mobile tablets,” in 2020 25th International
+Conference on Pattern Recognition (ICPR) . IEEE, 2021, pp. 9936–
+9943.
+[14] X. Zhang, Y . Sugano, M. Fritz, and A. Bulling, “It’s written
+all over your face: Full-face appearance-based gaze estimation,”
+in 2017 IEEE Conference on Computer Vision and Pattern
+Recognition Workshops (CVPRW) . IEEE, Jul. 2017. [Online].
+Available: http://dx.doi.org/10.1109/CVPRW.2017.284
+[15] X. Zhang, M. X. Huang, Y . Sugano, and A. Bulling, “Training person-
+specific gaze estimators from user interactions with multiple devices,”
+in Proceedings of the 2018 CHI conference on human factors in
+computing systems, 2018, pp. 1–12.
+[16] X. Zhou, H. Cai, Y . Li, and H. Liu, “Two-eye model-based gaze esti-
+mation from a kinect sensor,” in 2017 IEEE International Conference
+on Robotics and Automation (ICRA) , 2017, pp. 1646–1653.
+[17] G. Liu, Y . Yu, K. A. F. Mora, and J.-M. Odobez, “A differential
+approach for gaze estimation,” IEEE Transactions on Pattern Analysis
+and Machine Intelligence , vol. 43, no. 3, pp. 1092–1099, 2021.
+[18] X. Zhang, Y . Sugano, and A. Bulling, “Revisiting data normalization
+for appearance-based gaze estimation,” in Proceedings of the 2018
+ACM symposium on eye tracking research & applications , 2018, pp.
+1–9.
+[19] K. He, X. Zhang, S. Ren, and J. Sun, “Deep residual learning for
+image recognition,” 2015. [Online]. Available: https://arxiv.org/abs/
+1512.03385
+[20] J. Li, J. Yang, Y . Liu, et al. , “Easygaze3d: Towards effective and
+flexible 3d gaze estimation from a single rgb camera,” in 2023
+IEEE/RSJ International Conference on Intelligent Robots and Systems
+(IROS). IEEE, 2023, pp. 6537–6543.
+[21] Y . Cheng and F. Lu, “Gaze estimation using transformer,” in 2022
+26th International Conference on Pattern Recognition (ICPR). IEEE,
+2022, pp. 3341–3347.
+[22] Y . Shi, F. Zhang, W. Yang, G. Wang, and N. Su, “Agent-guided gaze
+estimation network by two-eye asymmetry exploration,” in 2024 IEEE
+International Conference on Image Processing (ICIP) . IEEE, 2024,
+pp. 2320–2326.
+[23] A. A. Abdelrahman, T. Hempel, A. Khalifa, A. Al-Hamadi, and
+L. Dinges, “L2cs-net: Fine-grained gaze estimation in unconstrained
+environments,” in 2023 8th International Conference on Frontiers of
+Signal Processing (ICFSP) . IEEE, 2023, pp. 98–102.
+[24] K. A. Funes Mora, F. Monay, and J.-M. Odobez, “Eyediap: A database
+for the development and evaluation of gaze estimation algorithms from
+rgb and rgb-d cameras,” in Proceedings of the symposium on eye
+tracking research and applications , 2014, pp. 255–258.
+[25] C. Lugaresi, J. Tang, H. Nash, C. McClanahan, E. Uboweja, M. Hays,
+F. Zhang, C.-L. Chang, M. Yong, J. Lee, W.-T. Chang, W. Hua,
+M. Georg, and M. Grundmann, “Mediapipe: A framework for per-
+ceiving and processing reality,” inThird Workshop on Computer Vision
+for AR/VR at IEEE Computer Vision and Pattern Recognition (CVPR)
+2019, 2019.
