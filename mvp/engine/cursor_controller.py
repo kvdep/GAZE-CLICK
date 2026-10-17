@@ -13,12 +13,12 @@ class CursorController:
         self.last_pos = (screen_w / 2.0, screen_h / 2.0)
         self.dwell_start_time = None
         self.dwell_anchor = None
-        self.dwell_radius_px = 35.0
-        self.dwell_time_sec = 0.85
+        self.dwell_radius_px = 65.0
+        self.dwell_time_sec = 0.65
         self.last_click_time = 0.0
         self.click_cooldown_sec = 0.6
-        self.r_capture = 60.0; self.r_release = 85.0; self.v_break = 350.0
-        self.r_capture_base = 60.0; self.r_release_base = 85.0
+        self.r_capture = 220.0; self.r_release = 320.0; self.v_break = 450.0
+        self.r_capture_base = 220.0; self.r_release_base = 320.0
         self.sigma_ema_sq = 0.020; self.sigma_thresh_sq = 0.040
         self.active_target = None; self.prev_raw_pos = None; self.prev_time = None
         self.registered_targets: List[Tuple[float, float, float]] = []

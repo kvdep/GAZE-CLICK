@@ -17,7 +17,18 @@ class GazeCalibration:
         self.resting_yaw_deg = 0.0
         self.gain_x = 1.85
         self.gain_y = 1.65
+        self.offset_x = 0.0
+        self.offset_y = 0.0
         self.load_profile()
+
+    def recenter(self, pitch_deg: float, yaw_deg: float, target_x: Optional[float] = None, target_y: Optional[float] = None, head_pitch_deg: float = 0.0, head_yaw_deg: float = 0.0) -> Tuple[float, float]:
+        tx = float(target_x if target_x is not None else self.screen_w / 2.0)
+        ty = float(target_y if target_y is not None else self.screen_h / 2.0)
+        self.offset_x = 0.0; self.offset_y = 0.0
+        cur_x, cur_y = self.predict(pitch_deg, yaw_deg, head_pitch_deg=head_pitch_deg, head_yaw_deg=head_yaw_deg)
+        self.offset_x = tx - cur_x
+        self.offset_y = ty - cur_y
+        return self.offset_x, self.offset_y
 
     def center_at(self, pitch_deg: float, yaw_deg: float) -> None:
         self.resting_pitch_deg = float(pitch_deg)
@@ -38,8 +49,8 @@ class GazeCalibration:
         px_per_mm_y = self.screen_h / max(self.physical_screen_h_mm, 1.0)
         dx_mm = -self.user_distance_mm * math.tan(y_rad) * self.gain_x
         dy_mm = -self.user_distance_mm * math.tan(p_rad) * self.gain_y
-        raw_x = center_x + dx_mm * px_per_mm_x
-        raw_y = center_y + dy_mm * px_per_mm_y
+        raw_x = center_x + dx_mm * px_per_mm_x + self.offset_x
+        raw_y = center_y + dy_mm * px_per_mm_y + self.offset_y
         clamped_x = float(np.clip(raw_x, 0.0, self.screen_w - 1.0))
         clamped_y = float(np.clip(raw_y, 0.0, self.screen_h - 1.0))
         return clamped_x, clamped_y
@@ -51,8 +62,8 @@ class GazeCalibration:
             else:
                 feat = np.array([1.0, yaw_deg, pitch_deg], dtype=np.float64)
             pred = feat @ self.weights
-            pred_x = float(np.clip(pred[0], 0.0, self.screen_w - 1.0))
-            pred_y = float(np.clip(pred[1], 0.0, self.screen_h - 1.0))
+            pred_x = float(np.clip(pred[0] + self.offset_x, 0.0, self.screen_w - 1.0))
+            pred_y = float(np.clip(pred[1] + self.offset_y, 0.0, self.screen_h - 1.0))
             return pred_x, pred_y
         return self.predict_uncalibrated(pitch_deg, yaw_deg)
 
@@ -60,42 +71,24 @@ class GazeCalibration:
         if len(calibration_data) < 5:
             return {"status": 0, "error": "Insufficient samples"}
         X_rows = []; Y_rows = []
-        has_head = any("head_pitch_deg" in sample for sample in calibration_data)
         for sample in calibration_data:
-            if has_head:
-                feat = self._extract_features(sample["pitch_deg"], sample["yaw_deg"], sample.get("head_pitch_deg", 0.0), sample.get("head_yaw_deg", 0.0))
-            else:
-                feat = np.array([1.0, sample["yaw_deg"], sample["pitch_deg"]], dtype=np.float64)
+            feat = np.array([1.0, sample["yaw_deg"], sample["pitch_deg"]], dtype=np.float64)
             X_rows.append(feat)
             Y_rows.append([sample["target_x"], sample["target_y"]])
         X = np.array(X_rows, dtype=np.float64)
         Y = np.array(Y_rows, dtype=np.float64)
-        if has_head:
-            Xx = X[:, [0, 1, 3]]
-            Xy = X[:, [0, 2, 4]]
-            reg_x = np.diag([0.0, l2_reg, l2_reg * 50.0])
-            reg_y = np.diag([0.0, l2_reg, l2_reg * 50.0])
-            wx = np.linalg.solve(Xx.T @ Xx + reg_x, Xx.T @ Y[:, 0])
-            wy = np.linalg.solve(Xy.T @ Xy + reg_y, Xy.T @ Y[:, 1])
-            self.weights = np.zeros((5, 2), dtype=np.float64)
-            self.weights[0, 0] = wx[0]
-            self.weights[1, 0] = wx[1]
-            self.weights[3, 0] = wx[2]
-            self.weights[0, 1] = wy[0]
-            self.weights[2, 1] = wy[1]
-            self.weights[4, 1] = wy[2]
-        else:
-            Xx = X[:, [0, 1]]
-            Xy = X[:, [0, 2]]
-            reg_x = l2_reg * np.eye(2); reg_x[0, 0] = 0.0
-            reg_y = l2_reg * np.eye(2); reg_y[0, 0] = 0.0
-            wx = np.linalg.solve(Xx.T @ Xx + reg_x, Xx.T @ Y[:, 0])
-            wy = np.linalg.solve(Xy.T @ Xy + reg_y, Xy.T @ Y[:, 1])
-            self.weights = np.zeros((3, 2), dtype=np.float64)
-            self.weights[0, 0] = wx[0]
-            self.weights[1, 0] = wx[1]
-            self.weights[0, 1] = wy[0]
-            self.weights[2, 1] = wy[1]
+        Xx = X[:, [0, 1]]
+        Xy = X[:, [0, 2]]
+        reg_x = np.diag([0.0, l2_reg])
+        reg_y = np.diag([0.0, l2_reg])
+        wx = np.linalg.solve(Xx.T @ Xx + reg_x, Xx.T @ Y[:, 0])
+        wy = np.linalg.solve(Xy.T @ Xy + reg_y, Xy.T @ Y[:, 1])
+        self.weights = np.zeros((3, 2), dtype=np.float64)
+        self.weights[0, 0] = wx[0]
+        self.weights[1, 0] = wx[1]
+        self.weights[0, 1] = wy[0]
+        self.weights[2, 1] = wy[1]
+        self.offset_x = 0.0; self.offset_y = 0.0
         Y_pred = X @ self.weights
         residuals = np.linalg.norm(Y - Y_pred, axis=-1)
         self.mean_residual_px = float(np.mean(residuals))
@@ -148,6 +141,7 @@ class GazeCalibration:
     def reset(self) -> None:
         self.is_calibrated = False; self.weights = None
         self.points_recorded = 0; self.mean_residual_px = 0.0; self.r2_score = 0.0
+        self.offset_x = 0.0; self.offset_y = 0.0
         if os.path.exists(self.profile_path):
             try:
                 os.remove(self.profile_path)

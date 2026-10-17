@@ -54,4 +54,10 @@ class PointOneEuroFilter:
         fy = self.filter_y.filter(self.anchor_y, timestamp)
         return fx, fy
 
+    def reset(self) -> None:
+        self.anchor_x = None
+        self.anchor_y = None
+        self.filter_x = OneEuroFilter(self.filter_x.min_cutoff, self.filter_x.beta, self.filter_x.d_cutoff)
+        self.filter_y = OneEuroFilter(self.filter_y.min_cutoff, self.filter_y.beta, self.filter_y.d_cutoff)
+
     filter_point = filter
