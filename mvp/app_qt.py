@@ -1094,14 +1094,24 @@ class GazeMainWindow(QMainWindow):
 
     def start_benchmark(self):
         self.mode = "benchmark"
+        self.benchmark.on_calibration_updated = self._on_benchmark_calibration_updated
         session_id = self.benchmark.start_recording()
         self.stacked_widget.setCurrentIndex(2)
+
+    def _on_benchmark_calibration_updated(self, calib):
+        self.calibration = calib
+        self.val_calib_status.setText(f"Calibrated ({calib.points_recorded} pts, R2={calib.r2_score:.2f})")
+        self.val_calib_status.setStyleSheet("color: #10b981; font-weight: bold;")
 
     def finish_benchmark(self):
         results = self.benchmark.stop_recording_and_evaluate()
         self.last_benchmark_results = results
         self.mode = "tracking"
         self.stacked_widget.setCurrentIndex(0)
+        if self.benchmark.session_calibration is not None:
+            self.calibration = self.benchmark.session_calibration
+            self.val_calib_status.setText(f"Calibrated ({self.calibration.points_recorded} pts, R2={self.calibration.r2_score:.2f})")
+            self.val_calib_status.setStyleSheet("color: #10b981; font-weight: bold;")
         if "error" in results:
             show_alert(self, "Benchmark Incomplete", f"Benchmark ended with notice: {results['error']}", QMessageBox.Icon.Warning)
         else:

@@ -13,12 +13,12 @@ class CursorController:
         self.last_pos = (screen_w / 2.0, screen_h / 2.0)
         self.dwell_start_time = None
         self.dwell_anchor = None
-        self.dwell_radius_px = 65.0
-        self.dwell_time_sec = 0.65
+        self.dwell_radius_px = 40.0
+        self.dwell_time_sec = 0.50
         self.last_click_time = 0.0
         self.click_cooldown_sec = 0.6
-        self.r_capture = 220.0; self.r_release = 320.0; self.v_break = 450.0
-        self.r_capture_base = 220.0; self.r_release_base = 320.0
+        self.r_capture = 40.0; self.r_release = 55.0; self.v_break = 350.0
+        self.r_capture_base = 40.0; self.r_release_base = 55.0
         self.sigma_ema_sq = 0.020; self.sigma_thresh_sq = 0.040
         self.active_target = None; self.prev_raw_pos = None; self.prev_time = None
         self.registered_targets: List[Tuple[float, float, float]] = []
@@ -67,33 +67,41 @@ class CursorController:
             v = dist_move / dt
         else:
             v = 0.0
-        self.prev_raw_pos = (raw_x, raw_y)
+            dist_move = 0.0
+        if v < 150.0 and self.prev_raw_pos is not None:
+            gain = 0.35
+            filtered_x = self.prev_raw_pos[0] + gain * (raw_x - self.prev_raw_pos[0])
+            filtered_y = self.prev_raw_pos[1] + gain * (raw_y - self.prev_raw_pos[1])
+        else:
+            filtered_x = raw_x
+            filtered_y = raw_y
+        self.prev_raw_pos = (filtered_x, filtered_y)
         self.prev_time = now
         if v > self.v_break:
             self.active_target = None
-            return raw_x, raw_y
+            return filtered_x, filtered_y
         if self.active_target is not None:
             tx, ty, tr = self.active_target
-            dist_active = math.hypot(raw_x - tx, raw_y - ty)
+            dist_active = math.hypot(filtered_x - tx, filtered_y - ty)
             if dist_active > self.r_release:
                 self.active_target = None
         if self.active_target is None and len(self.registered_targets) > 0:
             best_target = None; min_dist = float("inf")
             for t in self.registered_targets:
-                d = math.hypot(raw_x - t[0], raw_y - t[1])
+                d = math.hypot(filtered_x - t[0], filtered_y - t[1])
                 if d < self.r_capture and d < min_dist:
                     min_dist = d; best_target = t
             if best_target is not None:
                 self.active_target = best_target
         if self.active_target is not None:
             tx, ty, tr = self.active_target
-            dist_target = math.hypot(raw_x - tx, raw_y - ty)
+            dist_target = math.hypot(filtered_x - tx, filtered_y - ty)
             u = min(1.0, dist_target / self.r_release)
             alpha = (1.0 - u) ** 2 * (1.0 + 2.0 * u)
-            snapped_x = tx + (1.0 - alpha) * (raw_x - tx)
-            snapped_y = ty + (1.0 - alpha) * (raw_y - ty)
+            snapped_x = tx + (1.0 - alpha) * (filtered_x - tx)
+            snapped_y = ty + (1.0 - alpha) * (filtered_y - ty)
             return snapped_x, snapped_y
-        return raw_x, raw_y
+        return filtered_x, filtered_y
 
     def move_cursor(self, target_x: float, target_y: float, variance: Optional[float] = None) -> Tuple[int, int]:
         snapped_x, snapped_y = self.apply_magnetic_attractor(target_x, target_y, variance=variance)

@@ -67,27 +67,64 @@ class GazeCalibration:
             return pred_x, pred_y
         return self.predict_uncalibrated(pitch_deg, yaw_deg)
 
+    def update_baseline(self, cur_x: float, cur_y: float, target_x: float, target_y: float, alpha: float = 0.02) -> Tuple[float, float]:
+        err_x = target_x - cur_x
+        err_y = target_y - cur_y
+        self.offset_x += alpha * err_x
+        self.offset_y += alpha * err_y
+        return self.offset_x, self.offset_y
+
     def fit(self, calibration_data: List[Dict[str, Any]], l2_reg: float = 1.0) -> Dict[str, float]:
         if len(calibration_data) < 5:
             return {"status": 0, "error": "Insufficient samples"}
-        X_rows = []; Y_rows = []
-        for sample in calibration_data:
-            feat = np.array([1.0, sample["yaw_deg"], sample["pitch_deg"]], dtype=np.float64)
-            X_rows.append(feat)
-            Y_rows.append([sample["target_x"], sample["target_y"]])
-        X = np.array(X_rows, dtype=np.float64)
-        Y = np.array(Y_rows, dtype=np.float64)
-        Xx = X[:, [0, 1]]
-        Xy = X[:, [0, 2]]
-        reg_x = np.diag([0.0, l2_reg])
-        reg_y = np.diag([0.0, l2_reg])
-        wx = np.linalg.solve(Xx.T @ Xx + reg_x, Xx.T @ Y[:, 0])
-        wy = np.linalg.solve(Xy.T @ Xy + reg_y, Xy.T @ Y[:, 1])
-        self.weights = np.zeros((3, 2), dtype=np.float64)
-        self.weights[0, 0] = wx[0]
-        self.weights[1, 0] = wx[1]
-        self.weights[0, 1] = wy[0]
-        self.weights[2, 1] = wy[1]
+        has_head = all("head_yaw_deg" in s and "head_pitch_deg" in s for s in calibration_data)
+        if has_head:
+            X_rows = []
+            Y_rows = []
+            for sample in calibration_data:
+                feat = np.array([
+                    1.0,
+                    float(sample["yaw_deg"]),
+                    float(sample["pitch_deg"]),
+                    float(sample.get("head_yaw_deg", 0.0)),
+                    float(sample.get("head_pitch_deg", 0.0))
+                ], dtype=np.float64)
+                X_rows.append(feat)
+                Y_rows.append([float(sample["target_x"]), float(sample["target_y"])])
+            X = np.array(X_rows, dtype=np.float64)
+            Y = np.array(Y_rows, dtype=np.float64)
+            Xx = X[:, [0, 1, 3]]
+            Xy = X[:, [0, 2, 4]]
+            reg_x = np.diag([0.0, l2_reg, l2_reg])
+            reg_y = np.diag([0.0, l2_reg, l2_reg])
+            wx = np.linalg.solve(Xx.T @ Xx + reg_x, Xx.T @ Y[:, 0])
+            wy = np.linalg.solve(Xy.T @ Xy + reg_y, Xy.T @ Y[:, 1])
+            self.weights = np.zeros((5, 2), dtype=np.float64)
+            self.weights[0, 0] = wx[0]
+            self.weights[1, 0] = wx[1]
+            self.weights[3, 0] = wx[2]
+            self.weights[0, 1] = wy[0]
+            self.weights[2, 1] = wy[1]
+            self.weights[4, 1] = wy[2]
+        else:
+            X_rows = []; Y_rows = []
+            for sample in calibration_data:
+                feat = np.array([1.0, sample["yaw_deg"], sample["pitch_deg"]], dtype=np.float64)
+                X_rows.append(feat)
+                Y_rows.append([sample["target_x"], sample["target_y"]])
+            X = np.array(X_rows, dtype=np.float64)
+            Y = np.array(Y_rows, dtype=np.float64)
+            Xx = X[:, [0, 1]]
+            Xy = X[:, [0, 2]]
+            reg_x = np.diag([0.0, l2_reg])
+            reg_y = np.diag([0.0, l2_reg])
+            wx = np.linalg.solve(Xx.T @ Xx + reg_x, Xx.T @ Y[:, 0])
+            wy = np.linalg.solve(Xy.T @ Xy + reg_y, Xy.T @ Y[:, 1])
+            self.weights = np.zeros((3, 2), dtype=np.float64)
+            self.weights[0, 0] = wx[0]
+            self.weights[1, 0] = wx[1]
+            self.weights[0, 1] = wy[0]
+            self.weights[2, 1] = wy[1]
         self.offset_x = 0.0; self.offset_y = 0.0
         Y_pred = X @ self.weights
         residuals = np.linalg.norm(Y - Y_pred, axis=-1)

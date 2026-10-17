@@ -1,5 +1,6 @@
 import os, sys, math, time, cv2, numpy as np, pandas as pd
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Dict, Any, List, Optional, Tuple, Callable
+from engine.calibration import GazeCalibration
 
 class BenchmarkRecorder:
     def __init__(self, output_dir: str = "mvp/benchmarks", screen_w: int = 2880, screen_h: int = 1800, cam_w: int = 1280, cam_h: int = 720, fps: float = 30.0, user_distance_mm: float = 600.0, physical_screen_w_mm: float = 300.0, physical_screen_h_mm: float = 190.0) -> None:
@@ -34,6 +35,8 @@ class BenchmarkRecorder:
         self.trajectory_progress = 0.0
         self.current_target_pt = (self.screen_w / 2.0, self.screen_h / 2.0)
         self.current_phase_name = ""
+        self.session_calibration: Optional[GazeCalibration] = None
+        self.on_calibration_updated: Optional[Callable[[GazeCalibration], None]] = None
 
     def _build_static_points(self) -> List[Dict[str, Any]]:
         pts = []
@@ -132,11 +135,48 @@ class BenchmarkRecorder:
                 should_record = True
                 curr_desc = self.static_points[self.static_idx]["desc"]
                 phase_label = f"StaticFixation: {curr_desc}"
+    def _fit_session_calibration(self) -> None:
+        static_recs = [r for r in self.records if r.get("phase", "").startswith("StaticFixation") and r.get("face_detected", False)]
+        if len(static_recs) < 15:
+            return
+        df = pd.DataFrame(static_recs)
+        samples = []
+        for p, group in df.groupby("phase"):
+            samples.append({
+                "target_x": float(group["target_gt_x"].iloc[0]),
+                "target_y": float(group["target_gt_y"].iloc[0]),
+                "yaw_deg": float(group["gaze_yaw_deg"].median()),
+                "pitch_deg": float(group["gaze_pitch_deg"].median()),
+                "head_yaw_deg": float(group["head_yaw_deg"].median()),
+                "head_pitch_deg": float(group["head_pitch_deg"].median())
+            })
+        if len(samples) >= 5:
+            calib = GazeCalibration(screen_w=self.screen_w, screen_h=self.screen_h, profile_path="mvp/calibration_profile.json")
+            calib.fit(samples, l2_reg=1.0)
+            self.session_calibration = calib
+            if self.on_calibration_updated is not None:
+                try:
+                    self.on_calibration_updated(calib)
+                except Exception:
+                    pass
+
+    def record_frame(self, frame_bgr: np.ndarray, pred_raw: Tuple[float, float], pred_calib: Tuple[float, float], pred_filtered: Tuple[float, float], model_res: Dict[str, Any], is_holding_trajectory_key: bool) -> bool:
+        if not self.is_recording:
+            return False
+        should_record = False
+        phase_label = ""
+        if self.static_idx < len(self.static_points):
+            if self.is_capturing_static:
+                should_record = True
+                curr_desc = self.static_points[self.static_idx]["desc"]
+                phase_label = f"StaticFixation: {curr_desc}"
                 self.static_recording_counter += 1
                 if self.static_recording_counter >= self.frames_per_static_point:
                     self.is_capturing_static = False
                     self.static_recording_counter = 0
                     self.static_idx += 1
+                    if self.static_idx >= len(self.static_points):
+                        self._fit_session_calibration()
         else:
             if is_holding_trajectory_key:
                 should_record = True
@@ -152,6 +192,17 @@ class BenchmarkRecorder:
                 write_frame = frame_bgr
             self.video_writer.write(write_frame)
         gt_x, gt_y = self.current_target_pt
+        if self.session_calibration is not None and self.session_calibration.is_calibrated:
+            p_calib_x, p_calib_y = self.session_calibration.predict(
+                float(model_res.get("gaze_pitch_deg", 0.0)),
+                float(model_res.get("gaze_yaw_deg", 0.0)),
+                head_pitch_deg=float(model_res.get("head_pitch_deg", 0.0)),
+                head_yaw_deg=float(model_res.get("head_yaw_deg", 0.0))
+            )
+            p_filt_x, p_filt_y = p_calib_x, p_calib_y
+        else:
+            p_calib_x, p_calib_y = pred_calib
+            p_filt_x, p_filt_y = pred_filtered
         rec = {
             "video_frame_idx": len(self.records),
             "timestamp_sec": elapsed_sec,
@@ -160,10 +211,10 @@ class BenchmarkRecorder:
             "target_gt_y": gt_y,
             "pred_raw_x": pred_raw[0],
             "pred_raw_y": pred_raw[1],
-            "pred_calib_x": pred_calib[0],
-            "pred_calib_y": pred_calib[1],
-            "pred_filt_x": pred_filtered[0],
-            "pred_filt_y": pred_filtered[1],
+            "pred_calib_x": p_calib_x,
+            "pred_calib_y": p_calib_y,
+            "pred_filt_x": p_filt_x,
+            "pred_filt_y": p_filt_y,
             "gaze_pitch_deg": model_res.get("gaze_pitch_deg", 0.0),
             "gaze_yaw_deg": model_res.get("gaze_yaw_deg", 0.0),
             "raw_pitch_deg": model_res.get("raw_pitch_deg", 0.0),
@@ -195,10 +246,26 @@ class BenchmarkRecorder:
         valid_df = df[df["face_detected"]].copy()
         if len(valid_df) == 0:
             return {"error": "Face was never detected in benchmark"}
-        gt_pts = valid_df[["target_gt_x", "target_gt_y"]].to_numpy()
-        calib_pts = valid_df[["pred_calib_x", "pred_calib_y"]].to_numpy()
-        filt_pts = valid_df[["pred_filt_x", "pred_filt_y"]].to_numpy()
-        raw_pts = valid_df[["pred_raw_x", "pred_raw_y"]].to_numpy()
+        eval_subset = valid_df[valid_df["phase"] == "CircleTrajectory"].copy()
+        if len(eval_subset) < 10:
+            eval_subset = valid_df.copy()
+        if self.session_calibration is not None and self.session_calibration.is_calibrated:
+            eval_calib_list = []
+            for _, r in eval_subset.iterrows():
+                px, py = self.session_calibration.predict(
+                    float(r["gaze_pitch_deg"]), float(r["gaze_yaw_deg"]),
+                    head_pitch_deg=float(r["head_pitch_deg"]),
+                    head_yaw_deg=float(r["head_yaw_deg"])
+                )
+                eval_calib_list.append([px, py])
+            eval_calib_arr = np.array(eval_calib_list, dtype=np.float64)
+            calib_pts = eval_calib_arr
+            filt_pts = eval_calib_arr
+        else:
+            calib_pts = eval_subset[["pred_calib_x", "pred_calib_y"]].to_numpy()
+            filt_pts = eval_subset[["pred_filt_x", "pred_filt_y"]].to_numpy()
+        gt_pts = eval_subset[["target_gt_x", "target_gt_y"]].to_numpy()
+        raw_pts = eval_subset[["pred_raw_x", "pred_raw_y"]].to_numpy()
         diff_filt = filt_pts - gt_pts
         diff_calib = calib_pts - gt_pts
         diff_raw = raw_pts - gt_pts
