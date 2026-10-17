@@ -1,0 +1,42 @@
+{
+  "learning_rate": {
+    "previous": 0.0002,
+    "current": 0.00015
+  },
+  "warmup_epochs": {
+    "previous": 2,
+    "current": 1
+  },
+  "save_every_epoch": {
+    "previous": false,
+    "current": true
+  },
+  "gpu_latency_ms": {
+    "previous": 10.144,
+    "current": 9.89
+  },
+  "gpu_fp16_latency_ms": {
+    "previous": 15.577,
+    "current": 13.796
+  },
+  "gpu_jit_latency_ms": {
+    "previous": 10.144,
+    "current": 9.89
+  },
+  "cpu_latency_ms": {
+    "previous": 17.069,
+    "current": 13.893
+  },
+  "cpu_onnx_latency_ms": {
+    "previous": 17.069,
+    "current": 13.893
+  },
+  "gpu_eager_latency_ms": {
+    "previous": 19.826,
+    "current": 18.226
+  },
+  "cpu_eager_latency_ms": {
+    "previous": 19.908,
+    "current": 18.254
+  }
+}

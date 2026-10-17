@@ -11,7 +11,7 @@ from engine.cursor_controller import CursorController
 from engine.telemetry_logger import TelemetryLogger
 
 class GazeApplication:
-    def __init__(self, camera_id: int = 0, cam_w: int = 1280, cam_h: int = 720, enable_mouse: bool = False, checkpoint_path: str = "mvp/experiments/yolo26n_gaze_net_yolo26n/run_010_20261015_020142/checkpoints/best_model.pt", yunet_path: str = "mvp/models/weights/face_detection_yunet_2023mar.onnx", log_dir: str = "mvp/logs", headless: bool = False) -> None:
+    def __init__(self, camera_id: int = 0, cam_w: int = 1280, cam_h: int = 720, enable_mouse: bool = False, checkpoint_path: str = "mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/best_model.pt", yunet_path: str = "mvp/models/weights/face_detection_yunet_2023mar.onnx", log_dir: str = "mvp/logs", headless: bool = False) -> None:
         self.camera_id = camera_id; self.req_cam_w = cam_w; self.req_cam_h = cam_h
         self.headless = headless
         self.user32 = ctypes.windll.user32
@@ -280,7 +280,7 @@ def main() -> None:
     parser.add_argument("--headless", action="store_true")
     parser.add_argument("--cv", action="store_true")
     parser.add_argument("--fullscreen", action="store_true")
-    parser.add_argument("--checkpoint", type=str, default="mvp/experiments/yolo26n_gaze_net_yolo26n/run_008_20261014_024920/checkpoints/best_model.pt")
+    parser.add_argument("--checkpoint", type=str, default="mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/best_model.pt")
     args = parser.parse_args()
     if not args.cv and not args.headless:
         import app_qt

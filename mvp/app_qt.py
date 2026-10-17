@@ -709,7 +709,7 @@ class GazeMainWindow(QMainWindow):
 def main():
     parser = argparse.ArgumentParser(description="GAZE-CLICK PyQt6 Real-Time System")
     parser.add_argument("--camera-id", type=int, default=0)
-    parser.add_argument("--checkpoint", type=str, default="mvp/experiments/yolo26n_gaze_net_yolo26n/run_008_20261014_024920/checkpoints/best_model.pt")
+    parser.add_argument("--checkpoint", type=str, default="mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/best_model.pt")
     parser.add_argument("--fullscreen", action="store_true")
     args = parser.parse_args()
     app = QApplication(sys.argv)

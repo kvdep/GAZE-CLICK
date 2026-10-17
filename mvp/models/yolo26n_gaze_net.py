@@ -261,7 +261,7 @@ class StableVectorGazeLoss(nn.Module):
         h_gt = batch_data.get("head_vector", h_pred)
         if h_gt is None: h_gt = h_pred
         l1_diff = self.smooth_l1(g_pred, g_gt)
-        loss_aniso_vec = 2.0 * l1_diff[:, 0].mean() + 1.5 * l1_diff[:, 1].mean() + 1.0 * l1_diff[:, 2].mean()
+        loss_aniso_vec = 1.8 * l1_diff[:, 0].mean() + 1.8 * l1_diff[:, 1].mean() + 1.0 * l1_diff[:, 2].mean()
         loss_cos = 1.0 * (1.0 - torch.sum(g_pred * g_gt, dim=-1)).mean()
         dot_product = torch.clamp(torch.sum(g_pred * g_gt, dim=-1), -0.999999, 0.999999)
         loss_ang = self.lambda_ang * (180.0 / 3.141592653589793) * torch.acos(dot_product).mean()

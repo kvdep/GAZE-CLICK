@@ -17,7 +17,7 @@ def _resolve_path(p: str) -> str:
     return p
 
 class GazeTrackingPipeline:
-    def __init__(self, checkpoint_path: str = "mvp/experiments/yolo26n_gaze_net_yolo26n/run_010_20261015_020142/checkpoints/best_model.pt", yunet_path: str = "mvp/models/weights/face_detection_yunet_2023mar.onnx", device_str: Optional[str] = None) -> None:
+    def __init__(self, checkpoint_path: str = "mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/best_model.pt", yunet_path: str = "mvp/models/weights/face_detection_yunet_2023mar.onnx", device_str: Optional[str] = None) -> None:
         if device_str is None:
             self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         else:

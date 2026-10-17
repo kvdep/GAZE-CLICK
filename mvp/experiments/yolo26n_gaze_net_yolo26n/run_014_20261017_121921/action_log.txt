@@ -1,0 +1,36 @@
+[12:19:21] [00:00:00] [GPU] [11.1] [6.8] [experiment_manager.py:78] Initialized experiment: run_014_20261017_121921 in [DIR:mvp/experiments\yolo26n_gaze_net_yolo26n]
+[12:19:21] [00:00:00] [GPU] [11.1] [6.8] [experiment_manager.py:79] Copied model source definition to: [ARTIFACT:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\model_source.py]
+[12:19:21] [00:00:00] [GPU] [11.1] [6.8] [experiment_manager.py:82] Hyperparameter modifications detected: learning_rate: 0.0002 -> 0.00015, warmup_epochs: 2 -> 1, save_every_epoch: False -> True, gpu_latency_ms: 10.144 -> 9.89, gpu_fp16_latency_ms: 15.577 -> 13.796, gpu_jit_latency_ms: 10.144 -> 9.89, cpu_latency_ms: 17.069 -> 13.893, cpu_onnx_latency_ms: 17.069 -> 13.893, gpu_eager_latency_ms: 19.826 -> 18.226, cpu_eager_latency_ms: 19.908 -> 18.254
+[12:19:21] [00:00:00] [GPU] [11.1] [6.8] [main.py:323] Backbone 100% FROZEN (0 trainable params). Head/Adapters trainable tensors: 35 (LR=0.000150)
+[12:19:21] [00:00:00] [GPU] [11.1] [6.8] [main.py:331] Linear warmup enabled for 1 epochs (start_factor=0.05), followed by Cosine Annealing to eta_min=1e-6
+[12:19:27] [00:00:06] [GPU] [10.5] [6.8] [main.py:390] MLflow tracking started: [TRACKING_URI:file:./mvp/mlruns] [RUN:run_014_20261017_121921]
+[12:19:27] [00:00:00] [GPU] [10.5] [6.8] [memory.py:33] Runtime verified: Free VRAM = 6.82 GB, Free RAM = 10.53 GB
+[12:19:27] [00:00:00] [GPU] [10.5] [6.8] [trainer.py:138] Starting training run: total_epochs=150, patience=15, save_interval_min=20.0
+[12:26:53] [00:07:25] [GPU] [4.2] [6.6] [trainer.py:160] Epoch 1/150 | L Train: 0.1839 | L Val: 0.5005 | Gaze Val: 7.68° | Head P/Y: 6.34°/14.27° | LR: 0.000150
+[12:26:53] [00:00:00] [GPU] [4.2] [6.6] [registry.py:59] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
+[12:26:53] [00:00:00] [GPU] [4.2] [6.6] [trainer.py:184] Saved new best model checkpoint (Gaze Error: 7.68°): [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt]
+[12:26:53] [00:00:00] [GPU] [4.2] [6.6] [registry.py:59] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\latest_model.pt
+[12:26:53] [00:00:00] [GPU] [4.2] [6.6] [trainer.py:196] Periodic checkpoint synchronized: [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\latest_model.pt]
+[12:32:02] [00:05:09] [GPU] [3.8] [6.6] [trainer.py:160] Epoch 2/150 | L Train: 0.1886 | L Val: 0.5057 | Gaze Val: 7.78° | Head P/Y: 6.33°/14.25° | LR: 0.000150
+[12:32:02] [00:00:00] [GPU] [3.8] [6.6] [registry.py:59] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\latest_model.pt
+[12:32:02] [00:00:00] [GPU] [3.8] [6.6] [trainer.py:196] Periodic checkpoint synchronized: [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\latest_model.pt]
+[12:37:00] [00:04:57] [GPU] [3.8] [6.6] [trainer.py:160] Epoch 3/150 | L Train: 0.1846 | L Val: 0.5038 | Gaze Val: 7.74° | Head P/Y: 6.44°/14.14° | LR: 0.000150
+[12:37:00] [00:00:00] [GPU] [3.8] [6.6] [registry.py:59] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\latest_model.pt
+[12:37:00] [00:00:00] [GPU] [3.8] [6.6] [trainer.py:196] Periodic checkpoint synchronized: [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\latest_model.pt]
+[12:41:57] [00:04:56] [GPU] [3.5] [6.6] [trainer.py:160] Epoch 4/150 | L Train: 0.1840 | L Val: 0.5013 | Gaze Val: 7.70° | Head P/Y: 6.44°/14.22° | LR: 0.000150
+[12:41:57] [00:00:00] [GPU] [3.5] [6.6] [registry.py:59] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\latest_model.pt
+[12:41:57] [00:00:00] [GPU] [3.5] [6.6] [trainer.py:196] Periodic checkpoint synchronized: [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\latest_model.pt]
+[12:46:55] [00:04:57] [GPU] [3.6] [6.6] [trainer.py:160] Epoch 5/150 | L Train: 0.1854 | L Val: 0.5047 | Gaze Val: 7.75° | Head P/Y: 6.41°/14.18° | LR: 0.000150
+[12:46:55] [00:00:00] [GPU] [3.5] [6.6] [registry.py:59] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\latest_model.pt
+[12:46:55] [00:00:00] [GPU] [3.5] [6.6] [trainer.py:196] Periodic checkpoint synchronized: [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\latest_model.pt]
+[12:51:51] [00:04:56] [GPU] [3.5] [6.6] [trainer.py:160] Epoch 6/150 | L Train: 0.1834 | L Val: 0.4981 | Gaze Val: 7.65° | Head P/Y: 6.36°/14.16° | LR: 0.000150
+[12:51:51] [00:00:00] [GPU] [3.5] [6.6] [registry.py:59] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
+[12:51:51] [00:00:00] [GPU] [3.5] [6.6] [trainer.py:184] Saved new best model checkpoint (Gaze Error: 7.65°): [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt]
+[12:51:51] [00:00:00] [GPU] [3.5] [6.6] [registry.py:59] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\latest_model.pt
+[12:51:51] [00:00:00] [GPU] [3.5] [6.6] [trainer.py:196] Periodic checkpoint synchronized: [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\latest_model.pt]
+[12:56:57] [00:05:05] [GPU] [3.2] [6.6] [trainer.py:160] Epoch 7/150 | L Train: 0.1840 | L Val: 0.4993 | Gaze Val: 7.67° | Head P/Y: 6.27°/14.24° | LR: 0.000149
+[12:56:57] [00:00:00] [GPU] [3.2] [6.6] [registry.py:59] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\latest_model.pt
+[12:56:57] [00:00:00] [GPU] [3.2] [6.6] [trainer.py:196] Periodic checkpoint synchronized: [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\latest_model.pt]
+[13:02:12] [00:05:15] [GPU] [3.0] [6.6] [trainer.py:160] Epoch 8/150 | L Train: 0.1843 | L Val: 0.5011 | Gaze Val: 7.67° | Head P/Y: 6.39°/14.21° | LR: 0.000149
+[13:02:13] [00:00:00] [GPU] [3.0] [6.6] [registry.py:59] Saved model checkpoint with architecture to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\latest_model.pt
+[13:02:13] [00:00:00] [GPU] [3.0] [6.6] [trainer.py:196] Periodic checkpoint synchronized: [WEIGHTS:C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\latest_model.pt]
