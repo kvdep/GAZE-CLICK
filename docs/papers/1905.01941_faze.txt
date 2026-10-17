@@ -1,0 +1,1373 @@
+Few-Shot Adaptive Gaze Estimation
+Seonwook Park12*, Shalini De Mello1*, Pavlo Molchanov1, Umar Iqbal1, Otmar Hilliges2, Jan Kautz1
+1NVIDIA, 2ETH Z¨urich
+{spark, otmarh}@inf.ethz.ch; {shalinig, pmolchanov, uiqbal, jkautz}@nvidia.com
+Abstract
+Inter-personal anatomical differences limit the accuracy
+of person-independent gaze estimation networks. Yet there
+is a need to lower gaze errors further to enable applications
+requiring higher quality. Further gains can be achieved by
+personalizing gaze networks, ideally with few calibration
+samples. However, over-parameterized neural networks are
+not amenable to learning from few examples as they can
+quickly over-ﬁt. We embrace these challenges and propose
+a novel framework for Few-shot Adaptive GaZE Estima-
+tion (FAZE) for learning person-speciﬁc gaze networks with
+very few (≤ 9) calibration samples. FAZE learns a rotation-
+aware latent representation of gaze via a disentangling
+encoder-decoder architecture along with a highly adaptable
+gaze estimator trained using meta-learning. It is capable
+of adapting to any new person to yield signiﬁcant perfor-
+mance gains with as few as3 samples, yielding state-of-the-
+art performance of 3.18◦ on GazeCapture, a 19% improve-
+ment over prior art. We open-source our code at https:
+//github.com/NVlabs/few_shot_gaze 1.
+1. Introduction
+Estimation of human gaze has numerous applications in
+human-computer interaction [8], virtual reality [34], auto-
+motive [47] and content creation [52], among others. Many
+of these applications require high levels of accuracy (cf.
+[3, 43, 19, 2]). While appearance-based gaze estimation
+techniques that use Convolutional Neural Networks (CNN)
+have signiﬁcantly surpassed classical methods [57] for in-
+the-wild settings, there still remains a signiﬁcant gap to-
+wards applicability in high-accuracy domains. The cur-
+rently lowest reported person-independent error of 4.3◦ [7]
+is equivalent to 4.7cm at a distance of 60cm, which restricts
+use of such techniques to public display interactions [60] or
+crowd-sourced attention analysis [30].
+High-accuracy gaze estimation from images is difﬁcult
+because it requires either explicit or implicit ﬁtting of a
+*The ﬁrst two authors contributed equally.
+1This includes a real-time demo which takes < 10 seconds to record
+9 calibration points for a new user and ∼ 1 minute to train a personalized
+network on a laptop with an NVIDIA GTX GeForce 1060 GPU.
+Representation
+learning Meta-learning
+Training data {image, gaze}
+Person-speciﬁc
+gaze estimation network
+(PS-Gen) A
+calibration data 
+{image,	gaze}{image,	gaze}
+PS-Gen B
+calibration data 
+test image
+person B
+x y zx y z
+test image
+`
+person A
+Gaze
+direction
+Gaze
+direction
+Adaptable 
+gaze estimation network
+(AdaGen)
+Figure 1: Overview of the FAZE framework. Given a set of
+training images with ground-truth gaze direction informa-
+tion, we ﬁrst learn a latent feature representation, which is
+tailored speciﬁcally for the task of gaze estimation. Given
+the features, we then learn an adaptable gaze estimation net-
+work, AdaGEN, using meta-learning which can be adapted
+easily to a robust person-speciﬁc gaze estimation network
+(PS-GEN) with very little calibration data.
+person-speciﬁc eye-ball model to the image data and the es-
+timation of their visual and optical axes. Moreover, it is well
+understood that inter-subject anatomical differences affect
+gaze estimation accuracy [11]. Classical model-based tech-
+niques can often be personalized via few (9 or less) samples
+(e.g., [11, 13]) but are not robust to image variations in un-
+controlled settings. While feasible, subject-speciﬁc train-
+ing of CNNs requires thousands of samples and is clearly
+impractical [59]. Few-shot personalization of CNNs is dif-
+ﬁcult because training of highly overparametrized models
+with only few training samples will lead to over-ﬁtting.
+We tackle these many-fold challenges by proposing
+FAZE, a framework for learning gaze estimation networks
+for new subjects using very few calibration samples (Fig. 1).
+It consists of: i) learning a rotation-aware latent represen-
+arXiv:1905.01941v2  [cs.CV]  14 Oct 2019tation of gaze via a disentangling transforming encoder-
+decoder architecture ii) with these features learning a
+highly adaptable gaze estimator using meta-learning, and
+iii) adapting it to any new person to yield signiﬁcant perfor-
+mance gains with as few as 3 samples.
+In order to learn a robust representation for gaze, we
+take inspiration from recent work on transforming encoder-
+decoder architectures [15, 53] and design a rotation-
+equivariant pair of encoder-decoder functions. We disen-
+tangle the factors of appearance, gaze and head pose in the
+latent space and enforce equivariance by decoding explic-
+itly rotated latent codes to images of the same person but
+with a different gaze direction compared to the input (via
+a𝓁1 reconstruction loss). The equivariance property of our
+gaze representation further allows us to devise a novel em-
+bedding consistency loss term that further minimizes the
+intra-person differences in the gaze representation. We then
+leverage the proposed latent embedding to learn person-
+speciﬁc gaze estimators from few samples. To this end we
+use a meta-learning algorithm to learn how to learn such
+estimators. We take inspiration from the recent success of
+meta-learning [1] for few-shot learning in several other vi-
+sion tasks [6, 12, 31]. To the best of our knowledge, we are
+the ﬁrst to cast few-shot learning of person-speciﬁc gaze es-
+timators as one of multi-task learning where each subject is
+seen as a new task in the meta-learning sense.
+We evaluate the proposed framework on two benchmark
+datasets and show that our meta-learned network with its la-
+tent gaze features can be successfully adapted with very few
+(k≤ 9) samples to produce accurate person-speciﬁc mod-
+els. We demonstrate the validity of our design choices with
+detailed empirical evidence, and demonstrate that our pro-
+posed framework outperforms state-of-the-art methods by
+signiﬁcant margins. In particular, we demonstrate improve-
+ments of 13% (3.94◦→ 3.42◦) on the MPIIGaze dataset,
+and 19% (3.91◦→ 3.18◦) on the GazeCapture dataset over
+the approach of [26] using just 3 calibration samples.
+To summarize, the main contributions of our work are:
+• FAZE, a novel framework for learning person-speciﬁc
+gaze networks with few calibration samples, fusing
+the beneﬁts of rotation-equivariant feature learning and
+meta-learning.
+• A novel encoder-decoder architecture that disentangles
+gaze direction, head pose and appearance factors.
+• A novel and effective application of meta-learning to
+the task of few-shot personalization.
+• State-of-the-art performance ( 3.14◦ with k = 9 on
+MPIIGaze), with consistent improvements over exist-
+ing methods for 1≤k≤ 256.
+2. Related Work
+Gaze Estimation. Appearance-based gaze estimation [46]
+methods that map images directly to gaze have recently sur-
+passed classical model-based approaches [13] for in-the-
+wild settings. Earlier approaches in this direction assume
+images captured in restricted laboratory settings and use di-
+rect regression methods [28, 27] or learning-by-synthesis
+approaches combined with random forests to separate head-
+pose clusters [45]. More recently, the availability of large
+scale datasets such as MPIIGaze [57] and GazeCapture
+[22], and progress in CNNs have rapidly moved the ﬁeld
+forward. MPIIGaze has become a benchmark dataset for
+in-the-wild gaze estimation. For the competitive person-
+independent within-MPIIGaze leave-one-person-out evalu-
+ation, gaze errors have progressively decreased from 6.3◦
+for naively applying a LeNet-5 architecture to eye-input
+[57] to the current best of 4.3◦ with an ensemble of multi-
+modal networks based on VGG-16 [7]. Proposed advance-
+ments include the use of more complex CNNs [59]; more
+meaningful use of face [58, 22] and multi-modal input
+[22, 7, 54]; explicit handling of differences in the two eyes
+[4]; greater robustness to head pose [61, 36]; improvements
+in data normalization [55]; learning more informed inter-
+mediate representations [32]; using ensembles of networks
+[7]; and using synthetic data [42, 51, 24, 33, 36].
+However, person-independent gaze errors are still insuf-
+ﬁcient for many applications [3, 43, 19, 2]. While signiﬁ-
+cant gains can be obtained by training person-speciﬁc mod-
+els, it requires many thousands of training images per sub-
+ject [59]. On the other hand, CNNs are prone to over-ﬁtting
+if trained with very few ( k≤ 9) samples. In order to ad-
+dress this issue, existing approaches try to adapt person-
+independent CNN-based features [22, 33] or points-of-
+regard (PoR) [56] to person-speciﬁc ones via hand-designed
+heuristic functions. Some methods also train a Siamese net-
+work with pairs of images of the same subject [26].
+Learned Equivariance. Generalizing models learned for
+regression tasks to new data is a challenging problem. How-
+ever, recent works show improvements from enforcing the
+learning of equivariant mappings between input, latent fea-
+tures, and label spaces [16, 39], via so-called transform-
+ing encoder-decoder architectures [15]. In [53], this idea
+is expanded to learn complex phenomena such as the orien-
+tation of synthetic light sources and in [39] the method is
+applied to real-world multi-view imagery to improve semi-
+supervised human pose estimation. In contrast, we learn
+from very noisy real-world data while successfully disen-
+tangling the two noisily-labeled phenomena of gaze direc-
+tion and head orientation.
+Few-shot Learning. Few-shot learning aims to learn a new
+task with very few examples [23]. This is a non-trivial prob-lem for highly over-parameterized deep networks as it leads
+to over-ﬁtting. Recently, several promising meta-learning
+[44, 50, 38, 40, 6, 29, 37] techniques have been proposed
+that learn how to learn unique but similar tasks in a few-
+shot manner using CNNs. They have been shown to be suc-
+cessful for various few-shot visual learning tasks including
+object recognition [6], segmentation [35], viewpoint esti-
+mation [48] and online adaptation of trackers [31]. Inspired
+by their success, we use meta-learning to learn how to learn
+person-speciﬁc gaze networks from few examples. To the
+best of our knowledge we are the ﬁrst to cast person-speciﬁc
+gaze estimation as a multi-task problem in the context of
+meta-learning, where each subject is seen as a new task for
+the meta-learner. Our insight is that meta-learning lends it-
+self well to few-shot gaze personalization and leads to per-
+formance improvements.
+3. Method
+In this section, we describe how we perform gaze esti-
+mation from challenging in-the-wild imagery, with minimal
+burden to the user. The latter objective can be fulﬁlled by
+designing our framework to adapt well even with very few
+calibration samples (k≤ 9). We ﬁrst provide an overview
+of the FAZE framework and its three stages.
+3.1. The FAZE framework
+We design FAZE (Fig. 1) with the understanding that a
+person-speciﬁc gaze estimator must encode factors partic-
+ular to the person, yet at the same time, leverage insights
+from observing the eye-region appearance variations across
+a large number of people with different head pose and gaze
+direction conﬁgurations. The latter is important for build-
+ing models that are robust to extraneous factors such as poor
+image quality. Thus, the ﬁrst step in FAZE is to learn a gen-
+eralizable latent embedding space that encodes information
+pertaining to the gaze-direction, including person-speciﬁc
+aspects. We detail this in Sec. 3.2.
+Provided that good and consistent features can be
+learned, we can leverage meta-learning to learn how to learn
+few-shot person-speciﬁc gaze estimators for these features.
+This results in few-shot learners which generalize better
+to new people (tasks) without overﬁtting. Speciﬁcally, we
+use the MAML meta-learning algorithm [6]. For our task,
+MAML learns a set of initial network weights which allow
+for ﬁne-tuning without the usual over-ﬁtting issues that oc-
+cur with lowk. Effectively, it produces a highly Adaptable
+Gaze Estimation Network (AdaGEN). The ﬁnal step con-
+cerns the adaptation of MAML-initialized weights to pro-
+duce person-speciﬁc models (PS-GEN) for each user. We
+describe this in Sec. 3.3.
+Encoder
+Gaze MLP
+Decoder
+copy
+x y z Gaze direction
+16      Appearance code
+ 3x2    Gaze direction code
+3x16  Head rotation code
+Figure 2: Disentangling appearance, gaze and head pose
+variations from an image with our Disentangling Trans-
+forming Encoder-Decoder (DT-ED). We learn to translate
+between pairs of images of the same person by rotating the
+gaze and head pose codes. The encoder-decoder are super-
+vised by a pixel-wiseL1 loss (Eq. 3), with the gaze embed-
+ding additionally supervised via gaze regression (Eq. 5).
+3.2. Gaze-Equivariant Feature Learning
+In this section, we explain how the learning of a function,
+which understands equivalent rotations in input data and
+output label can lead to better generalization in the context
+of our ﬁnal task of person-speciﬁc gaze estimation. In addi-
+tion, we: (a) show how to disentangle eyeball and head rota-
+tion factors leading to better distillation of gaze information,
+and (b) introduce a frontalized embedding consistency loss
+term to speciﬁcally aid in learning consistent frontal gaze
+codes for a particular subject.
+3.2.1 Architecture Overview
+In learning a generalizable latent embedding space repre-
+senting gaze, we apply the understanding that a relative
+change in gaze direction is easier to learn in a person-
+independent manner [26]. We extend the transforming
+encoder-decoder architecture [15, 53] to consider three dis-
+tinct factors apparent in our problem setting: gaze direction,
+head orientation, and other factors related to the appearance
+of the eye region in given images (Fig. 2). We disentangle
+the three factors by explicitly applying separate and known
+differences in rotations (eye gaze and head orientation) to
+the respective sub-codes. We refer to this architecture as the
+Disentangling Transforming Encoder-Decoder (DT-ED).
+For a given input image x , we deﬁne an encoder E :
+x→ z and a decoderD : z→ ˆx such thatD (E(x)) = ˆx.
+We consider the latent space embedding z as being formed
+of 3 parts representing: appearance ( za), gaze direction or
+eyeball rotation (zg), and head pose (zh), which can be ex-
+pressed as: z =
+{
+za; zg; zh}
+where gaze and head codes
+are ﬂattened to yield a single column. We deﬁne zg as
+having dimensions (3×Fg) and zh as having dimensions(
+3×Fh)
+withF∈ N. With these dimensions, it is possi-
+ble to apply a rotation matrix to explicitly rotate these 3D
+latent space embeddings using rotation matrices.(a) Only varying gaze direction, (θg, φg)∈ [−25◦, 25◦]
+(b) Only varying head orientation,
+(
+θh, φh)
+∈ [−20◦, 20◦]
+Figure 3: Our disentangled rotation-aware embedding
+spaces for gaze direction and head pose are demonstrated
+by predicting embeddings ˆzg, ˆzh from a given sample, ro-
+tating it to 15 points each, and then decoding them.
+The frontal orientation of eyes and heads in our setting
+can be represented as (0, 0) in Euler angles notation for az-
+imuth and elevation, respectively assuming no roll, and us-
+ing thex−y convention. Then, the rotation of the eyes and
+the head from the frontal orientation can be described us-
+ing (θg,φg) and
+(
+θh,φh)
+in Euler angles and converted to
+rotation matrices deﬁned as,
+R(θ,φ ) =
+
+
+cosφ 0 sin φ
+0 1 0
+− sinφ 0 cos φ
+
+
+
+
+1 0 0
+0 cos θ − sinθ
+0 sin θ cosθ
+
+.
+(1)
+While training DT-ED, we input a pair of images of a
+person xa and xb. We can calculate Rg
+ba = Rg
+b (Rg
+a)−1 to
+describe the change in gaze direction in going from sample
+a to sample b of the same person. Likewise for head ro-
+tation, Rh
+ba = Rh
+b
+(
+Rh
+a
+)−1
+. This can be done using the
+ground-truth labels for gaze ( ga and gb) and head pose
+(ha and hb) for the pair of input samples. The rotation of
+the latent code zg
+a can then be expressed via the operation
+ˆzg
+b = Rg
+abzg
+a. At training time, we enforce this code to be
+equivalent to the one extracted from image xb, via a recon-
+struction loss (Eq. 3). We assume the rotated codes ˆzh
+b and
+ˆzg
+b, along with the appearance-code za
+a, to be sufﬁcient for
+reconstructing xb through the decoder function such that,
+D (ˆzb) = xb. More speciﬁcally, given the encoder output
+E (xa) = za =
+{
+za
+a; zg
+a; zh
+a
+}
+, we assume the rotated ver-
+sion of xa to match the embedding of xb, that is we assume{ˆza
+b; ˆzg
+b; ˆzh
+b
+}
+=
+{
+za
+a; Rg
+bazg
+a; Rh
+bazh
+a
+}
+(See Fig. 2).
+This approach indeed applies successfully to noisy real-
+world imagery, as shown in Fig. 3 where we map a sam-
+ple into the gaze and head pose latent spaces, rotate to the
+frontal orientation, and then again rotate by a pre-deﬁned
+set of 15 yaw and pitch values and reconstruct the image
+via the decoder. We can see that the factors of gaze direction
+and head pose are fully disentangled and DT-ED succeeds
+in the challenging task of eye-region frontalization and re-
+direction from monocular RGB input.
+We train the FAZE transforming encoder-decoder archi-
+tecture using a multi-objective loss function deﬁned as,
+Lfull =λreconLrecon +λECLEC +λgazeLgaze, (2)
+where we empirically setλrecon = 1,λEC = 2, andλgaze =
+0.1. The individual loss terms are explained in the following
+sub-sections.
+3.2.2 Reconstruction Loss
+To guide learning of the encoding-decoding process, we ap-
+ply a simple 𝓁1 reconstruction loss. Given an input image
+xb and reconstructed ˆxb obtained by decoding the rotated
+embeddings ˆzb of image xa, the loss term is deﬁned as,
+Lrecon (xb, ˆxb) = 1
+|xb|
+∑
+u∈xb,ˆu∈ˆxb
+|ˆu−u|, (3)
+whereu and ˆu are pixels of images xb and ˆxb respectively.
+3.2.3 Embedding consistency Loss
+We introduce a novel embedding consistency term, which
+ensures that the encoder network always embeds images of
+a person with different appearance but identical gaze direc-
+tion to similar features. Usually this would require paired
+images with only gaze directions changed. However, it is in-
+tractable to collect such data in the real world, so we instead
+exploit the learned equivariance of DT-ED. Before measur-
+ing the consistency between latent gaze features from dif-
+ferent samples, we ﬁrst frontalize them by applying the in-
+verse of the rotation matrix Rg
+a using ground-truth gaze di-
+rection ga. It should be noted that naively enforcing all
+gaze features to be similar across persons may disregard the
+inter-subject anatomical differences which should result in
+different latent embeddings. Hence, we apply the embed-
+ding consistency to intra-subject pairs of images only. We
+validate this choice through experiments in Sec. B.1.
+Given a batch of B image samples during training, we
+formally compute the embedding consistency loss using,
+LEC = 1
+B
+B∑
+i=1
+max
+j=1...B
+id(i)=id(j)
+d
+(
+f(zg
+i ),f (zg
+j)
+)
+, (4)
+where f(zg) = ( Rg)−1 zg corresponds to frontalized la-
+tent gaze features. The function id(i) provides the person-
+identity of the i-th sample in the batch, and d is a function
+based on mean column-wise angular distance (between 3D
+vectors). The max function minimizes differences between
+intra-person features that are furthest apart, and is similar to
+the idea of batch-hard online triplet mining [41].
+During training, we linearly increase λEC from 0 until
+sufﬁcient mini-batches to cover 106 images have been pro-
+cessed, to allow for more natural embeddings to arise before
+applying consistency.3.2.4 Gaze Direction Loss
+Lastly, we add the additional objective of gaze estimation
+viaG : zg→ ˆg, parameterized by a simple multi-layer per-
+ceptron (MLP). The gaze direction loss is calculated using,
+Lgaze (ˆg, g) = arccos
+( ˆg· g
+‖ˆg‖‖g‖
+)
+. (5)
+3.3. Person-speciﬁc Gaze Estimation
+Having learned a robust feature extractor, which is tai-
+lored speciﬁcally for gaze estimation, our ﬁnal goal is to
+learn a personalized gaze estimator with as few calibration
+samples as possible. A straightforward solution for doing
+this is to train a person-independent model with the training
+data used to train DT-ED and simply ﬁne-tune it with the
+available calibration samples for the given subject. How-
+ever, in practical setups where only a few calibration sam-
+ples are available, this approach can quickly lead to over-
+ﬁtting (see experiments in Fig. 7a). In order to alleviate
+this problem, we propose to use the meta-learning method
+MAML [6], which learns a highly adaptable gaze network
+(AdaGEN).
+Adaptable Gaze Estimator (AdaGEN) Training. We
+wish to learn weights θ∗ for the AdaGEN gaze predic-
+tion modelM such that it becomes a successful few-shot
+learner. In other words, whenMθ∗ is ﬁne-tuned with only
+a few “calibration” examples of a new personP not present
+in the training set, it can generalize well to unseen “val-
+idation” examples of the same person. We achieve this by
+training it with the MAML meta learning algorithm adapted
+for few-shot learning.
+In conventional CNN training the objective is to min-
+imize the training loss for all the examples of all train-
+ing subjects. In contrast, for few-shot learning, MAML
+explicitly minimizes the generalization loss of a network
+after minimizing its training loss for a few examples
+of a particular subject via a standard optimization algo-
+rithm, e.g., stochastic gradient descent (SGD). Addition-
+ally, MAML repeats this procedure for all subjects in the
+training set and hence learns from several closely related
+“tasks” (subjects) to become a successful few shot learner
+for any new unseen task (subject). We identify that person-
+speciﬁc factors may have few parameters, with only slight
+but important variations across people such that all people
+constitute a set of closely related tasks. Our insight is that
+meta-learning lends itself well to such a problem of person-
+alization.
+The overall procedure of meta-learning to learn the
+optimal θ∗ is as follows. We divide the entire set of
+persons S into meta-training ( Strain) and meta-testing
+(Stest) subsets of non-overlapping subjects. During each
+meta-training iteration n, we randomly select one person
+Ptrain fromStrain and create a meta-training sample for
+the person (via random sampling), deﬁned as Ptrain =
+{Dtrain
+c ,Dtrain
+v }, containing a calibration set Dtrain
+c =
+{(zgi, gi)|i = 1 ...k } of k training examples, and a val-
+idation set Dtrain
+v = {(zgj, gj)|j = 1 ...l } of another
+l examples for the same person. Here, zg and g refer to
+the latent gaze representation learned by DT-ED and the
+ground-truth 3D gaze vector, respectively. Bothk andl are
+typically small (≤ 20) andk represents the “shot” size used
+in few-shot learning.
+The ﬁrst step in the meta-learning procedure is to com-
+pute the loss for the few-shot calibration setDtrain
+c and up-
+date the weights θn at step n via one (or more) gradient
+steps and a learning rateα as,
+θ′
+n =f(θn) =θn−α∇Lc
+P train(θn). (6)
+With the updated weights θ′
+n, we then compute the loss
+for the validation set Dtrain
+v of the subject Ptrain as
+Lv
+P train(θ′
+n) = Lv
+P train(f(θn)) and its gradients w.r.t the
+initial weights of the networkθn at that training iterationn.
+Lastly, we update θn with a learning rate of η to explicitly
+minimize the validation loss as,
+θn+1 =θn−η∇Lv
+P train(f(θn)). (7)
+We repeat these training iterations until convergence to
+get the optimal weightsθ∗.
+Final Person-speciﬁc Adaptation. Having learned our
+encoder and our optimal few-shot person-speciﬁc learner
+Mθ∗, we are now well poised to produce person-speciﬁc
+models for each new personPtest fromStest. We ﬁne-tune
+Mθ∗ with thek calibration imagesDtest
+c to create a person-
+alized model forPtest as
+θP test =θ∗−α∇Lc
+P test(θ∗), (8)
+and test the performance of the personalized model
+MθPtest on personPtest’s validation setDtest
+v .
+4. Implementation Details
+4.1. Data pre-processing
+Our data pre-processing pipeline is based on [55], a revi-
+sion of the data normalization procedure introduced in [45].
+In a nutshell, the data normalization procedure ensures that
+a common virtual camera points at the same reference point
+in space with the head upright. This requires the rotation,
+tilt, and forward translation of the virtual camera. Please
+refer to [55] for a formal and complete description, and our
+supplementary materials for a detailed list of changes.4.2. Neural Network Conﬁgurations
+DT-ED. The functions E and D in our transforming
+encoder-decoder architecture can be implemented with any
+CNN architecture. We select the DenseNet architecture [18]
+both for our DT-ED as well as for our re-implementation
+of state-of-the-art person-speciﬁc gaze estimation methods
+[26, 56]. The latent codes za, zg, and zh are deﬁned to have
+dimensions (64), (3× 2), and (3× 16) respectively. Please
+refer to supplementary materials for further details.
+Gaze MLP. Our gaze estimation function G is parame-
+terized by a multi-layer perceptron with 64 hidden layer
+neurons and SELU [21] activation. The MLP outputs 3-
+dimensional unit gaze direction vectors.
+4.3. Training
+DT-ED. Following [9], we use a batch size of 1536 and
+apply linear learning rate scaling and ramp-up for the ﬁrst
+106 training samples. We use NVIDIA’s Apex library2 for
+mixed-precision training. and train our model for50 epochs
+with a base learning rate of 5× 10−5,l2 weight regulariza-
+tion of 10−4, and use instance normalization [49].
+Gaze MLP. During meta-learning, we use α = 10−5 with
+SGD (Eq. 6), and η = 10−3 (Eq. 7) with the Adam opti-
+mizer (α andβ in [6]), and do5 updates per inner loop itera-
+tion. For samplingDtrain
+v we setl = 100. During standard
+eye-tracker calibration, one cannot assume the knowledge
+of extra ground-truth beyond the k samples. Thus, we per-
+form the ﬁnal ﬁne-tuning operation (Eq. 8) for 1000 steps
+for all values ofk and for all people.
+4.4. Datasets
+GazeCapture [22] is the largest available in-the-wild gaze
+dataset. We mined camera intrinsic parameters from the
+web for the devices used, and applied our pre-processing
+pipeline (Sec. A.1) to yield input images. For training the
+DT-ED as well as for meta-learning, we use data from 993
+people in the training set speciﬁed in [22], each with 1766
+samples, on average, for a total of1.7M samples. To ensure
+within-subject diversity of sampled image-pairs at training
+time, we only select subjects with ≥ 400 samples. For
+computing our ﬁnal evaluation metric, we use the last 500
+entries from 109 subjects that have at least 1000 samples
+each. We select the k-shot samples for meta-training and
+ﬁne-tuning randomly from the remaining samples.
+MPIIGaze [57] is the most established benchmark dataset
+for in-the-wild gaze estimation. In comparison to GazeCap-
+ture it has higher within-person variations in appearance in-
+cluding illumination, make-up, and facial hair changes, po-
+tentially making it more challenging. We use the images
+2https://github.com/NVIDIA/apex
+speciﬁed in the MPIIFaceGaze subset [58] only for evalu-
+ation purposes. The MPIIFaceGaze subset consists of 15
+subjects each with 2500 samples on average. We reserve
+the last 500 images of each subject for ﬁnal evaluations as
+is done in [59] and selectk calibration samples for personal-
+ization by sampling randomly from the remaining samples.
+5. Results
+For all methods, we report person-speciﬁc gaze estima-
+tion errors for a range of k calibration samples. For each
+data point, we perform the evaluation 10 times usingk ran-
+domly chosen calibration samples. Each evaluation or trial
+yields a mean gaze estimation error in degrees over all sub-
+jects in the test set. The mean error over all such trials
+is plotted, with its standard deviation represented by the
+shaded areas above and below the curves. The values at
+k = 0 are determined viaG (zg). We train this MLP on the
+GazeCapture training subset, without any person-speciﬁc
+adaptation.
+5.1. Ablation Study
+We evaluate our method under different settings to better
+understand the impact of our various design choices. For
+all experiments, we train the models using the GazeCap-
+ture dataset’s training set and test on the MPIIGaze dataset.
+This challenging experiment allows us to demonstrate the
+generalization capability of our approach across different
+datasets. The ablation studies are summarized in Fig. 7. We
+provide additional plots of the results of this ablation study
+on the test partition of the GazeCapture dataset in the sup-
+plementary material.
+MAML vs. Finetuning. In Fig. 7a, we ﬁrst evaluate the im-
+pact of meta-learning a few-shot person-adaptive gaze esti-
+mator using MAML (Sec. 3.3) and compare its performance
+with naive ﬁnetuning. When no person-speciﬁc adaptation
+is performed (i.e.,k = 0), the person-independent baseline
+modelG (zg) with the features learned using a vanilla au-
+toencoder (AE) results in a mean test error of 7.17◦. Using
+MAML for person-speciﬁc adaptation with only one cali-
+bration sample decreases the error to 6.61◦. The error re-
+duces further as we increase k and reaches a mean value
+of 5.38◦ for k = 32 . In contrast, naively ﬁnetuning (AE-
+Finetuning) the gaze estimator results in severe over-ﬁtting
+and yields very high test errors, in particular, for very low
+k values. In fact, for k≤ 3, the error increases to above
+the person-independent baseline model. Since the model
+initialized with weights learned by MAML clearly outper-
+forms vanilla ﬁnetuning, in the rest of this section, we al-
+ways use MAML unless speciﬁed otherwise.
+Impact of feature representation. Fig. 7a also evaluates
+the impact of the features used to learn the gaze estimation
+model. Our proposed latent gaze features (Sec. 3.2) signif-0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 32
+No. of calibration samples ( k)
+4.0
+6.0
+8.0
+10.0
+12.0Mean test error / deg
+6.35
+5.65 5.28 5.18 5.08 5.10 4.95 4.79 4.77 4.87 4.77 4.77 4.76 4.78 4.81 4.72 4.74 4.65
+AE (Fine-tuning)
+AE (MAML)
+DT-ED (Fine-tuning)
+DT-ED (MAML)
+(a)
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 32
+No. of calibration samples ( k)
+3.0
+4.0
+5.0
+6.0Mean test error / deg
+5.23
+3.91
+3.64 3.42 3.37
+3.24 3.21 3.16 3.20 3.14 3.14 3.16 3.12 3.14 3.10 3.12 3.08 3.06
+DT-ED
+DT-ED + Lgaze
+DT-ED + LEC
+DT-ED + Lgaze + LEC (b)
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 32
+No. of calibration samples ( k)
+2.0
+4.0
+6.0
+8.0
+10.0Mean test error / deg
+5.23
+3.91 3.64 3.42 3.37 3.24 3.21 3.16 3.20 3.14 3.14 3.16 3.12 3.14 3.10 3.12 3.08 3.06
+DT-ED
+DT-ED + Ltriplet
+DT-ED + LEC (person-independent)
+DT-ED + LEC (person-speciﬁc) (c)
+Figure 4: Ablation Study: Impact of (a) learning the few-shot gaze estimator using MAML (Sec. 3.3) and using the trans-
+forming encoder-decoder for feature learning (Sec. 3.2); (b) different loss terms in Eq. (2) for training the transforming
+encoder-decoder; and (c) comparison of the different variants of embedding consistency loss term (Eq. (4)). We provide
+additional results for the test partition of the GazeCapture dataset in the supplementary material.
+icantly decrease the error, e.g., 4.87◦ vs. 5.62◦ withk = 9
+for DT-ED (MAML) and AE (MAML), respectively. Note
+that the gain remains consistent across all values of k. The
+only difference between DT-ED and AE is that the latent
+codes are rotated in DT-ED before decoding. Despite this
+more difﬁcult task, the learned code clearly better informs
+the ﬁnal task of person-speciﬁc gaze estimation, showing
+that disentangling gaze, head pose, and appearance is im-
+portance for gaze estimation.
+Contribution of loss terms.We evaluate the impact of each
+loss term described in Eq. (2) (Sec. 3.2) by incorporating
+them one at a time into the total loss used to train DT-ED.
+Fig. 7b summarizes the results. Using only the image re-
+construction lossLrecon in Eq. (3), the learned latent gaze
+features result in an error of 4.87◦ atk = 9. Incorporating
+gaze supervisionLgaze in Eq. (5) to obtain features that are
+more informed of the ultimate task of gaze-estimation gives
+an improvement of 26% from 4.87◦ to 3.60◦. Adding the
+person-speciﬁc embedding consistency termLEC in Eq. (4)
+toLrecon also reduces the error signiﬁcantly from 4.87◦ to
+3.32◦ at k = 9 (an improvement of over 30%). Finally,
+combining all loss terms improves the performance even
+further to 3.14◦ (in total, an improvement of 36%).
+Analysis of embedding consistency. In order to validate
+our choice of the embedding consistency loss, in Fig. 7c, we
+compare its performance with two other possible variants.
+As described in Sec. 3.2.3, the embedding consistency loss
+term minimizes the intra-person differences of the frontal-
+ized latent gaze features. The main rationale behind this is
+that the gaze features for a unique person should be con-
+sistent while they can be different across subjects due to
+inter-subject anatomical differences. We further conjecture
+that preserving these inter-personal differences as opposed
+to trying to remove them by learning person-invariant em-
+beddings is indeed important to obtaining high accuracy for
+gaze estimation. In order to validate this observation, we in-
+troduce a person-independent embedding consistency term
+which also minimizes the inter-person latent gaze feature
+differences. As is evident from Fig. 7c, enforcing person-
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+No. of calibration samples ( k)
+3.0
+4.0
+5.0Mean test error / deg
+5.23
+3.91
+3.64 3.42 3.37 3.24 3.21 3.16 3.20 3.14 3.14 3.16 3.12 3.14 3.10 3.12 3.08
+DenseNet + MAML
+VGG-16 + MAML
+F aze(ours)
+Figure 5: Comparison of F AZE against competitive CNN +
+MAML baselines, evaluated on MPIIGaze.
+independent embedding consistency of the latent gaze fea-
+tures results in increased mean errors. In fact it performs
+worse than only using the reconstruction loss (Lrecon).
+One may argue the complete opposite i.e., the latent gaze
+features should be hugely different for every subject for the
+best possible subject-speciﬁc accuracy, but we did not ﬁnd
+this to be the case. To demonstrate this, we apply a triplet
+loss (Ltriplet) [41], which explicitly maximizes the inter-
+personal differences in gaze features in addition to mini-
+mizing the intra-person ones. As is evident from Fig 7c this
+results in a signiﬁcant increase in the error. This suggests
+that perhaps factors that quantify the overall appearance of
+a person’s face and deﬁne their unique identity may not nec-
+essarily be correlated to the anatomical properties that de-
+ﬁne “person-uniqueness” for the task of gaze estimation.
+5.2. Comparison with CNN + Meta-Learning
+An alternative baseline to F AZE can be created by re-
+placing the DT-ED with a standard CNN architecture. We
+take an identically conﬁgured DenseNet (to F AZE) and a
+VGG-16 architecture for the convolutional layers, then add
+2 fully-connected layers each with256 neurons and train the
+networks with the gaze objective (Eq. 5). The output of the
+convolutional layers are used as input to a gaze estimation
+network trained via MAML to yield the results in Fig. 5.
+Having been directly trained on the (cross-person) gaze es-
+timation objective, it is expected that the encoder network
+would make better use of its model capacity as it does not
+have to satisfy a reconstruction objective. Thus, we can0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 32 64 128 256
+No. of calibration samples ( k)
+2.5
+3.0
+3.5
+4.0
+4.5
+5.0
+5.5Mean test error / deg
+3.49 3.66
+3.31 3.18 3.11 3.08 3.09 3.02 3.06 3.00 2.99 3.00 2.98 2.99 2.97 2.99 2.95 2.94 2.91 2.93 2.90
+(a) GazeCapture (test)
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 32 64 128 256
+No. of calibration samples ( k)
+2.5
+3.0
+3.5
+4.0
+4.5
+5.0
+5.5Mean test error / deg
+5.23
+3.91
+3.64 3.42 3.37
+3.24 3.21 3.16 3.20 3.14 3.14 3.16 3.12 3.14 3.10 3.12 3.08 3.06 2.98 3.02 3.00
+Zhang et al. [2019]
+Liu et al. [2018]
+F aze(ours) (b) MPIIGaze
+Figure 6: Comparison of FAZE against state-of-the-art person-speciﬁc gaze estimation methods [26, 56]
+call these highly competitive baselines. F AZE outperforms
+these baselines with statistical signiﬁcance, demonstrating
+that the DT-ED training and our loss terms yield features
+which are more amenable to meta-learning, and thus to the
+ﬁnal objective of personalized gaze estimation.
+5.3. Comparison with State-of-the-Art
+Few-shot personalization of CNN models in the con-
+text of gaze estimation for very low k is very challenging.
+Two recent approaches [56, 26] are the most relevant in
+this direction, and we provide evaluations on highly com-
+petitive re-implementations. Our results are presented in
+Fig. 6 for both the test partition of the GazeCapture dataset
+and the MPIIGaze dataset. Overall, we show statistically
+signiﬁcantly better mean errors over the entire range of
+1≤k≤ 256 than all the existing state-of-the-art methods.
+In addition, our performance between trials is more consis-
+tent as shown by the narrower error bands. This indicates
+robustness to the choice of thek calibration samples.
+Ours vs Polynomial ﬁt to PoR. In [56], Zhang et al. ﬁt
+a 3rd order polynomial function to correct initial point-
+of-regard (PoR) estimates from a person-independent gaze
+CNN. To re-implement their method, we train a DenseNet
+CNN (identical to F AZE) and intersect the predicted gaze
+ray (deﬁned by gaze origin and direction in 3D with re-
+spect to the original camera) with the z = 0 plane to esti-
+mate the initial PoR and later reﬁne it with a person-speciﬁc
+3rd order polynomial function. Though this approach per-
+forms respectably withk = 9, yielding 4.19◦ on MPIIGaze
+(Fig. 6b), it suffers with lowerk especially on GazeCapture.
+Nonetheless, its performance converges to our performance
+atk≥ 128 showing its effectiveness at higherk despite its
+apparent simplicity.
+Ours vs Differential Gaze Estimation. Liu et al. [26]
+introduce a CNN architecture for learning to estimate the
+differences in the gaze yaw and pitch values between pairs
+of images of the same subject. That is, in order to esti-
+mate the gaze their network always requires one reference
+image of a subject with known gaze values. Then given a
+reference imageIa with a known gaze label ga and another
+imageIb with unknown gaze label, their approach outputs a
+∆gba, from which the absolute gaze forIb can be computed
+as ˆyb = ya + ∆gba. Their original paper states a within-
+MPIIGaze error withk = 9 at 4.67◦ using a simple LeNet-
+5 style Siamese network and a pair of eye images as input.
+We use 256× 64 eye-region images from GazeCapture as
+input and use a DenseNet-based architecture to make their
+approach more comparable to ours. Our re-implementation
+yields 3.53◦ for their method atk = 9 on MPIIGaze, a 1.2◦
+improvement despite dataset differences. We show statisti-
+cally signiﬁcant improvements to [26] across all ranges ofk
+in our MPIIGaze evaluations, with our method only requir-
+ing 4 calibration samples to compete with their best perfor-
+mance atk = 256 (see the red and green curves in Fig. 6).
+The improvement from our ﬁnal approach is further empha-
+sized in Fig. 6a with evaluations on the test subset of Gaze-
+Capture. At k = 4 , we yield a performance improvement
+of 20.5% or 0.8◦ over [26].
+6. Conclusion
+In this paper we presented the ﬁrst practical approach to
+deep-learning based high-accuracy personalized gaze esti-
+mation requiring only few calibration samples. Our F AZE
+framework consists of a disentangling encode-decoder net-
+work that learns a compact person-speciﬁc latent represen-
+tation of gaze, head pose and appearance. Furthermore, we
+show that these latent embeddings can be used in a meta-
+learning context to learn a person-speciﬁc gaze estimation
+network from very few (as low ask = 3) calibration points.
+We experimentally showed that our approach outperforms
+other state-of-the-art approaches by signiﬁcant margins and
+produces the currently lowest reported personalized gaze er-
+rors on both the GazeCapture and MPIIGaze datasets.
+Acknowledgements. Seonwook Park carried out this
+work during his internship at Nvidia. This work was
+supported in part by the ERC Grant OPTINT (StG-2016-
+717054).References
+[1] Marcin Andrychowicz, Misha Denil, Sergio Gomez,
+Matthew W Hoffman, David Pfau, Tom Schaul, Brendan
+Shillingford, and Nando De Freitas. Learning to learn by
+gradient descent by gradient descent. In NeurIPS, 2016.
+[2] Margrit Betke, James Gips, and Peter Fleming. The camera
+mouse: visual tracking of body features to provide computer
+access for people with severe disabilities.IEEE Transactions
+on neural systems and Rehabilitation Engineering, 10(1):1–
+10, 2002.
+[3] Ralf Biedert, Georg Buscher, Sven Schwarz, J ¨orn Hees, and
+Andreas Dengel. Text 2.0. In CHI, 2010.
+[4] Yihua Cheng, Feng Lu, and Xucong Zhang. Appearance-
+based gaze estimation via evaluation-guided asymmetric re-
+gression. In ECCV, 2018.
+[5] J. Deng, Y . Zhou, S. Cheng, and S. Zaferiou. Cascade multi-
+view hourglass model for robust 3d face alignment. In FG,
+2018.
+[6] Chelsea Finn, Pieter Abbeel, and Sergey Levine. Model-
+agnostic meta-learning for fast adaptation of deep networks.
+In ICML, 2017.
+[7] Tobias Fischer, Hyung Jin Chang, and Yiannis Demiris. RT-
+GENE: Real-Time Eye Gaze Estimation in Natural Environ-
+ments. In ECCV, 2018.
+[8] Lex Fridman, Bryan Reimer, Bruce Mehler, and William T.
+Freeman. Cognitive load estimation in the wild. In CHI,
+2018.
+[9] Priya Goyal, Piotr Doll ´ar, Ross B. Girshick, Pieter Noord-
+huis, Lukasz Wesolowski, Aapo Kyrola, Andrew Tulloch,
+Yangqing Jia, and Kaiming He. Accurate, large minibatch
+SGD: training imagenet in 1 hour. CoRR, abs/1706.02677,
+2017.
+[10] Ralph Gross, Iain Matthews, Jeffrey Cohn, Takeo Kanade,
+and Simon Baker. Multi-pie. IVC, 28(5):807–813, May
+2010.
+[11] Elias Daniel Guestrin and Moshe Eizenman. General theory
+of remote gaze estimation using the pupil center and corneal
+reﬂections. IEEE Transactions on biomedical engineering ,
+53(6):1124–1133, 2006.
+[12] Liang-Yan Gui, Yu-Xiong Wang, Deva Ramanan, and
+Jos´e MF Moura. Few-shot human motion prediction via
+meta-learning. In ECCV, 2018.
+[13] Dan Witzner Hansen and Qiang Ji. In the eye of the beholder:
+A survey of models for eyes and gaze. TPAMI, 32(3):478–
+500, 2010.
+[14] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.
+Delving deep into rectiﬁers: Surpassing human-level perfor-
+mance on imagenet classiﬁcation. In ICCV, 2015.
+[15] Geoffrey E Hinton, Alex Krizhevsky, and Sida D Wang.
+Transforming auto-encoders. In ICANN, 2011.
+[16] Sina Honari, Pavlo Molchanov, Stephen Tyree, Pascal Vin-
+cent, Christopher Pal, and Jan Kautz. Improving landmark
+localization with semi-supervised learning. In CVPR, 2018.
+[17] Peiyun Hu and Deva Ramanan. Finding tiny faces. In CVPR,
+2017.
+[18] Gao Huang, Zhuang Liu, Laurens Van Der Maaten, and Kil-
+ian Q Weinberger. Densely connected convolutional net-
+works. In CVPR, 2017.
+[19] Michael Xuelin Huang, Jiajia Li, Grace Ngai, and Hong Va
+Leong. Stressclick: Sensing stress from gaze-click patterns.
+In ACM MM, 2016.
+[20] Patrik Huber, Guosheng Hu, Rafael Tena, Pouria Mortaza-
+vian, P Koppen, William J Christmas, Matthias Ratsch, and
+Josef Kittler. A multiresolution 3d morphable face model
+and ﬁtting framework. In VISIGRAPP, 2016.
+[21] G ¨unter Klambauer, Thomas Unterthiner, Andreas Mayr, and
+Sepp Hochreiter. Self-normalizing neural networks. In
+NeurIPS, 2017.
+[22] Kyle Krafka, Aditya Khosla, Petr Kellnhofer, Harini Kan-
+nan, Suchendra Bhandarkar, Wojciech Matusik, and Antonio
+Torralba. Eye Tracking for Everyone. In CVPR, 2016.
+[23] Brenden M Lake, Ruslan Salakhutdinov, and Joshua B
+Tenenbaum. Human-level concept learning through proba-
+bilistic program induction. Science, 350(6266):1332–1338,
+2015.
+[24] Kangwook Lee, Hoon Kim, and Changho Suh. Simu-
+lated+unsupervised learning with adaptive data generation
+and bidirectional mappings. In ICLR, 2018.
+[25] Vincent Lepetit, Francesc Moreno-Noguer, and Pascal Fua.
+Epnp: An accurate o (n) solution to the pnp problem. Inter-
+national journal of computer vision, 81(2):155, 2009.
+[26] Gang Liu, Yu Yu, Kenneth Alberto Funes Mora, and Jean-
+Marc Odobez. A differential approach for gaze estimation
+with calibration. In BMVC, 2018.
+[27] Feng Lu, Takahiro Okabe, Yusuke Sugano, and Yoichi Sato.
+A head pose-free approach for appearance-based gaze esti-
+mation. In BMVC, 2011.
+[28] Feng Lu, Yusuke Sugano, Takahiro Okabe, and Yoichi Sato.
+Inferring human gaze from appearance via adaptive linear
+regression. In ICCV, 2011.
+[29] Alex Nichol, Joshua Achiam, and John Schulman. On ﬁrst-
+order meta-learning algorithms. In arXiv:1803.02999, 2018.
+[30] Alexandra Papoutsaki, James Laskey, and Jeff Huang.
+Searchgazer: Webcam eye tracking for remote studies of web
+search. In CHIIR, 2017.
+[31] Eunbyung Park and Alexander C Berg. Meta-tracker: Fast
+and robust online adaptation for visual object trackers. In
+ECCV, 2018.
+[32] Seonwook Park, Adrian Spurr, and Otmar Hilliges. Deep
+Pictorial Gaze Estimation. In ECCV, 2018.
+[33] Seonwook Park, Xucong Zhang, Andreas Bulling, and Ot-
+mar Hilliges. Learning to ﬁnd eye region landmarks for
+remote gaze estimation in unconstrained settings. In ACM
+ETRA, 2018.
+[34] Anjul Patney, Joohwan Kim, Marco Salvi, Anton Kaplanyan,
+Chris Wyman, Nir Benty, Aaron Lefohn, and David Luebke.
+Perceptually-based foveated virtual reality. In SIGGRAPH,
+2016.
+[35] Kate Rakelly, Evan Shelhamer, Trevor Darrell, Alexei A
+Efros, and Sergey Levine. Few-shot segmentation
+propagation with guided networks. arXiv preprint
+arXiv:1806.07373, 2018.[36] Rajeev Ranjan, Shalini De Mello, and Jan Kautz. Light-
+weight head pose invariant gaze tracking. In CVPR - Work-
+shops, 2018.
+[37] Sachin Ravi and Hugo Larochelle. Optimization as a model
+for few-shot learning. In ICLR, 2017.
+[38] Danilo Jimenez Rezende, Shakir Mohamed, Ivo Danihelka,
+Karol Gregor, and Daan Wierstra. One-shot generalization
+in deep generative models. JMLR, 48, 2016.
+[39] Helge Rhodin, Mathieu Salzmann, and Pascal Fua. Unsu-
+pervised geometry-aware representation for 3d human pose
+estimation. In ECCV, 2018.
+[40] Adam Santoro, Sergey Bartunov, Matthew Botvinick, Daan
+Wierstra, and Timothy Lillicrap. Meta-learning with
+memory-augmented neural networks. In ICML, 2016.
+[41] Florian Schroff, Dmitry Kalenichenko, and James Philbin.
+Facenet: A uniﬁed embedding for face recognition and clus-
+tering. In CVPR, 2015.
+[42] Ashish Shrivastava, Tomas Pﬁster, Oncel Tuzel, Joshua
+Susskind, Wenda Wang, and Russell Webb. Learning
+from simulated and unsupervised images through adversarial
+training. In CVPR, July 2017.
+[43] John L Sibert, Mehmet Gokturk, and Robert A Lavine. The
+reading assistant: eye gaze triggered auditory prompting for
+reading remediation. In ACM UIST, pages 101–107, 2000.
+[44] Jake Snell, Kevin Swersky, and Richard Zemel. Prototypical
+networks for few-shot learning. In NeurIPS, 2017.
+[45] Yusuke Sugano, Yasuyuki Matsushita, and Yoichi Sato.
+Learning-by-Synthesis for Appearance-based 3D Gaze Es-
+timation. In CVPR, 2014.
+[46] Kar-Han Tan, David J. Kriegman, and Narendra Ahuja.
+Appearance-based eye gaze estimation. In WACV, 2002.
+[47] Ashish Tawari, Kuo Hao Chen, and Mohan M Trivedi.
+Where is the driver looking: Analysis of head, eye and iris
+for robust gaze zone estimation. In ITSC, 2014.
+[48] Hung-Yu Tseng, Shalini De Mello, Jonathan Tremblay, Sifei
+Liu, Stan Birchﬁeld, Ming-Hsuan Yang, and Jan Kautz. Few-
+shot viewpoint estimation. In BMVC, 2019.
+[49] Dmitry Ulyanov, Andrea Vedaldi, and Victor Lempitsky. In-
+stance normalization: The missing ingredient for fast styliza-
+tion. arXiv preprint arXiv:1607.08022, 2016.
+[50] Oriol Vinyals, Charles Blundell, Tim Lillicrap, Daan Wier-
+stra, et al. Matching networks for one shot learning. In
+NeurIPS, 2016.
+[51] Kang Wang, Rui Zhao, and Qiang Ji. A hierarchical genera-
+tive model for eye image synthesis and eye gaze estimation.
+In CVPR, 2018.
+[52] Michel Wedel and Rik Pieters. A review of eye-tracking re-
+search in marketing. In Review of marketing research. Emer-
+ald Group Publishing Limited, 2008.
+[53] Daniel E Worrall, Stephan J Garbin, Daniyar Turmukham-
+betov, and Gabriel J Brostow. Interpretable transformations
+with encoder-decoder networks. In ICCV, 2017.
+[54] Yu Yu, Gang Liu, and Jean-Marc Odobez. Deep multitask
+gaze estimation with a constrained landmark-gaze model. In
+ECCV - Workshops, 2018.
+[55] Xucong Zhang, Yusuke Sugano, and Andreas Bulling. Re-
+visiting data normalization for appearance-based gaze esti-
+mation. In ETRA, 2018.
+[56] Xucong Zhang, Yusuke Sugano, and Andreas Bulling. Eval-
+uation of appearance-based methods and implications for
+gaze-based applications. In CHI, 2019.
+[57] Xucong Zhang, Yusuke Sugano, Mario Fritz, and Andreas
+Bulling. Appearance-based gaze estimation in the wild. In
+CVPR, 2015.
+[58] Xucong Zhang, Yusuke Sugano, Mario Fritz, and Andreas
+Bulling. It’s written all over your face: Full-face appearance-
+based gaze estimation. In CVPR - Workshops, 2017.
+[59] Xucong Zhang, Yusuke Sugano, Mario Fritz, and Andreas
+Bulling. Mpiigaze: Real-world dataset and deep appearance-
+based gaze estimation. TPAMI, 2019.
+[60] Yanxia Zhang, J ¨org M ¨uller, Ming Ki Chong, Andreas
+Bulling, and Hans Gellersen. Gazehorizon: Enabling
+passers-by to interact with public displays by gaze. In ACM
+UbiComp, 2014.
+[61] Wangjiang Zhu and Haoping Deng. Monocular free-head 3d
+gaze tracking with deep learning and geometry constraints.
+In ICCV, 2017.Appendix
+Due to constraints on the space available in the main paper,
+we were unable to include all the details there. Here we
+provide additional implementation details pertaining to our
+(a) data pre-processing pipeline and (b) the conﬁguration of
+our DT-ED network. We also show additional results of the
+ablation study (Section 5.1 in the main paper) on the test
+partition of the GazeCapture dataset and the performance
+of FAZE for the within MPIIGaze leave-one-person out set-
+ting. Finally, we show the sensitivity of F AZE to various
+design conﬁgurations.
+A. Implementation Details
+We describe further details in how we pre-process the
+datasets used, and the conﬁguration of the DT-ED ar-
+chitecture. A reference implementation of both can be
+found as open-source software at https://github.
+com/NVlabs/few_shot_gaze.
+A.1. Data Pre-processing
+We employ a normalization procedure based on [55], which
+is a revision of [45], but with a few small changes. We uti-
+lize state-of-the-art open-source implementations for face
+detection3 [17] and facial landmarks detection4 [5], respec-
+tively. We use the Surrey Face Model [20] as the reference
+3D face model, and select 4 eye corners and 9 nose land-
+marks as described by the Multi-PIE 68-points markup [10]
+for PnP-based [25] head pose estimation. This is in con-
+trast to [45, 55] which instead use the 4 eye corners and 2
+mouth corners. This is motivated by our observation that the
+mouth corner landmarks are not sufﬁciently static due to fa-
+cial expression changes, and that the inherent ambiguity in
+determining head yaw with very few co-planar landmarks
+in 3D leads to less reliable head pose estimation.
+In our work, we utilize a single image as input which
+contains both eyes. For this purpose, we select the mean
+of the 2 inner eye corner landmarks in 3D as the origin of
+our normalized camera coordinate system. We use a focal
+length of 1300mm for the normalized camera intrinsic pa-
+rameters, and a distance of600mm from the face to produce
+image patches of size 256× 64 to use as input for training.
+A.2. Conﬁguration of Disentangling Transforming
+Encoder-Decoder (DT-ED)
+We use the DenseNet architecture to parameterize our
+encoder-decoder network [18]. We conﬁgure the DenseNet
+with a growth-rate of 32, 4 dense blocks (each with 4 com-
+posite layers), and a compression factor of 1.0. We neither
+use dropout nor 1×1 convolutional layers. We use instance
+normalization [49] and leaky ReLU activation functions
+3 https://github.com/cydonia999/Tiny_Faces_in_Tensorflow
+4 https://github.com/jiankangdeng/Face_Detection_Alignment
+(withα = 0.01) throughout the network as they proved to
+improve performance for all architectures.
+To project CNN features back from latent features z, we
+apply a fully-connected layer to output values equivalent to
+32 feature maps of width 8 and height 2. The DenseNet de-
+coder that we use to modelD is identical in construction to a
+usual DenseNet but uses deconvolutional layers (with stride
+1) in the place of normal convolutions, and 3× 3 decon-
+volutions (with stride 2) instead of average pooling at the
+transition layers. To be faithful to the original implemen-
+tation, we do not apply bias layers to convolutions in our
+DenseNet-based DT-ED. We initialize all layers’ weights
+with MSRA initialization [14], while biases of the fully-
+connected layers are initialized with zeros.
+B. Additional Results
+We provide additional results of the ablation study on
+the test partition of the GazeCapture dataset and evaluate
+the within-dataset performance of F AZE on the MPIIGaze
+dataset.
+B.1. Ablation Study on GazeCapture
+In the main paper, we provide the results of the ablation
+study on the MPIIGaze dataset (Fig. 4 in the main paper).
+Our evaluation setting is a cross-dataset evaluation, where
+we train on the training partition of the GazeCapture dataset
+[22] and test on the test partition of the same dataset as well
+as on MPIIGaze [57]. Here we show additional results for
+the GazeCapture test partition (Fig. 7).
+In Fig. 7a we observe the same trends for the Gaze-
+Capture test dataset that we observed for MPIIGaze. Our
+proposed DT-ED architecture learns latent representations
+that are better suited for gaze estimation than those learned
+by a naive encoder-decoder architecture. Additionally, for
+few-shot personalization signiﬁcant gains in accuracy are
+obtained with meta-learning an adaptable network, as we
+propose, versus naively ﬁne-tuning a network designed
+for person-independent gaze estimation (Fine-tuning versus
+MAML). The latter approach also leads to over-ﬁts at very
+lowk. Fig. 7b shows the value of our proposed loss terms
+of embedding consistency and of computing gaze from the
+latent representations while training DT-ED, for GazeCap-
+ture. Finally, Fig. 7c shows the consistent improvements
+obtained for the GazeCapture dataset by preserving inter-
+person differences versus not doing so.
+B.2. Within-MPIIGaze Performance
+So far Liu et al. [26] report the best known accuracy of
+4.67◦ with 9 calibration samples on MPIIGaze with their
+differential network architecture. They use the within MPI-
+IGaze leave-one-subject out evaluation protocol for their
+experiments. To directly compare against their method, we0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 32
+No. of calibration samples ( k)
+4.0
+6.0
+8.0
+10.0
+12.0Mean test error / deg
+4.78 4.99
+4.58 4.55 4.50 4.46 4.33 4.29 4.34 4.38 4.26 4.29 4.36 4.32 4.27 4.21 4.27 4.19
+AE (Fine-tuning)
+AE (MAML)
+DT-ED (Fine-tuning)
+DT-ED (MAML)
+(a)
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 32
+No. of calibration samples ( k)
+3.0
+3.5
+4.0
+4.5
+5.0Mean test error / deg
+3.49 3.66
+3.31
+3.18
+3.11 3.08 3.09 3.02 3.06 3.00 2.99 3.00 2.98 2.99 2.97 2.99 2.95 2.94
+DT-ED
+DT-ED + Lgaze
+DT-ED + LEC
+DT-ED + Lgaze + LEC (b)
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 32
+No. of calibration samples ( k)
+2.0
+4.0
+6.0
+8.0
+10.0
+12.0Mean test error / deg
+3.49 3.66 3.31 3.18 3.11 3.08 3.09 3.02 3.06 3.00 2.99 3.00 2.98 2.99 2.97 2.99 2.95 2.94
+DT-ED
+DT-ED + Ltriplet
+DT-ED + LEC (person-independent)
+DT-ED + LEC (person-speciﬁc) (c)
+Figure 7: Ablation Study on GazeCapture (test):Impact of (a) learning the few-shot gaze estimator using MAML and using
+the transforming encoder-decoder for feature learning; (b) different loss terms for training the transforming encoder-decoder;
+and (c) comparison of the different variants of embedding consistency loss term.
+evaluate the performance of our F AZE framework for this
+experimental protocol (Fig. 8). With 9 calibration sam-
+ples FAZE obtains a gaze error of 3.88, which is a 17% im-
+provement over Liu et al.’s method. Note, also, that within-
+MPIIGaze training performs worse than training with Gaze-
+Capture (see Fig. 6 in the main paper). This is expected,
+given the signiﬁcantly larger diversity of subjects present in
+the GazeCapture training subset (993) versus MPIIGaze (14
+in a leave-one-out setting), which beneﬁts both DT-ED and
+MAML. This observation corroborates with similar ones
+previously made in [22].
+C. Sensitivity Analysis
+We show the inﬂuence of various design parameters on the
+overall performance of our algorithm. These analyses help
+to determine the parameters’ optimal values.
+C.1. Latent Gaze Code
+Dimension Our latent gaze code has the dimensions of
+3×Fg. In order to empirically select the optimal value of
+Fg, we evaluate the performance of F AZE for several dif-
+ferent values of Fg = {16, 3, 2} shown in Fig. 9, while
+keeping the dimensions of the appearance and head pose
+codes ﬁxed at 64 and 16 respectively. Empirically we ﬁnd
+Fg = 2 to be optimal for both datasets and hence select it
+for our ﬁnal implementation.
+Normalization In general we ﬁnd that is beneﬁcial to nor-
+malize our 3×Fg-sized latent gaze code to achieve the low-
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 32 64 128 256
+No. of calibration samples ( k)
+3.0
+3.5
+4.0
+4.5
+5.0
+5.5Mean test error / deg
+4.10
+3.74
+3.51
+3.38 3.42 3.35
+3.24 3.18
+3.27
+3.14
+3.26
+3.13 3.19 3.13
+3.23 3.25
+3.11 3.07 3.06 3.09
+Within-MPI
+GazeCapture -to- MPI
+Figure 8: Gaze errors of F AZE for within-MPII leave-one-
+person out training (blue); and training on GazeCapture’s
+training partition and testing one MPIIGaze (orange).
+est gaze errors. We experiment with various methods for
+normalization, which involve computing an 𝓁2 norm along
+a particular dimension and dividing all the observed values
+for that dimension with the norm. We compute norms along
+theFg dimension resulting in 3 norms. Alternatively, one
+can normalize along the3 dimension, resulting inFg norms.
+We observe that normalizing along the Fg dimension, pro-
+duces lower gaze errors for GazeCapture and equivalent
+ones for MPIIGaze, versus the alternate approach (Fig. 10).
+Hence, we use it for our ﬁnal implementation.1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 32 64 128 256
+No. of calibration samples ( k)
+2.8
+3.0
+3.2
+3.4
+3.6
+3.8
+4.0Mean test error / deg
+3.36
+3.27
+3.07 3.11 3.10
+3.00
+3.07
+3.02 3.04 3.06
+3.01
+2.97 2.98 2.99
+3.09
+2.99 3.01
+2.94 2.98 2.97
+Fg = 16
+Fg = 3
+Fg = 2
+(a) GazeCapture (test)
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 32 64 128 256
+No. of calibration samples ( k)
+2.8
+3.0
+3.2
+3.4
+3.6
+3.8
+4.0
+4.2
+4.4Mean test error / deg
+4.11
+3.81
+3.51 3.41
+3.37 3.28 3.29
+3.19 3.20 3.19
+3.08 3.17 3.18 3.15
+3.06 3.08 3.06
+3.09 3.05
+2.99
+Fg = 16
+Fg = 3
+Fg = 2
+(b) MPIIGaze
+Figure 9: Performance of FAZE for different dimensionsFg
+of the 3×Fg-dimensional latent gaze code.
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 32 64 128 256
+No. of calibration samples ( k)
+2.8
+3.0
+3.2
+3.4
+3.6
+3.8
+4.0
+4.2Mean test error / deg
+3.66
+3.22
+3.10 3.08 3.03 3.04
+3.00 2.98
+2.93 2.91 2.94 2.95
+2.89 2.89
+2.93 2.91
+2.84 2.85 2.82 2.85
+Norm. along 3 values
+Norm. along Fg values
+(a) GazeCapture (test)
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 32 64 128 256
+No. of calibration samples ( k)
+2.8
+3.0
+3.2
+3.5
+3.8
+4.0
+4.2
+4.5
+4.8Mean test error / deg
+4.10
+3.74
+3.51
+3.38 3.42 3.35
+3.24
+3.18
+3.27
+3.14
+3.26
+3.13
+3.19 3.13
+3.23 3.25
+3.11 3.07 3.06 3.09
+Norm. along 3 values
+Norm. along Fg values
+(b) MPIIGaze
+Figure 10: Performance of F AZE for normalizing the 3×
+Fg-dimensional gaze code along the 3 or Fg dimensions,
+respectively.

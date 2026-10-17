@@ -1,0 +1,438 @@
+L2CS-NET: FINE-GRAINED GAZE ESTIMA TION IN UNCONSTRAINED ENVIRONMENTS
+Ahmed A.Abdelrahman, Thorsten Hempel, Aly Khalifa, Ayoub Al-Hamadi
+Faculty of Electrical Engineering and Information Technology, Neuro-Information Technology Group
+Otto-von-Guericke-University, Magdeburg, Germany
+ABSTRACT
+Human gaze is a crucial cue used in various applications
+such as human-robot interaction and virtual reality. Recently,
+convolution neural network (CNN) approaches have made
+notable progress in predicting gaze direction. However, esti-
+mating gaze in-the-wild is still a challenging problem due to
+the uniqueness of eye appearance, lightning conditions, and
+the diversity of head pose and gaze directions. In this paper,
+we propose a robust CNN-based model for predicting gaze in
+unconstrained settings. We propose to regress each gaze an-
+gle separately to improve the per-angel prediction accuracy,
+which will enhance the overall gaze performance. In addition,
+we use two identical losses, one for each angle, to improve
+network learning and increase its generalization. We evaluate
+our model with two popular datasets collected with uncon-
+strained settings. Our proposed model achieves state-of-the-
+art accuracy of 3.92 ◦and 10.41 ◦on MPIIGaze and Gaze360
+datasets, respectively. We make our code open source at
+https://github.com/Ahmednull/L2CS-Net.
+Index Terms— Appearance-based gaze estimation, Gaze
+Analysis, Gaze Tracking, Convolutional Neural Network.
+1 Introduction
+Eye gaze is one of the essential cues used in a large variety
+of applications. It indicates the user’s level of engagement in
+human-robot interaction [1,2], and open dialogue systems [3].
+Furthermore, it is used in augmented reality [4] to predict
+the users’ attention, which improves the device’s awareness
+and reduces power consumption. Therefore, researchers de-
+veloped multiple methods and techniques for accurately esti-
+mating the human gaze. These methods are divided into two
+categories: model-based and appearance-based approaches.
+Model-based methods generally require dedicated hardware
+that makes them difﬁcult to use in an unconstrained environ-
+ment. On the other hand, appearance-based methods regress
+the human gaze directly from the images captured by inex-
+pensive off-the-shelf cameras, making them easy to generate
+in different locations with unconstrained settings.
+This research was funded by the Federal Ministry of Education and Re-
+search of Germany (BMBF) RoboAssist no. 03ZZ0448L.
+Recently, CNN-based appearance-based methods are the
+most commonly used gaze estimation methods as they pro-
+vide better gaze performance [5–8]. Most of the related work
+[5–7, 9, 10] focussed on developing novel CNN-based net-
+works which mainly consist of popular backbones (e.g. VGG
+[11], ResNet-18 [9], ResNet-50 [12]) to extract gaze features
+and ﬁnally outputs the gaze direction. The input to these net-
+works can be a single stream [9, 12](e.g., face or eye images)
+or multiple streams [5] (e.g., face and eye images). The most
+common loss function used for the gaze estimation task is the
+mean square loss or𝓁2 loss. However, Petr et al. [9] proposed
+a novel pinball loss that estimates the gaze direction and error
+bounds together, which improves the accuracy of gaze esti-
+mation, especially in unconstrained settings. Although CNN-
+based methods achieve improved gaze accuracy, they lack ro-
+bustness and generalization, especially in unconstrained envi-
+ronments.
+In this paper, we introduce a new method to estimate
+3D gaze angles from RGB images using a multi-loss ap-
+proach. We propose to regress each gaze angle (yaw, pitch)
+independently using two fully-connected layers to enhance
+the prediction accuracy of each angle. Furthermore, we use
+two separate loss functions for each gaze angle. Each loss
+consists of gaze binary classiﬁcation and regression compo-
+nents. Finally, the two losses are backpropagated through
+the network, which accurately ﬁne-tunes the network weights
+and increases network generalization. We perform gaze bin
+classiﬁcation by utilizing a softmax layer along with cross-
+entropy loss so that the network estimates the neighborhood
+of the gaze angle in a robust manner. Based on the proposed
+loss function and the softmax layer ( 𝓁2 loss+ cross-entropy
+loss+ softmax layer), we present a new network (L2CS-Net)
+to predict 3D gaze vector in unconstrained settings. Finally,
+we evaluate the robustness of our network on two popular
+datasets, MPIIGaze [10] and Gaze360 [9]. The proposed
+L2CS-Net achieved state-of-the-art performance on MPI-
+IGaze and Gaze360 datasets.
+2 Related Work
+According to the literature, appearance-based gaze estimation
+can be divided into conventional and CNN-based methods.
+©2022 IEEE. Personal use of this material is permitted. Permission from IEEE must be obtained for all other uses, in any
+current or future media, including reprinting/republishing this material for advertising or promotional purposes, creating new
+collective works, for resale or redistribution to servers or lists, or reuse of any copyrighted component of this work in other
+works.
+arXiv:2203.03339v1  [cs.CV]  7 Mar 2022Conventional gaze estimation methods use a regression func-
+tion to create a person-speciﬁc mapping function to the hu-
+man gaze, e.g., adaptive linear regression [13] and gaussian
+process regression [14]. These methods show reasonable ac-
+curacy in constrained setup (e.g., subject-speciﬁc and ﬁxed
+head pose and illumination), however they signiﬁcantly de-
+crease when tested on unconstrained settings.
+Recently, researchers have gained more interest in CNN-
+based gaze estimation methods, as they can model a highly
+nonlinear mapping function between images and gaze. Zhang
+et al. [10] ﬁrst proposed a simple VGG CNN-based architec-
+ture to predict gaze using a single eye image. Also, they de-
+signed a spatial weights CNN in [15] to give more weight to
+those regions of the face that related to the gaze in appear-
+ance. Krafka et al. [16] proposed a multichannel network that
+takes eye images, full-face images, and face grid information
+as inputs.
+Combining statistical models with deep learning is a good
+solution for gaze estimation as in [17], which they introduced
+a mixed effect model that integrates information from statis-
+tics within CNN architecture based on eye images. Chen et al.
+[7] adopted dilated convolutions to make use of the high-level
+features extracted from images without decreasing spatial res-
+olution. In addition, they expanded their work by proposing
+GEDDNet [18], which utilizes both gaze decomposition with
+dilated convolutions and reported better performance than us-
+ing dilated convolutions only. Fischer et al. [11] append the
+head pose vector along with features extracted using a VGG
+CNN with eye crops to predict gaze angels. Additionally, they
+used an ensemble scheme to improve gaze accuracy.
+Motivated by the two-eye asymmetry property, Cheng et
+al. [19] proposed FAR-Net that estimates 3D gaze angels for
+both eyes with an asymmetric approach. They give asymmet-
+ric weights to each loss of the two eyes and ﬁnally sum these
+losses. The proposed model presented a top performance in
+multiple public datasets. Wang et al. [20] integrated adver-
+sarial learning with the Bayesian approach in one framework,
+which demonstrates an increased gaze generalization perfor-
+mance. Cheng et al. [6] proposed a coarse-to-ﬁne adaptive
+network (CA-Net) that ﬁrst uses face image to predict primary
+gaze angels and adapt it with the residual estimated from eye
+crops. Then, they proposed a bi-gram model to bridge the
+primary gaze with the eye residual. Kellnhofer et al. [9] used
+a temporal model (LSTM) with a sequence of 7 frames to
+predict gaze angels. In addition, they adopt pinball loss to
+jointly regress the gaze direction and error bounds together to
+improve gaze accuracy.
+The most recent work with gaze estimation is AGE-Net
+[5] which they propose two parallel networks for each eye im-
+age, one is used to generate a feature vector using CNN, and
+the other is used to generate a weight feature vector using an
+attention-based network. The output of the two parallel net-
+works is multiplied and then reﬁned with the output of VGG
+CNN of the face images.
+3 METHOD
+3.1 Proposed loss function
+Most CNN-based gaze estimation models predict 3D gaze as
+the gaze direction angles (yaw, pitch) in spherical coordinates.
+Further, they adopt the mean-squared error (𝓁2 loss) for penal-
+izing their networks. We propose to use two identical losses
+for each gaze angle. Each loss contains a combined cross-
+entropy loss and mean-squared error. Instead of directly pre-
+dicting continuous gaze angels, we used a softmax layer with
+cross-entropy to predict binned gaze classiﬁcation. Then, we
+estimate the expectation of the gaze binned output to ﬁne-
+grain the predictions. Finally, we add a mean-squared error to
+the output to improve the gaze predictions. Using𝓁2 together
+with Softmax can tune the nonlinear softmax layer with im-
+mense ﬂexibility.
+The cross entropy loss is deﬁned as:
+H(y,p ) =−
+∑
+i
+yi logpi
+And the mean-squared error is deﬁned as:
+MSE (y,p ) = 1
+N
+N∑
+0
+(y−p)2
+Our proposed loss for each gaze angle is a linear com-
+bination of the mean-squared error and cross-entropy losses,
+which is deﬁned as:
+CLS (y,p ) = H(y,p ) +β·MSE (y,p )
+WhereCLS is the combined loss, p is the predicted val-
+ues,y is the ground-truth values andβ is the regression coefﬁ-
+cient. We change the weight of the mean-squared loss during
+the experiments in Section 4 to obtain the best gaze perfor-
+mance.
+To the best of our knowledge, all related works which
+estimated gaze using CNN-based methods do not consider
+the combined classiﬁcation and regression loss in their tech-
+niques.
+3.2 L2CS-Net Architecture
+We propose a simple network architecture (L2CS-Net) based
+upon the proposed classiﬁcation and regression losses. It
+takes face images as input and feeds them to ResNet-50 as
+a backbone to extract spatial gaze features from images. In
+contrast to most previous work that regresses the two gaze
+angles together in one fully-connected layer, we predict each
+angle separately using two fully-connected layers. These two
+fully-connected layers share the same convolution layers inFig. 1: L2CS-Net with combined classiﬁcation and regression losses.
+the backbone. Also, we use two loss functions, one for each
+gaze angle (yaw, pitch). Using this approach will improve
+network learning, as it has two signals that backpropagate
+through the network.
+For each output from the fully-connected layer, we ﬁrst
+use a softmax layer to convert the network output logits into a
+probability distribution. Then, a cross-entropy loss is applied
+to calculate the bin classiﬁcation loss between output proba-
+bilities and target bin labels. Next, we calculate the expec-
+tation of the probability distribution to get ﬁne-grained gaze
+predictions. Finally, we calculate the mean square error for
+this prediction and add it to the classiﬁcation loss. The de-
+tailed architecture of L2CS-Net is shown in Figure 1.
+3.3 Datasets
+With the development of appearance-based gaze estimation
+methods, large-scale datasets have been proposed to improve
+gaze performance. These datasets were collected with differ-
+ent procedures, varying from laboratory-constrained settings
+to unconstrained indoor and outdoor environments. In order
+to get a valuable evaluation of our network, we train and eval-
+uate our model using two popular datasets collected with un-
+constrained settings: Gaze360 and MPIIGaze.
+Gaze360 [9] provides the widest range of 3D gaze annota-
+tions with a range of 360 degrees. It contains 238 subjects of
+different ages, genders, and ethnicity. Its images are captured
+using a Ladybug multi-camera system in different indoor and
+outdoor environmental settings like lighting conditions and
+backgrounds.
+MPIIGaze [15] provides 213.659 images from 15 subjects
+captured during their daily routine over several months. Con-
+sequently, it contains images with diverse backgrounds, time,
+and lighting that make it suitable for unconstrained gaze esti-
+mation. It was collected using software that asks the partici-
+pants to look at randomly moving dots on their laptops.
+4 Experiments
+4.1 Data preprocessing
+We follow the same procedures in [15] to normalize images
+in the two datasets. In summary, this process applies rotation
+and translation to the virtual camera to remove the head’s roll
+angle and keep the same distance between the virtual camera
+and a reference point (the center of the face). Furthermore,
+we split up the continuous gaze target in each dataset (pitch
+and yaw angles) into bins with binary labels for classiﬁca-
+tion based on the range of the gaze annotations. As a result,
+both datasets have two different target annotations: continu-
+ous and binned labels make them suitable for our combined
+regression and classiﬁcation losses. Furthermore, we change
+the regression coefﬁcient in the combined loss function dur-
+ing the experiments to obtain the best gaze performance.
+4.2 Training and results
+We use an ImageNet-pretrained ResNet-50 as the backbone
+network. Our proposed network (L2CS-Net) was trained in
+PyTorch framework using Adam optimizer with a learning
+rate of 0.00001. We train our proposed network for 50 epochs
+using a batch size of 16. We evaluate our proposed network on
+MPIIGaze and Gaze360 datasets. We change the regression
+coefﬁcient during the experiments and compare the output
+performance with the state-of-the-art gaze estimation meth-
+ods. We utilize gaze angular error (◦) as the evaluation met-
+ric following most gaze estimation methods. Assuming the
+ground-truth gaze direction is gϵ R3 and the predicted gaze
+vector is ˆ gϵ R3 , the gaze angular error (◦) can be computed
+as:
+Langular = g· ˆ g
+‖g‖‖ ˆ g‖Methods MPIIFaceGaze
+iTracker (AlexNet) [16] 5.6◦
+MeNets [17] 4.9◦
+FullFace (Spatial weights CNN) [15] 4.8◦
+Dilated-Net [7] 4.8◦
+RT-Gene(1 model) [11] 4.8◦
+GEDDNet [18] 4.5◦
+RT-Gene(4 ensemble) [11] 4.3◦
+Bayesian Approach [20] 4.3◦
+FAR-Net [19] 4.3◦
+CA-Net [6] 4.1◦
+AGE-Net [5] 4.09◦
+L2CS-Net (β = 1)
+L2CS-Net (β = 2)
+3.96◦
+3.92◦
+Table 1: Comparison of mean angular error between our pro-
+posed model and SOTA methods on MPIIGaze dataset
+Methods Front 180◦ Front Facing
+FullFace 14.99◦ N/A
+Dilated-Net 13.73◦ N/A
+RT-Gene (4 ensemble) 12.26◦ N/A
+CA-Net 12.26◦ N/A
+Gaze360 (LSTM) [9] 11.4◦ 11.1◦
+L2CS-Net (β = 2)
+L2CS-Net (β = 1)
+10.54◦
+10.41◦
+9.13◦
+9.02◦
+Table 2: Comparison of mean angular error between our pro-
+posed model and SOTA methods on Gaze360 dataset
+We adapt leave-one-subject-out cross-validation on MPI-
+IGaze dataset as used in the related works [5, 6, 15]. In or-
+der to obtain the best performance, we train L2CS-Net on the
+MPIIGaze dataset with different regression coefﬁcients ( β)
+of 1 and 2. Table. 1 shows the comparison of mean angular
+error between our proposed model and state-of-the-art meth-
+ods on MPIIGaze dataset. Our proposed L2CS-Net ( β = 1 )
+achieved state-of-the-art gaze performance with 3.92 ◦mean
+angular error. Furthermore, we present the gaze accuracy of
+each subject of the MPIIGaze dataset and compare it with
+FARE-Net [19] as they presented the subject-wise gaze accu-
+racy. Out of 15 subjects, our proposed method achieves better
+gaze accuracy for 11 subjects, as shown in Fig 2.
+Kellnhofer et al. [9] divided the Gaze360 dataset into
+train-val-test sets and presented three evaluation scopes based
+on the range of gaze angles: all 360 ◦, front 180 ◦, and front-
+facing (within 20 ◦). We follow the same evaluation criteria
+in [9], but only with the front 180 ◦and front-facing for a fair
+comparison with all related methods that are trained and eval-
+uated on datasets within 180 ◦range. We trained L2CS-Net
+on Gaze360 dataset with different regression coefﬁcients of 1
+and 2. Table. 2 shows the comparison of mean angular error
+p00p01 p02p03 p04p05 p06p07p08 p09p10 p11p12 p13p14Avg
+2
+3
+4
+5
+6
+7Mean Angular Error (degrees)
+L2CS-Net
+FARE-Net
+Fig. 2: Comparison of subject gaze accuracy between our pro-
+posed model and FARE-Net [19] on MPIIGaze dataset.
+between our proposed model and State-of-the-art methods
+on Gaze360 dataset. We used the results from [21] as they
+implement typical gaze estimation methods on the Gaze360
+dataset. Our proposed L2CS-Net ( β = 1 ) achieves state-of-
+the-art gaze performance with 10.41 ◦mean angular error on
+front 180◦and 9.02◦on front facing.
+5 Conclusion
+In this paper, we present a robust CNN-based model (L2CS-
+Net) for predicting 3D gaze directions in unconstrained envi-
+ronments. We propose to predict each gaze angle individually
+with two fully-connected layers and a ResNet-50 backbone.
+In order to improve the network learning, we used two sepa-
+rate loss functions for each gaze angle, each of them is a linear
+combination of regression and classiﬁcation losses. Further,
+we use a reliable softmax layer to predict gaze bins. Fur-
+thermore, we changed the regression coefﬁcient during the
+experiments to obtain the best gaze performance. To show
+the robustness of our model, we validate our network using
+two of the most unconstrained gaze datasets: MPIIGaze and
+Gaze360, and we followed the same evaluation criteria used
+in each dataset. Our model achieved state-of-the-art gaze ac-
+curacy with the lowest angular error in both datasets.
+6 References
+[1] Thorsten Hempel and Ayoub Al-Hamadi, “Slam-based
+multistate tracking system for mobile human-robot in-
+teraction,” in International Conference on Image Anal-
+ysis and Recognition. Springer, 2020, pp. 368–376.[2] Dominykas Strazdas, Jan Hintz, Aly Khalifa, Ahmed A
+Abdelrahman, Thorsten Hempel, and Ayoub Al-
+Hamadi, “Robot system assistant (rosa): Towards intu-
+itive multi-modal and multi-device human-robot inter-
+action,” Sensors, vol. 22, no. 3, pp. 923, 2022.
+[3] Liyuan Li, Xinguo Yu, Jun Li, Gang Wang, Ji-Yu Shi,
+Yeow Kee Tan, and Haizhou Li, “Vision-based atten-
+tion estimation and selection for social robot to per-
+form natural interaction in the open world,” in 2012 7th
+ACM/IEEE International Conference on Human-Robot
+Interaction (HRI). IEEE, 2012, pp. 183–184.
+[4] Anjul Patney, Marco Salvi, Joohwan Kim, Anton Ka-
+planyan, Chris Wyman, Nir Benty, David Luebke, and
+Aaron Lefohn, “Towards foveated rendering for gaze-
+tracked virtual reality,” ACM Transactions on Graphics
+(TOG), vol. 35, no. 6, pp. 1–12, 2016.
+[5] Pradipta Biswas et al., “Appearance-based gaze esti-
+mation using attention and difference mechanism,” in
+Proceedings of the IEEE/CVF Conference on Computer
+Vision and Pattern Recognition, 2021, pp. 3143–3152.
+[6] Yihua Cheng, Shiyao Huang, Fei Wang, Chen Qian,
+and Feng Lu, “A coarse-to-ﬁne adaptive network for
+appearance-based gaze estimation,” in Proceedings of
+the AAAI Conference on Artiﬁcial Intelligence , 2020,
+vol. 34, pp. 10623–10630.
+[7] Zhaokang Chen and Bertram E Shi, “Appearance-based
+gaze estimation using dilated-convolutions,” in Asian
+Conference on Computer Vision . Springer, 2018, pp.
+309–324.
+[8] Song Liu, Danping Liu, and Haiyang Wu, “Gaze es-
+timation with multi-scale channel and spatial attention,”
+in Proceedings of the 2020 9th International Conference
+on Computing and Pattern Recognition, 2020, pp. 303–
+309.
+[9] Petr Kellnhofer, Adria Recasens, Simon Stent, Wojciech
+Matusik, and Antonio Torralba, “Gaze360: Physically
+unconstrained gaze estimation in the wild,” in Pro-
+ceedings of the IEEE/CVF International Conference on
+Computer Vision, 2019, pp. 6912–6921.
+[10] Xucong Zhang, Yusuke Sugano, Mario Fritz, and An-
+dreas Bulling, “Mpiigaze: Real-world dataset and deep
+appearance-based gaze estimation,” IEEE transactions
+on pattern analysis and machine intelligence , vol. 41,
+no. 1, pp. 162–175, 2017.
+[11] Tobias Fischer, Hyung Jin Chang, and Yiannis Demiris,
+“Rt-gene: Real-time eye gaze estimation in natural envi-
+ronments,” in Proceedings of the European Conference
+on Computer Vision (ECCV), 2018, pp. 334–352.
+[12] Xucong Zhang, Seonwook Park, Thabo Beeler, Derek
+Bradley, Siyu Tang, and Otmar Hilliges, “Eth-xgaze:
+A large scale dataset for gaze estimation under extreme
+head pose and gaze variation,” in European Conference
+on Computer Vision. Springer, 2020, pp. 365–381.
+[13] Feng Lu, Yusuke Sugano, Takahiro Okabe, and Yoichi
+Sato, “Adaptive linear regression for appearance-based
+gaze estimation,” IEEE transactions on pattern analy-
+sis and machine intelligence, vol. 36, no. 10, pp. 2033–
+2046, 2014.
+[14] Oliver Williams, Andrew Blake, and Roberto Cipolla,
+“Sparse and semi-supervised visual mapping with the sˆ
+3gp,” in 2006 IEEE Computer Society Conference on
+Computer Vision and Pattern Recognition (CVPR’06) .
+IEEE, 2006, vol. 1, pp. 230–237.
+[15] Xucong Zhang, Yusuke Sugano, Mario Fritz, and An-
+dreas Bulling, “It’s written all over your face: Full-
+face appearance-based gaze estimation,” in Computer
+Vision and Pattern Recognition Workshops (CVPRW),
+2017 IEEE Conference on. IEEE, 2017, pp. 2299–2308.
+[16] Kyle Krafka, Aditya Khosla, Petr Kellnhofer, Harini
+Kannan, Suchendra Bhandarkar, Wojciech Matusik, and
+Antonio Torralba, “Eye tracking for everyone,” in Pro-
+ceedings of the IEEE conference on computer vision and
+pattern recognition, 2016, pp. 2176–2184.
+[17] Yunyang Xiong, Hyunwoo J Kim, and Vikas Singh,
+“Mixed effects neural networks (menets) with appli-
+cations to gaze estimation,” in Proceedings of the
+IEEE/CVF Conference on Computer Vision and Pattern
+Recognition, 2019, pp. 7743–7752.
+[18] Zhaokang Chen and Bertram E Shi, “Geddnet: A net-
+work for gaze estimation with dilation and decomposi-
+tion,” arXiv preprint arXiv:2001.09284, 2020.
+[19] Yihua Cheng, Xucong Zhang, Feng Lu, and Yoichi
+Sato, “Gaze estimation by exploring two-eye asymme-
+try,” IEEE Transactions on Image Processing, vol. 29,
+pp. 5259–5272, 2020.
+[20] Kang Wang, Rui Zhao, Hui Su, and Qiang Ji, “Gener-
+alizing eye tracking with bayesian adversarial learning,”
+in Proceedings of the IEEE/CVF Conference on Com-
+puter Vision and Pattern Recognition, 2019, pp. 11907–
+11916.
+[21] Yihua Cheng, Haofei Wang, Yiwei Bao, and Feng
+Lu, “Appearance-based gaze estimation with deep
+learning: A review and benchmark,” arXiv preprint
+arXiv:2104.12668, 2021.

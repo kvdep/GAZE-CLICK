@@ -1,0 +1,1266 @@
+arXiv:2104.11477v1  [math.PR]  23 Apr 2021
+RATIO LIMITS AND MARTIN BOUNDARY
+WOLFGANG WOESS
+Abstract. Consider an irreducible Markov chain which satisﬁes a ratio limit theore m,
+and let ρ be the spectral radius of the chain. We investigate the relation of t he the
+ρ -Martin boundary with the boundary induced by the ρ -harmonic kernel which ap-
+pears in the ratio limit. Special emphasis is on random walks on non-ame nable groups,
+speciﬁcally, free groups and hyperbolic groups.
+1. Introduction
+Let X be the denumerable state space of a time-homogeneous Markov ch ain ( Xn)n≥0
+with transition matrix P . We assume that it is irreducible and aperiodic: for any pair of
+points x, y ∈ X , there is kx,y ∈ N such that p(n)(x, y) > 0 for all n ≥ kx,y , where p(n)(x, y)
+denotes the n-step transition probability from x to y. We will often (but not always) also
+assume that P has ﬁnite range, that is, for each x ∈ X , there are only ﬁnitely many y
+with p(x, y) > 0. (This simpliﬁes parts of the technicalities.) We choose and ﬁx a root
+e ∈ X . In case of a group, this will be the identity.
+In a variety of cases, part of which will be displayed below, one knows that a ratio limit
+theorem holds, that is, there is a function (kernel) h : X 2 → (0, ∞) such that
+(1.1) lim
+n→∞
+p(n)(x, y)
+p(n)(e, e) = h(x, y) for all x, y ∈ X .
+Now let ρ = ρ(P ) = lim sup p(n)(x, y)1/n be the so-called spectral radius of the Markov
+chain. It is independent of x and y by irreducibility. If (1.1) holds then in a large variety
+of cases (including ﬁnite range) one deduces that
+(1.2) P h = hP = ρ · h
+in the sense of matrix products. In particular, for any ﬁxed y, the function x ↦→h(x, y)
+is a positive ρ -harmonic function: more generally, for real t ≥ ρ, a function f : X → R is
+t-harmonic, if
+(1.3)
+∑
+w
+p(x, w)f (w) = t f(x) for all x ∈ X .
+When t = 1, one just speaks of a harmonic function. Let us write H+(P, t) for the convex
+cone of positive t-harmonic functions.
+For each x, we have h(x, y) ≤ Cx h(e, y) for all y, where 1 /Cx = ρk p(k)(e, x) with the
+smallest k such that this is non-zero. Therefore, we can consider the norma lised ratio
+limit kernel
+H(x, y) = h(x, y)/h(e, y),
+and the function y ↦→H(x, y) is bounded by Cx for each y.
+Date: April 2021.
+2020 Mathematics Subject Classiﬁcation. 60G50; 60J05.
+Supported by Austrian Science Fund projects FWF P31889-N35 an d W1230.
+12 W. Woess
+(1.4) Deﬁnition. The ratio limit compactiﬁcation 1 ∆ratio(X ) of X is the (up to homo-
+morphism) unique compact Hausdorﬀ space which contains X as a discrete, dense subset
+and has the following properties:
+• each function H(x, ·) extends continuously to ∆ratio(X ) , and denoting the ex-
+tended kernel also by H,
+• if ξ, η ∈ R (X ) = ∆ratio(X ) \ X are distinct, then there is x ∈ X such that
+H(x, ξ) ⁄= H(x, η).
+For the general construction of such a compactiﬁcation, within th e present context see
+e.g. [30, Thm. 7.13]. At least when P has ﬁnite range, each function x ↦→H(x, ξ),
+ξ ∈ ∆ratio(X ) , is ρ -harmonic.
+In relation with his current work on Cuntz algebras related to rando m walks, Adam
+Dor-On, in an exchange that lead to the “companion” paper [11], has asked how one can
+describe this compactiﬁcation in terms of a given structure of the u nderlying state space,
+and how it relates with the ρ -Martin compactiﬁcation. His questions were motivated
+by operator algebraic issues, and the answers provided here help w ith clarifying some of
+them. The Martin boundary will be recalled in the next section.
+The main interest is in the case when X = Γ is a ﬁnitely generated, inﬁnite group, and
+the Markov chain is a random walk induced by a ﬁnitely supported prob ability measure
+µ on Γ, that is,
+p(x, y) = µ(x−1y) .
+Irreducibility & aperiodicity then amount to the property that the s upport of µ generates
+Γ as a semi-group and that it is not contained in a coset of a proper no rmal subgroup
+of Γ. Given the ﬁrst of those two properties, the second will certa inly hold if µ(e) > 0,
+where e is the group identity. (Assuming this is not a crucial restriction.)
+If in this case we have a ratio limit theorem, then clearly h(gx, gy) = h(x, y) for all
+x, y, g ∈ Γ, so that the function f (x) = h(x, e) is ρ -harmonic, and h(x, y) = f (y−1x). In
+that case, the ratio limit boundary is a Γ-space, and the elements of Γ act continuously
+on ∆ratio(Γ).
+For random walks on groups, a famous ratio limit theorem is due to A vez:
+(1.5) Theorem. [2] If the group Γ is amenable and µ is symmetric, i.e., µ(x−1) = µ(x),
+then
+lim
+n→∞
+p(n)(x, y)
+p(n)(e, e) = 1 for all x, y ∈ Γ .
+(Finite support is not needed here.) In this case, we see that ∆ratio(X ) is the one-point
+compactiﬁcation. We mention here that there are symmetric rando m walks on amenable
+groups where the Martin boundary (and even the minimal one; see §2) is inﬁnite. For
+example, for random walks on lamplighter groups over Zd (d ≥ 3), the Poisson boundary
+is non-trivial, see Kaimanovich and Vershik [21], whence there are non-constant
+minimal harmonic functions. This is even true for certain lamplighter r andom walks over
+Z, see [31].
+1 [11] calls this the full ratio limit compactiﬁcation.Ratio limits and Martin boundary 3
+For non-amenable groups, there is a variety of results which go bey ond ratio limit
+theorems, namely, local limit theorems which provide an asymptotic evaluation of the
+n-step transition probabilities. Typically (but not necessarily), they are of the form
+(1.6) p(n)(x, y) ∼ C β (x, y) ρn n−α as n → ∞ ,
+where ∼ means that the quotient of the left and right hand sides tends to 1, and
+C, β(x, y), α > 0. For results up to 2000, see [29, Ch. III] and the references th erein.
+The ﬁrst of those results are due to Gerl [15] and Sawyer [27], concerning random
+walks on free groups, resp. regular trees. The latest results are by Gou¨ezel [17], [18]
+and Dussaule [12], for hyperbolic, resp. relatively hyperbolic groups. In between , there
+is a rather large body of work.
+Whenever one has (1.6), this yields the ratio limit theorem with h(x, y) = β(x, y)/β(e, e),
+and the kernel for the ratio limit compactiﬁcation is H(x, y) = β(x, y)/β(e, y), where e is
+the group identity.
+In the present paper, we exhibit classes of random walks on non-am enable groups
+where the ratio limit compactiﬁctation coincides with the ρ -Martin compactiﬁcation, and
+one has a geometric description of the latter. Recall that ρ < 1 on those groups by
+Kesten [22].
+After laying out some necessary preliminaries in §2, in §3 we consider free groups
+and regular trees, and instead of stating and proving right away th e most general result
+for general ﬁnite range random walks, we proceed step by step. S ubsequently, in §4,
+we consider hyperbolic groups. In §5, we discuss how the ratio limit compactiﬁcation
+interacts with taking direct or Cartesian products. In §6, we discuss the reduced ratio
+limit boundary and show that in the cases of §3, there is no reduction, while for hyperbolic
+groups, reduction may come only from a (ﬁnite) torsion subgroup. The ﬁnal §7 contains
+a brief discussion and an outlook on work to be done in the future.
+It is on purpose that three diﬀerent methods are displayed for (1) isotropic random
+walks on trees, (2) ﬁnite range random walks on free groups, and ( 3) symmetric random
+walks on hyperolic groups (with ﬁnite range). In spite of the fact th at the most modern
+approach is based on the cited work of Gou¨ezel [17], the older methods regarding (1),
+going back to Sawyer [27], resp. (2), going back to Derriennic [10] plus Lalley [23],
+are still very valid in the author’s view. Also, for the time being, (3) do es not cover (1)
+and (2) completely.
+Acknowledgment. The author thanks Adam Dor-On for posing the question, for inter -
+esting exchanges on the subject, as well as for his comments on dr afts of this paper. Also,
+the author is extremely grateful to S´ ebastien Gou¨ ezel for helpful input that facilitated the
+elaboration of the proof of Theorem 4.5.
+2. Preliminaries; the Martin compactification
+A. The t-Martin compactiﬁcation
+We let t ≥ ρ (focusing on the case when t = ρ). To describe the t-Martin compactiﬁcation,4 W. Woess
+consider for real z > 0 the Green function
+G(x, y|z) =
+∞∑
+n=0
+p(n)(x, y) zn , x, y ∈ X .
+The radius of convergence of this power series is r = 1 /ρ. At that value, the series may
+either converge or diverge for all x, y. The latter is the ρ -recurrent case, the former the
+ρ -transient one. The quotient
+F (x, y|z) = G(x, y|z)
+G(y, y, |z) =
+∞∑
+n=0
+f (n)(x, y) zn
+is also a generating function: f (n)(x, y) is the probability that the Markov chain starting
+at x ﬁrst reaches y at time n ≥ 0. It is known [30, Lemma 3.66] that F (x, y|1/ρ) is always
+ﬁnite. In the case of a random walk on a group, it is known that one alw ays has the
+ρ -transient case, except when that group is virtually Z or Z2, see e.g. Woess [29, Thm.
+7.8]. For real t ≥ ρ, the t-Martin kernel is
+K(x, y|t) = F (x, y|1/t)
+F (e, y|1/t) .
+Here we shall mainly work with t = ρ. For ﬁxed y, the function x ↦→K(x, y|ρ) satisﬁes
+(1.3) at every x ∈ X \ y. Furthermore, for ﬁxed x, we have K(x, ·|t) ≤ Cx with the same
+bound as above. Thus, we can construct the compactiﬁcation ∆Mart, t(X ) of X , analogous
+to the one of Deﬁnition 1.4, for the t-Martin kernel K(x, y|t) in the place of H(x, y). This
+is the t-Martin compactiﬁcation, and Mt(X ) = ∆Mart, t(X ) \ X is the t-Martin boundary.
+Each function x ↦→K(x, ξ|t), ξ ∈ M t(X ), is t-harmonic. The signiﬁcance of Mt(X ) lies
+in the fact that every positive t-harmonic function f on X has an integral representation
+f (x) =
+∫
+Mt(X )
+K(x, ·|t) dνf ,
+where ν is a Borel measure on Mt(X ). That measure is unique, if we require that
+νf (
+Mt(X ) \ M t,min(X )
+)
+= 0, where Mt,min(X ) is the minimal boundary: a positive t-
+harmonic function f is called minimal, if f (e) = 1 and it cannot be written as a convex
+combination of two distinct positive t-harmonic functions with value 1 at e. The minimal
+boundary is {ξ ∈ M t(X ) : K(·, ξ|t) is minimal }; it consists of all minimal t-harmonic
+functions.
+The ﬁnite range assumption simpliﬁes a few things (for example, it yield s that all
+extended Martin kernels are t-harmonic in the ﬁrst variable), but is not needed for the
+construction and properties. Also, aperiodicity is not needed, irre ducibility is suﬃcient,
+that is, for every pair x, y ∈ X there is k = kx,y such that p(k)(x, y) > 0. (It even suﬃces
+to have this only for e and every y.)
+For all these facts, see e.g. [29, §24] or the references provided there. The largest part of
+the literature is on the ordinary 1-Martin compactiﬁcation. There is a simple tool to pass
+from the t-Martin compactiﬁcation to the latter. Namely, take one positive t-harmonicRatio limits and Martin boundary 5
+function f and use the Doob transform: deﬁne new transition probabilities by
+(2.1) pf (x, y) = p(x, y)f (y)
+t f(x)
+Then the t-Martin compactiﬁcation of the original Markov chain is the 1-Martin com-
+pactiﬁcation of the Doob transform, and KP f (x, ·|1) = K(x, ·|t)/f (x).
+B. Comparing compactiﬁcations
+Let ∆(X ) and ∆′(X ) be two compactiﬁcations of the countable set X , that is, compact
+Hausdorﬀ spaces which contain X as open and dense subsets. Then we say that the for-
+mer is bigger than the latter, if the identity map on X extends to a continuous surjection
+∆(X ) → ∆′(X ). Clearly, if also ∆′(X ) is bigger than ∆(X ) then that continuous map-
+ping is a homeomorphism. In this case, we say that the two compactiﬁ cations coincide
+geometrically.
+In typical cases, one has a “natural” geometric compactiﬁcation o f X and then wants
+to show that it coincides geometrically with the Martin compactiﬁcatio n, or that it is
+smaller than the Martin compactiﬁcation.
+In particular, we want to compare the ratio limit compactiﬁcation with the ρ -Martin
+compactiﬁcation. In its geometric, resp. topological meaning, this will mean that the
+latter is bigger than the former, or that they coincide in the above s ense.
+However, this is not the full picture; it does note yet fully reﬂect its analytic proper-
+ties. One should also ask whether in that case the homoeomorphism τ : ∆Mart, ρ(X ) →
+∆ratio(X ), in case it exists, is such that
+(2.2) K(x, ξ|ρ) = H
+(
+x, τ(ξ)
+)
+for all x ∈ X , ξ ∈ M ρ(X ) .
+When we have two geometrically equal compactiﬁcations construct ed via two diﬀerent
+kernels, let us say that they coincide analytically, when the extended kernels coincide on
+the boundary. (“Coincide” is of course meant in terms of a homeomo rphism as above.)
+Indeed, no matter whether the ratio limit and ρ -Martin compactiﬁcations coincide
+geometrically or not: whenever ν is a Borel measure on the ratio limit boundary R, the
+function
+f (x) =
+∫
+R
+H(x, ·) dν
+is positive ρ -harmonic, and the above question basically amounts to asking whet her every
+positive ρ -harmonic function arises in this way.
+In general, it is for example known that for any two ﬁnite range, irre ducible random
+walks on a free group, the Martin compactiﬁcations coincide geomet rically, but in general
+by no means analytically.
+(2.3) Proposition. [25, Prop. 1] Let P, Q be two irreducible transition operators on X
+such that every positive harmonic function for P is also harmonic for Q. Suppose that
+• the 1-Martin compactiﬁcations of P and Q coincide geometrically, and
+• the 1-Martin boundary of P is Dirichlet-regular, that is, every continuous function
+on the boundary has a continuous extension to the entire comp actiﬁcation which
+is 1-harmonic for P on X .6 W. Woess
+Then the two compactiﬁcations coincide analytically, so th at the positive 1-harmonic func-
+tions for P and Q coincide.
+We shall apply this below.
+3. Trees and free groups
+Let T be the regular tree where each vertex has q + 1 neighbours, with q ≥ 2.
+If there is an edge between the vertices x, y ∈ T then we write x ∼ y. For any pair of
+vertices x, y, there is a unique ﬁnite geodesic π(x, y) = [ x = x0 , x1 , . . . , xk = y] connecting
+the two, that is, xi−1 ∼ xi, and all xi are distinct. The distance between x and y is then
+d(x, y) = k. An inﬁnite ray is a one-sided inﬁnite geodesic path π = [x0 , x1 , x2 , . . .], that
+is, xk ∼ xk−1 and all xk are distinct. Two rays π and π′ are called equivalent, if they
+diﬀer only by ﬁnitely many initial vertices. An end of T is an equivalence class of rays.
+The geometric boundary ∂T is the set of all ends. For any x ∈ T and ξ ∈ ∂T, there is a
+unique ray π(x, ξ) starting at x which represents ξ. We set ∆ends(T) = T ∪ ∂T .
+We choose and ﬁx a root vertex e. For x ∈ T, we let |x| = d(e, x). We deﬁne the branch
+of ∆ends(T) at x as
+∆ends(Tx) = {w ∈ ∆ends(T) : x ∈ π(e, w)}.
+The topology on ∆ends(T) is discrete on T, while a neighbourhood basis of ξ ∈ ∂T is
+given by the collection of all ∆ends(Tx), where x ∈ π(e, ξ). Each of those sets is open and
+compact. This turns ∆ends(T) into a totally disconnected, compact Hausdorﬀ space in
+which T is open and dense. It can be metricised as follows. For distinct v, w ∈ ∆ends(T),
+their conﬂuent v ∧ w is the vertex on π(e, v) ∩ π(e, w) furthest from the root e. Then
+ϑ(v, w) =
+{
+q−|v∧w| , if v ⁄= w,
+0 , if v = w
+is an ultrametric which induces the above topology. Below, we shall als o need the Buse-
+mann function or horocycle index with respect to an end ξ ∈ ∂T. For a vertex x ∈ T,
+this is
+h(x, ξ) = d(x, x ∧ ξ) − |x ∧ ξ| = lim
+T∋y→ξ
+d(x, y) − |y|.
+A. Isotropic random walks on T
+A Markov chain with transition matrix P on T is called an isotropic random walk , if
+p(x, y) depends only on d(x, y). For d ∈ N, let Pd be the stochastic transition matrix with
+entries
+pd(x, y) =
+
+
+
+1
+(q + 1)qd−1 , if d(x, y) = d ,
+0 , otherwise.
+Also, we set P0 = I. For each d, there is a polynomial ˆPd(t) of degree d such that
+Pd = ˆPd(P1). If P is isotropic then it can be written as a (possibly inﬁnite) convex
+combination P = ∑ ∞
+d=0 ad Pd . In order to guarantee irreducibility & aperiodicity, weRatio limits and Martin boundary 7
+assume that ad > 0 for some odd and some even d. We now refer to the results explained
+in [29, §19.C], due to [27]. The spherical transform of P is
+ˆP (t) =
+∞∑
+d=0
+ad ˆPd(t) .
+Thus, P = ˆP (P1). It is very well known that
+(3.1) ρ(P1) = 2√q
+q + 1 and ρ = ρ(P ) = ˆP
+(
+ρ(P1)
+)
+.
+Let
+(3.2) ϕ(n) =
+(
+1 + q − 1
+q + 1 n
+)
+q−n/2 , n ∈ N0 .
+Set Φ(x, y) = ϕ
+(
+d(x, y)
+)
+. Thus, Φ(x) = Φ(x, e) is the spherical function which satisﬁes
+P1Φ(x) = ρ(P1) Φ(x). (“Spherical” means that it is an eigenfunction of P1 with value 1
+at e that depends only on |x|.) We see that also P Φ(x, y) = ρ Φ(x, y). The local limit
+theorem of [27] says that
+p(n)(x, y) ∼ C Φ(x, y) ρn n−3/2 , as n → ∞ .
+Thus, we get
+H(x, y) = Φ(x, y)
+Φ(e, y) .
+(3.3) Theorem. For isotropic P as above, suppose that it has super-exponential moments:
+lim supd→∞ a1/d
+d = 0 . Then the ratio limit compactiﬁcation coincides with the ρ -Martin
+compactiﬁcation analytically. Geometrically, this is the end compactiﬁcation, and for
+ξ ∈ ∂T,
+K(x, ξ|ρ) = H(x, ξ) = q−h(x,ξ)/2.
+Proof. It is known from [18, Thm. 1.3] that under the super-exponential m oment condi-
+tion the ρ -Martin compactiﬁcation coincides geometrically with the end compac tiﬁcation.
+From (3.2), we compute for any end ξ ∈ ∂T
+lim
+y→ξ
+H(x, y) = lim
+y→ξ
+1 + q−1
+q+1d(x, y)
+1 + q−1
+q+1|y| q−d(x,y)/2+|y|/2 = q−h(x,ξ)/2.
+This shows that the ratio limit compactiﬁcation coincides geometrically with the end
+compactiﬁcation. Thus, what is left to show is that
+(3.4) K(x, y|ρ) = q−h(x,ξ)/2.
+For this purpose, we use Proposition 2.3. Since P = ˆP (P1), equation 3.1 implies that
+H+(
+P1, ρ(P1)
+)
+⊂ H +(P, ρ). The Green function for P1 is very well known, see e.g. [29,
+Lemma 1.12]. In particular,
+GP1
+(
+x, y|1/ρ(P1)
+)
+= 2q
+q − 1 q−d(x,y)/2,
+so that (3.4) holds for P1 , whose Martin compactiﬁcation is of course again the end
+compactiﬁcation of T.8 W. Woess
+The spherical function Φ(x) = Φ(x, e) is in H+(
+P1, ρ(P1)
+)
+. We now consider the Doob
+transforms Q1 = P Φ
+1 and Q = P Φ, that is, their respective matrix elements are
+q1(x, y) = p1(x, y)Φ(y)
+ρ(P1) Φ(x) and q(x, y) = p(x, y)Φ(y)
+ρ Φ(x)
+Then f ∈ H (P, ρ) if and only if f /Φ ∈ H (Q, 1), and analogously for P1 and Q1. This
+implies that H
+(
+Q1, 1
+)
+⊂ H (Q, 1). In view of Proposition 2.3, we need to verify that the
+1-Martin boundary ∂T is Dirichlet regular for Q1. By Cartwright et al. [8], for this
+it is necessary and suﬃcient that the Green kernel of Q1 vanishes at inﬁnity, that is,
+lim
+|x|→∞
+GQ1(x, e|1) = 0 .
+Now, GQ1(x, y|1) = GP1
+(
+x, y|1/ρ(P1)
+)
+Φ(y)/Φ(x). Thus,
+GQ1(x, e|1) = 2q
+q − 1
+/ (
+1 + q − 1
+q + 1 |x|
+)
+→ 0 , as |x| → ∞ .
+This concludes the proof. □
+(3.5) Remark. It seems likely that the super-exponential moment condition may be
+relaxed here. Cartwright and Sawyer [6] have shown that H+(P, 1) = H+(P1 , 1) for
+arbitrary isotropic P , as long as it is irreducible. However, the 1-Martin compactiﬁcation
+is the end compactiﬁcation (and thus coincides analytically with the on e of P1) only under
+additional hypotheses, such as ﬁrst moment, i.e., ∑
+d d ad < ∞ . Otherwise, the 1-Martin
+boundary can contain further, non-minimal elements. [6] contain s no analogous result at
+the critical value ρ, where also the Martin boundary might behave more “critically”. On
+the other hand, isotropic random walks on T are a rather special case, where more general
+results may hold.
+B. Nearest neighbour random walk on free groups
+Let F = Fs be the free group on s free generators a1 , . . . , as, and write a−i = a−1
+i . Let
+I = {±1, . . . ,±s} and S = {ai : i ∈ I}. Recall that every element x of F can be written
+as a reduced word over S,
+(3.6) x = ai1ai2 · · · aik , i l ∈ I , i l ⁄= −il−1 .
+The length |x| of x is k, and when k = 0, this is the empty word e, which is the group
+identity. The Cayley graph of F with respect to S is the tree T = T2s−1 : its vertex set is
+F, and x, y ∈ F are connected by an edge whenever x−1y ∈ S. Thus, the natural geometric
+compactiﬁcation ˆF of F is the end compactiﬁcation of T, with boundary ∂F = ∂T.
+We now let µ be a probability measure on F whose support is supp(µ) = {e} ∪ S. This
+nearest neighbour case serves as a warm-up for the next sub-se ction; it might be omitted
+but may be instructive. The local limit theorem and the involved ρ -harmonic function
+have been studied in detail by Gerl and Woess [16]. One has (1.6) with α = 3 /2,
+and ρ < 1 by non-amenability of F. We subsume those facts which are needed here.
+(The notation is slightly modiﬁed.) By group invariance, G(x, y|z) = G(e, x−1y|z). TheRatio limits and Martin boundary 9
+function G(z) = G(x, x|z) is solution of an implicit equation, which leads to a formula for
+ρ. Set Fi(z) = F (e, ai|z) for i ∈ I. If x ∈ F has the reduced representation (3.6) then
+F (e, x|z) = Fi1(z) · · · Fik(z).
+The ends of the tree T which is the Cayley graph of F can be written as inﬁnite words
+(3.7) ξ = aj1aj2aj3 · · · , j l ∈ I , j l ⁄= −jl−1 ,
+and the nth vertex on the geodesic π(e, ξ) is xn = aj1aj2 · · · ajn . For any t ≥ ρ, the
+t-Martin compactiﬁcation is ∂T. This goes back to Dynkin and Malyutov [13] and
+Cartier [4].
+With ξ as above, if x ∈ F has reduced representation (3.6), then there is a maximal
+index m = m(x, ξ) ≤ k such that j1 = i1 , . . . , jm = im. Then xm = x ∧ ξ in the above
+description of conﬂuents in the geometry of the tree. Then the Ma rtin kernel at ξ is
+K(x, ξ|t) = F−ik(1/t)F−ik−1(1/t) · · ·F−im+1(1/t)
+Fi1(1/t)Fi2(1/t) · · ·Fim(1/t)
+It is always minimal. The analysis of [16] yields that in a neighbourhood of the principal
+singularity r = 1/ρ, for z ∈ C \ [r , ∞), one has Puiseux series expansions of the form
+(3.8) G(z) = α0 − β0
+√
+r − z + h.o.t. and Fi(z) = αi − βi
+√
+r − z + h.o.t. ,
+where αi, βi > 0 for i ∈ I ∪ {0}, and h.o.t. stands for series of “higher order terms” of
+the form C · (r − z)q, where C is a constant and q is a rational number with q > 1/2, and
+the appearing exponents form a discrete subset of Q. As a matter of fact, in the present
+case, q is always an integer multiple of 1 /2. From this, one gets with x as in (3.6), ξ as in
+(3.7) and m = m(x, ξ) as above that
+(3.9) K(x, ξ|ρ) = α−ikα−ik−1 · · · α−im+1
+αi1αi2 · · · αim
+.
+On the other hand, again for x as in (3.6), we get for z near r as above the Puiseux series
+expansion
+(3.10)
+G(e, x|z) = Fi1(z) · · · Fik (z)G(z) = α(x) − β(x)
+√
+r − z + h.o.t. , where
+α(x) = α0 αi1αi2 · · · αik and β(x) = α(x) γ(x) , with γ(x) = β0
+α0
++
+k∑
+l=1
+βil
+αil
+.
+(3.11) Corollary. For an aperiodic nearest neighbour random walk on the free gr oup
+F, the ratio limit kernel is H(x, y) = β(x−1y)/β(y). The ratio limit compactiﬁcation
+coincides analytically with the ρ -Martin compactiﬁcation, which geometrically is the end
+compactiﬁcation ˆF = ∆ends(T) .
+Proof. The expansion (3.10) yields the following local limit theorem, see [16, T hm. 2]:
+p(n)(e, x) ∼ 1
+2√ρ π β(x) ρn n−3/2 .10 W. Woess
+This yields the stated form of the ratio limit kernel. We need to show th at for every x ∈ F
+and every end ξ,
+lim
+y→ξ
+β(x−1y)
+β(y) = K(x, ξ|ρ).
+Again, suppose that x is as in (3.6). Let m = m(x, ξ) ∈ { 0, . . . , k}. We now write the
+reduced representation of y as y = aj1aj2 · · ·ajn . In principle, the indices j1 , . . . , jn vary
+with y, but y → ξ means that ¯m = m(y, ξ) → ∞ , so that the initial piece aj1aj2 · · · aj ¯m
+coincides with the initial word of ξ of the same length. Furthermore, we will have ¯ m ≥
+m(x, ξ) when y is close to ξ in the geometric compactiﬁcation ∆ends(T). For such y,
+recalling that xm is the mth element on π(e, x),
+x−1y = a−ika−ik−1 · · · a−im+1
+/bracehtipupleft /bracehtipdownright/bracehtipdownleft/bracehtipupright
+x−1xm
+ajm+1ajm+2 · · · ajn
+/bracehtipupleft/bracehtipdownright/bracehtipdownleft/bracehtipupright
+x−1
+m y
+.
+Note that by (3.9) we then have α(x−1y)/α(y) = K(x, ξ|ρ). Therefore, when ¯m ≥ m,
+H(x, y) = K(x, ξ|ρ) γ(x−1y)
+γ(y) .
+We then get γ(x−1y) − γ(y) = γ(x−1xm) − γ(xm) , while γ(y) → ∞ . Thus,
+γ(x−1y)
+γ(y) → 1 , as y → ξ.
+This concludes the proof. □
+C. Bounded range random walk on free groups
+The result of this sub-section generalises the previous one.
+(3.12) Theorem. Suppose that the probability measure µ on F has ﬁnite support S which
+generates F as a semi-group and contains the group identity. Then the rat io limit com-
+pactiﬁcation coincides with ρ -Martin compactiﬁcation analytically. Geometrically, it is
+the end compactiﬁcation.
+This needs some preparation. From Lalley [23], it is known that the random walk
+satisﬁes again a local limit theorem (1.6) with α = 3 /2, and ρ < 1 by non-amenability
+of F. We shall use a mix of the methods of [10] and its extensions by Picardello and
+Woess [24], and of [23], compare with [29, §19.B and §26.A].
+For n ∈ N, let let Bn = {x : |x| ≤ n} be the ball of radius n around the identity (root)
+with respect to the metric of the tree T which is the Cayley graph of the group. For any
+y ∈ F, the set yBn is the ball of radius n centred at y. Let R = max{|x| : x ∈ S}, and let
+B = BR . For any set A ⊂ F, we consider the stopping time plus associated probability
+generating function
+sA = inf {n ≥ 0 : Xn ∈ yA} and F A(u, v|z) =
+∞∑
+n=0
+Pr[sA = n , X n = v|X0 = u] zn ,
+where u, v ∈ F. For the simple proof of the following, see the above references.Ratio limits and Martin boundary 11
+(3.13) Lemma. If x0 , x1 ∈ F are distinct and y ∈ π(x0 , x1) then the random walk
+starting at x0 must pass through yB in order to reach x1 . Thus,
+F (x0 , x1|z) =
+∑
+v∈yB
+F yB(x0 , v|z)F (v, x1|z).
+Next, for A ⊂ F as above, let
+FA(u, u′|z) =
+∞∑
+n=0
+Pr[sF\A > n , X n = u′|X0 = u] zn ,
+where u, u′ ∈ A. There is N ≥ R such that
+FBN (u, u′|z) > 0 for all u, u′ ∈ B = BR and all z ∈ (0 , r ] ,
+where, as above, r = 1 /ρ. (This is a simple observation: there must be a sequence
+u = u0 , u1 . . . , uk = v such that p(ui−1 , ui) > 0 for all i. We take N large enough such
+that for any choice of u, v ∈ B there is such a sequence which is entirely contained in
+BN .)
+For x, y ∈ F, we deﬁne the square matrix, resp. (column) vectors
+(3.14)
+F(x, y|z) =
+(
+F yB(xu, yv|z)
+)
+u,v∈B ,
+f(x, y|z) =
+(
+F yB(x, yu|z)
+)
+u∈B and g(x, y|z) =
+(
+G(xu, y|z)
+)
+v∈B.
+We now let D = N + 2R + 1 and consider the set WD = {w ∈ F : |w| = D} of all elements
+(words) in F with length D. We observe that when d(x, y) = D then w = x−1y ∈ WD and
+F(x, y|z) = F(e, w|z) =: F(w|z). Then the following is a consequence of Lemma 3.13, see
+[10], [24].
+(3.15) Lemma. Let x, y in F and u0 , u1 , . . . , un ∈ π(x, y) such that d(u0 , x) > R ,
+d(un, y) > R and d(uk , x) = d(u0 , x) + k D , so that wk = u−1
+k−1uk ∈ WD for k = 1, . . . , n.
+Then for z ∈ (0 , r ] with r = 1/ρ,
+G(x, y|z) =
+⟨
+f(x, u0|z) , F(u0 , u1|z) · · · F(un−1 , un|z)/bracehtipupleft /bracehtipdownright/bracehtipdownleft /bracehtipupright
+F(w1|z) · · · F(wn|z)
+g(un, y|z)
+⟩
+.
+Here, F(w1|z) · · · F(wn|z)g(un, y|z) is the product of n square matrices applied to the
+column vector g(un, y|z), and ⟨·, ·⟩ is the ordinary inner product of column vectors indexed
+by B. Now set
+λz = min{FBN (u, u′|z) : u, u′ ∈ B}
+Then
+F wB(u, wv|z) ≥ FBN (u, u′|z)F wB(u′, wv|z) ≥ λz for all u, u′, v ∈ B and z ∈ (0 , r ].
+In words, the ﬁrst of the two inequalities comes from the fact that the random walk
+starting at u ∈ B can reach u′ ∈ B with positive probability before entering wB at
+wv. In potential theoretic terms, this can be interpreted as “balaya ge” or as a Harnack
+inequality. What is important for us is that it tells us that all the matric es F(w|z),
+w ∈ WD, z ∈ (0 , r ], have their zeros disposed in columns, and that in each non-zero
+column, the ratio of any two entries is bounded below by λz when z ∈ (0 , r ].12 W. Woess
+For any vector v ∈ (0 , ∞)B, let
+Proj v = 1
+⟨v, 1⟩ v
+be its projection onto the standard simplex over B (all non-negative vectors whose coor-
+dinates sum up to 1). Then the above yields the following, see [10], [24] or [29, §26.A].
+(3.16) Proposition. Let z ∈ (0 , r ] and w = (wn)n∈N be a sequence in WD . Then there
+is a vector w∞ = w∞(w, z) ∈ (0 , ∞)B with ⟨w∞ , 1⟩ = 1 such that uniformly for any
+sequence of non-zero vectors an ∈ [0 , ∞)B,
+lim
+n→∞
+Proj F(w1|z) · · · F(wn|z) an = w∞.
+The reason is that for each w ∈ WD , the mapping a ↦→Proj F(w|z) a is a contraction
+of the standard simplex over B with Lipschitz constant ℓ(λz) < 1 that maps the simplex
+into its interior.
+It is known from the cited references that the λ-Martin compactiﬁcation for λ ≥ ρ is
+always the end compactiﬁcation of the tree, and that each end is a m inimal boundary
+element. For our purpose, we need the above material in order to id entify the Martin
+kernels for λ = ρ, i.e., z = r, as follows. Let ξ ∈ ∂T, and let π(e, ξ) = [ e = x0 , x1 , x2 , . . .].
+Let un = xnD and, with the group operation of F, wn = u−1
+n−1un . We obtain a sequence
+w = w(ξ) in WD. Following Proposition 3.16, we let for k ∈ N
+wk,∞ = wk,∞(ξ) = lim
+n→∞
+Proj F(wk+1|r) · · ·F(wn|r) an ,
+which is independent of the speciﬁc choice of the positive vectors an . Using Lemma 3.15
+and Proposition 3.16, we now obtain the following.
+(3.17) Corollary. With the foregoing notation, in particular π(e, ξ) = [ e = x0 , x1 , . . .]
+for ξ ∈ ∂T, let x ∈ F ≡ T, and let k be such that uk = xkD ∈ π(x ∧ ξ, ξ) and d(uk, x) > R.
+Then
+lim
+T∋y→ξ
+K(x, y|ρ) =
+⟨
+f(x, uk|r), wk,∞
+⟩
+⟨
+f(e, uk|r), wk,∞
+⟩ = K(x, ξ|ρ).
+Proof of Thm. 3.12 . We need to describe the kernel H(x, y) arising from the local
+limit theorem of [23] at least when d(x, y) is large, and we need to show that H(x, y) →
+K(x, ξ|ρ) when y → ξ ∈ ∂T.
+The main point is that by [23], for z near r, there is once more a Puiseux expansion
+G(x, y|z) = G(x, y|r) − β(x, y)
+√
+r − z + h.o.t.,
+where β(x, y) = β(e, x−1y) > 0. Then H(x, y) = β(x, y)/β(e, y) . It follows from [23] (see
+also the exposition in [29, §26.A]) that also the non-vanishing entries of all the matrices
+F(w|z), as well as the entries of the vectors f(x, w|z), where d(x, w) > R , have Puiseux
+expansions of the same form. That is, in multidimensional notation we can expand
+F(w|z) = F(w|r) −
+√
+r − z B(w) + h.o.t., w ∈ WD ,
+f(x, y|z) = f(x, y|r) −
+√
+r − z b(x, y) + h.o.t., x, y ∈ F , d (x, y) > R ,
+g(x, y|z) = g(x, y|r) −
+√
+r − z ~b(x, y) + h.o.t, x, y ∈ F .Ratio limits and Martin boundary 13
+Here, B(w) is a non-negative matrix indexed by B ×B, and B(w) is strictly positive in the
+same entries as F(w|r) . Furthermore, the non-negative B-indexed vectors f(x, y|r) and
+b(x, y) are strictly positive in the same entries, while g(x, y|r) and ~b(x, y) are positive in
+all entries.
+We now use the same notation as in Corollary 3.17. If y → ξ then n = ny → ∞, where
+ny is the largest integer such that un = xnD ∈ π(e, y) and d(un , y) > R. In particular, we
+shall have n > k . Using Lemma 3.15, we obtain
+(3.18)
+β(x, y) =
+⟨
+f(x, uk|r) , F(wk+1|r) · · ·F(wn|r) ~b(un, y)
+⟩
++
+⟨
+b(x, uk) , F(wk+1|r) · · ·F(wn|r) g(un, y|r)
+⟩
++
+n∑
+i=k+1
+⟨
+f(x, uk|r) , F(wk+1|r) · · ·B(wi) · · ·F(wn|r) g(un, y|r)
+⟩
+,
+where more precisely, F(wk+1|r) · · ·B(wi) · · ·F(wn|r) is obtained from the matrix product
+F(wk+1|r) · · ·F(wn|r) by replacing the i th factor F(wi|r) by B(wi). There is the analogous
+formula for β(e, y), where one just needs to replace x by e. By a slight abuse of notation,
+we write Proj β(x, y) for the expression where in all the inner products of (3.18), the
+vectors appearing in the second variable are replaced by their proj ection onto the standard
+simplex. We choose m(n) ≥ k such that m(n) → ∞ and m(n)/n → 0 (for example,
+m(n) = max {⌊log n⌋, k}). Then
+Proj F(wk+1|r) · · ·F(wm(n)|r) · · ·B(wi) · · ·F(wn|r) g(un, y|r) → wk+1,∞ for all i > m(n).
+Recall that this convergence is uniform in whatever non-negative v ector appears on the
+right of F(wm(n)|r). Therefore, as y → ξ, i.e., n → ∞,
+1
+n
+n∑
+i=m(n)+1
+⟨
+f(x, uk|r) , Proj F(wk+1|r) · · ·B(wi) · · · F(wn|r) g(un, y|r)
+⟩
+∼ n − m(n)
+n
+⟨
+f(x, uk|r) , wk+1,∞
+⟩
+→
+⟨
+f(x, uk|r) , wk+1,∞
+⟩
+On the other hand, since m(n)/n → 0,
+1
+n
+m(n)∑
+i=k+1
+⟨
+f(x, uk|r) , Proj F(wk+1|r) · · ·B(wi) · · ·F(wn|r) g(un, y|r)
+⟩
+→ 0.
+Also the extra ﬁrst two terms of Proj β(x, y) divided by n tend to 0. All this is also valid
+for e in the place of x. We see that
+1
+n Proj β(x, y) →
+⟨
+f(x, uk|r) , wk+1,∞
+⟩
+and 1
+n Proj β(e, y) →
+⟨
+f(e, uk|r) , wk+1,∞
+⟩
+.
+Taking quotients and comparing with Corollary 3.17, we see that H(x, y) → K(x, ξ|r) as
+y → ξ. □
+We remark here that the hypothesis that supp(µ) contains the identity can be replaced
+without substantial change by aperiodicity. Recall that this means that p(n)(e, e) > 0 for
+all but ﬁnitely many n, or in group theoretic terms, that supp(µ) is not contained in a14 W. Woess
+coset of a proper normal subroup of Γ (in our case, F). Also, Theorem 3.12 holds without
+substantial change of the proof for virtually free groups.
+4. Hyperbolic groups
+We brieﬂy recall the basic deﬁnition of hyperbolicity in the sense of Gr omov [20]. Let
+(X , d) be a geodesic metric space, i.e., for any pair of points x, y ∈ X , there is a (not
+necessarily unique) geodesic π(x, y), that is, an isometric embedding [0 , d (x, y)]֒X
+which maps 0 to x and d(x, y) to y. In our situation, X will carry the structure of a
+locally ﬁnite, connected graph and d will be the graph metric. In this case, we replace
+the real interval [0 , d (x, y)] by its integer counterpart [0 , d (x, y)]Z = {0, 1, . . . , d(x, y)}.
+The metric space is called hyperbolic, if it is δ-hyperbolic for some δ ≥ 0 (possibly large):
+if a, b, c ∈ X and π(a, b), π(b, c), π(c, a) are geodesics between the respective points (the
+sides of a triangle with vertices a, b, c) then for every x ∈ π(a, b) there is y ∈ π(b, c)∪π(c, a)
+such that d(x, y) ≤ δ. The most basic examples are provided by trees, where δ = 0. For
+all our purposes, it will be convenient to assume without loss of gene rality that δ ∈ N0
+(non-negative integer).
+We remark here that this implies, among many other facts, that any two geodesics
+connecting the same two points x and y are at Hausdorﬀ distance at most δ, and we let
+Π(x, y) denote the union of all those geodesics, a kind of “slim sausage”.
+A ﬁnitely generated group Γ is called hyperbolic, if its Cayley graph with respect to
+some ﬁnite, symmetric set of generators is hyperbolic. This does no t depend on the
+speciﬁc generating set, up to a change of δ. Basic examples are free groups and co-
+compact Fuchsian groups. The entire theory will not be repeated h ere. For the present
+purpose, the exposition in [29, §22] plus the references given there will suﬃce. Besides
+very basic cases (virtually cyclic groups), all inﬁnite hyperbolic grou ps are non-amenable.
+A locally ﬁnite hyperbolic graph X , resp. ﬁnitely generated hyperbolic group Γ has
+its hyperbolic compactiﬁcation ∆hyp(X ), resp. ∆hyp(Γ). It was shown by Ancona [1]
+that under natural assumptions on P on a hyperbolic graph X (bounded range, uniform
+irrecducibility; see [29, §27]), ∆hyp(X ) is a geometric realisation of the t-Martin compact-
+iﬁcation for positive t > ρ . In the group case this has been progressively strengthened in
+papers by Gou¨ezel and Lalley :
+(4.1) Theorem. [19], [17]. Let Γ be a non-amenable, ﬁnitely generated hyperbolic group,
+and µ a probability measure which induces an irreducible random w alk. If µ is symmetric
+and is ﬁnitely supported, then the t-Martin compactiﬁcation coincides with the ∆hyp(Γ)
+for every t ≥ ρ.
+If in addition, µ is aperiodic, then the random walk satisﬁes a local limit the orem
+p(n)(x, y) ∼ C β (x, y) ρn n−3/2 as n → ∞ .
+Regarding the Martin compactiﬁcation, the noteworthy part is tha t it is also valid at
+the critical value t = ρ. The crucial tool for this is the following, whose part (a) was again
+ﬁrst proved in [1] for z < r = 1/ρ without requiring group-invariance, and then extended
+to z = r in the group case in [19], [17], and ﬁnally [18], including the strong inequalit y
+(b).Ratio limits and Martin boundary 15
+(4.2) Proposition. (Ancona inequalities). Suppose that Γ and µ are as in Theorem
+4.1, and consider a Cayley graph of Γ with respect to a ﬁnite, symmetric set of generators.
+Then there are constants CAnc ≥ 1 and 0 ≤ α < 1 such that the following holds for all
+z ∈ [1 , r ].
+(a) For any geodesic path π(x, y) in the graph and any w ∈ π(x, y), one has
+C −1
+Anc G(x, w|z)G(w, y|z) ≤ G(x, y|z) ≤ CAnc G(x, w|z)G(w, y|z) .
+(b) For any quadruple of points x, x′, y, y′ such that d
+(
+Π(x, x′), Π(y, y′)
+)
+= n ≥ 2δ, one
+has ⏐⏐⏐⏐
+G(x, y|z)G(x′, y′|z)
+G(x, y′|z)G(x′, y|z) − 1
+⏐⏐⏐⏐ ≤ CAnc G(x, w|z)G(w, y|z) αn.
+In order to get a feeling for the last inequality, observe that for a n earest neighbour
+random walk on a tree, one has α = 0. As a matter of fact, it is proved in [18] that
+Proposition 4.2 and Theorem 4.1 are also valid when instead of ﬁnite sup port, one assumes
+that µ has super-exponential moments, that is, ∑
+x a|x| µ(x) < ∞ for all a > 1.
+Irreducibilty plus group-invariance of the random walk yield a local Ha rnack inequality:
+there is a constant CHar > 1 such that
+(4.3) G(x′, y|z) ≤ C d(x,x′)
+Har G(x, y|z) for all x, x′, y ∈ Γ and z ∈ [1 , r ] .
+Even without symmetry, the same also holds for G(y, x|z) and G(y, x′|z). This leads
+to the following generalisation of the ﬁrst Ancona inequality. For x, y, w ∈ Γ with ℓ =
+d
+(
+w, Π(x, y)
+)
+and z ∈ [1 , r ],
+(4.4)
+C −1
+ℓ G(x, w|z)G(w, y|z) ≤ G(x, y|z) ≤ Cℓ G(x, w|z)G(w, y|z) ,
+where Cℓ = CAnc C 2ℓ
+Har .
+(4.5) Theorem. Let Γ be a non-amenable, ﬁnitely generated hyperbolic group, and µ a
+ﬁnitely supported symmetric probability measure which ind uces an irreducible & aperiodic
+random walk. Then the ratio limit compactiﬁcation coincide s with ρ -Martin compactiﬁ-
+cation analytically.
+Proof. Let G′(x, y|z) be the derivative of the Green function with respect to z, where
+|z| < r . It is proved in [19] and [17] that for all x, y ∈ Γ, there is β(x, y) > 0 such that
+G′(x, y|z) ∼ β(x, y)
+/ √
+r − z as z → r , 0 < z < r .
+By working through the “Tauberian” last part of [19], one learns tha t symmetry and
+aperiodicity yield the asymptotics of Theorem 4.1 above, with consta nt C =
+√
+r/π.
+Therefore the ratio limit kernel is the left-sided limit
+H(x, y) = lim
+z→r−
+G′(x, y|z)
+G′(e, y|z) .
+It is a well-known consequence of the resolvent equation that for z ∈ (0 , r ) one has
+G′(x, y|z) = G(2)(x, y|z)/z2 , where G(2)(x, y|z) =
+∑
+v∈X
+G(x, v|z)G(v, y|z) .16 W. Woess
+We now set
+Φ(x, y|z) = G(2)(x, y|z)
+G(x, y|z) , so that H(x, y)
+K(x, y|ρ) = lim
+z→r−
+Φ(x, y|z)
+Φ(e, y|z) =: Φ(x, y|r−)
+Φ(e, y|r−) .
+Here, we always assume that z is real, z ∈ [1 , r ). The proof will be complete once we
+have shown the following.
+Claim. lim
+|y|→∞
+Φ(x, y|r−)
+Φ(e, y|r−) = 1 .
+Proof of the Claim 2. Let π(e, y) = [ e = y0 , y1 , . . . , yn = y] be a geodesic from e to y in
+our Cayley graph, so that n = |y|. We set
+k(v) = ky(v) = max
+{
+k : d
+(
+yk, Π(e, v)
+)
+≤ δ
+}
+.
+Let w ∈ Π(e, v) be such that d(yk(v), w) = d
+(
+yk(v), Π(e, v)
+)
+, and let π(e, v) be a geodesic
+that contains w. Using the geodesic triangle with sides π(e, w), π(e, yk(v)) and a third side
+π(w, yk(v)) (which has length ≤ δ), one ﬁnds that d
+(
+yj, π(e, v)
+)
+≤ 2δ for j ≤ k(v) and ≤ δ
+for all j ≤ k(v) − δ. Also, |w| ≥ k(v) − δ. Second, take a geodesic π(y, v). If k(v) < |y|
+then we must have d
+(
+yk(v)+1 , π(v, y)
+)
+≤ δ. Thus (even when k(v) = |y|) we have
+(4.6) d(yk(v) , ¯v) ≤ δ + 1 for some ¯ v ∈ π(v, y).
+which will be needed below. Consider the geodesic rectangle with sides π(y, v), π(w, yk(v))
+and π
+(
+yk(v) , y
+)
+⊂ π(e, y) as well as π(w, v) ⊂ π(e, v). The rectangle is 2 δ-thin: every
+element on π(y, v) is at distance at most 2 δ from one of the other three sides, while any
+element on one of those three sides has distance at least k(v)−δ from the root (identity) e.
+Hence,
+d
+(
+Π(y, v), e
+)
+≥ k(v) − 3δ .
+Thus, when k(v) ≥ | x| + 5δ, we have d
+(
+Π(e, x), Π(y, v)
+)
+≥ 2δ, and the strong Ancona
+inequality of Proposition 4.2(b) yields
+(4.7)
+⏐⏐⏐⏐
+G(x, v|z)G(e, y|z)
+G(e, v|z)G(x, y|z) − 1
+⏐⏐⏐⏐ ≤ CAnc αk(v).
+Combining (4.7) with (4.3), we get for the given y and geodesic π(e, y) that
+(4.8)
+⏐⏐⏐⏐
+G(x, v|z)G(e, y|z)
+G(e, v|z)G(x, y|z) − 1
+⏐⏐⏐⏐ ≤ C(x) αk(v) for all x, v ∈ Γ and z ∈ [1 , r ] ,
+where C(x) depends only on x.
+We now write for z ∈ [1, r)
+Φ(x, y|z) − Φ(e, y|z) =
+∑
+v∈Γ
+G(e, v|z)G(v, y|z)
+G(e, y|z)
+(G(x, v|z)G(e, y|z)
+G(e, v|z)G(x, y|z) − 1
+)
+.
+Then (4.8) yields
+⏐⏐Φ(x, y|z) − Φ(e, y|z)
+⏐⏐ ≤ C(x)
+|y|∑
+k=0
+αk ∑
+v:k(v)=k
+G(e, v|z)G(v, y|z)
+G(e, y|z)
+2 This was facilitated signiﬁcantly by input from S´ ebastien Gou¨ ezel.Ratio limits and Martin boundary 17
+By Proposition 4.2(a),
+G(e, y|z) ≥ C −1
+AncG(e, yk(v)|z)G(yk(v) , y|z).
+By (4.4) and, for the second inequality, (4.6)
+G(e, v|z) ≤ Cδ G(e, yk(v)|z)G(yk(v), v|z) and
+G(v, y|z) ≤ Cδ+1 G(v, yk(v)|z)G(yk(v), y|z).
+We get for any k ≤ |y| that with C = CAnc Cδ Cδ+1 ,
+∑
+v:k(v)=k
+G(e, v|z)G(v, y|z)
+G(e, y|z) ≤ C
+∑
+v:k(v)=k
+G(yk , v|z)G(v, yk|z)
+≤ C G(2)(yk , yk|z) = C G(2)(e, e|z).
+[17] uses the notation G(2)(e, e|z) = η(r), with z ↔ r, while our r = 1 /ρ is denoted R.
+With C(x) = C(x) C/(1 − α), we get
+⏐⏐⏐⏐
+Φ(x, y|z)
+Φ(e, y|z) − 1
+⏐⏐⏐⏐ ≤ C(x) G(2)(e, e|z)
+Φ(e, y|z) .
+Now the crucial point is that following [17, Lemma 3.20 and equation (3.1 5)],
+Φ(e, y|z) ≍ |y| G(2)(e, e|z) uniformly for z ∈ [1 , r ) as |y| → ∞ ,
+i.e., the ratio is bounded above and below by uniform positive constant s A and 1 /A,
+respectively, when |y| is large enough. Thus, for large |y|,
+⏐⏐⏐⏐
+Φ(x, y|r−)
+Φ(e, y|r−) − 1
+⏐⏐⏐⏐ ≤ C(x) A
+|y|,
+which tends to 0 as |y| → ∞ . This concludes the proof of the Claim and the Theorem. □
+We note here that the last theorem does not fully cover the results on free groups and
+trees of §3. Theorem 3.3 does not need ﬁnite range, and Theorem 3.12 does no t need
+symmetry, while symmetry of µ is a crucial tool for the local limit theorem on hyperbolic
+groups stated in Theorem 4.1. In any case, it may be interesting to w atch out how certain
+features of the respective proofs show up in diﬀerent “disguise” in each of them.
+5. Direct and Cartesian products
+The ratio limit compactiﬁcation adapts quite well to direct products. In general, let
+∆(X1) and ∆(X2) be compactiﬁcations of the two discrete state spaces X1 and X2 , with
+respective boundaries ∂X1 and ∂X2 . Then ∆(X1) × ∆(X2) is the natural associated
+compactiﬁcation of X = X1 × X2 . In this case, the boundary is
+(5.1) ∂X =
+(
+∂X1 × ∂X2
+)
+∪
+(
+X1 × ∂X2) ∪
+(
+∂X1 × X2).18 W. Woess
+We write elements of the product space as w1w2 , where wi ∈ ∆(Xi). In the resulting
+topology, let
+(
+y1(n)y2(n)
+)
+n∈N be a sequence in X . Then, as n → ∞ ,
+y1(n)y2(n) → ξ1ξ2 ∈ ∂X1 × ∂X2 ⇐ ⇒yi(n) → ξi in ∆(Xi) for i = 1, 2 ,
+y1(n)y2(n) → w1ξ2 ∈ X 1 × ∂X2 ⇐ ⇒y1(n) = w1 for all but ﬁnitely many n, and
+y2(n) → ξ2 in ∆(X2) ,
+y1(n)y2(n) → ξ1w2 ∈ ∂X1 × X2 ⇐ ⇒y1(n) → ξ1 in ∆(X1), and
+y2(n) = w2 for all but ﬁnitely many n.
+Let us call this the product compactiﬁcation of the given compactiﬁcations of X1 and X2 ,
+with the product boundary (5.1). Now let ( X1 , P1) and ( X2 , P2) the state spaces plus
+irreducible and aperiodic transition matrices of two respective Mark ov chains. Suppose
+that for i = 1, 2
+lim
+n→∞
+p(n)
+i (xi , yi)
+p(n)
+i (ei , ei)
+= hi(xi , yi) for all xi, yi ∈ X .
+The direct product is the Markov chain on X1 × X2 with transition matrix P = P1 ⊗ P2,
+where
+p(x1x2 , y1y2) = p1(x1 , y1)p2(x2 , y2) .
+It is clear that it has a ratio limit (1.1) with
+h(x1x2 , y1y2) = h1(x1 , y1)h2(x2 , y2),
+so that also the kernel H(x1x2 , y1y2) splits in the same way. The associated ratio limit
+compactiﬁcation of X1 × X2 is not always the product compactiﬁcation of the two ratio
+limit compactiﬁcations, but it is a factor thereof. The following is quite obvious; see
+e.g. the “preamble” on compactiﬁcations in [30, §7.B], and recall that the ratio limit
+compactiﬁcation of X1 × X2 is the minimal one which provides continuous extensions of
+the functions H(x1x2 , ·), where x1x2 ∈ X 1 × X2 .
+(5.2) Lemma. Consider the extensions of Hi(xi , ·) to the ratio limit boundary Ri of Xi ,
+i = 1, 2. For η = η1η2 and ζ = ζ1ζ2 ∈
+(
+R1 × R2
+)
+∪
+(
+X1 × R2) ∪
+(
+R1 × X2), let
+η ≈ ζ ⇐ ⇒ H1(x1 , η1)H2(x2, η2) = H1(x1 , ζ1)H2(x2, ζ2) for all x1x2 ∈ X 1 × X2 .
+Then the ratio limit boundary R of P = P1 ⊗ P2 is the image of the product boundary
+of the two ratio limit compactiﬁcations with respect to the f actor map of the equivalence
+relation ≈. In particular, the extension of H(x1x2 , ·) to R is given by H(x1x2, ξ) =
+H1(x1 , η1)H2(x2, η2), where η1η2 is a representative of the ≈-equivalence class ξ.
+In a certain sense more natural than direct products are Cartesian products. Given
+Pi in Xi for i = 1 , 2, write Ii for the identity operator (or matrix) over Xi and choose a
+parameter s ∈ (0 , 1). On X = X1 × X2 , let
+P = Ps = s · P1 ⊗ I2 + (1 − s) · I2 ⊗ P2 .
+That is, the new Markov chain is such that ﬁrst a coin is tossed where “heads” comes
+up with probability s, and in that case, a step is performed according to P1 in tb ﬁrst
+coordinate, while the second coordinate remains unchanged. And w ith probability 1 − s,Ratio limits and Martin boundary 19
+a step is performed according to P2 in the second coordinate, while the ﬁrst one remains
+unchanged.
+For example, simple random walk on Zd1+d2 arises as a Cartesian (and not direct)
+product of the simple random walks on Zd1 and Zd2 with s = d1/(d1 + d2).
+In general, it does not appear to be completely straightforward th at a ratio limit for
+each Pi also implies one for the Cartesian products Ps . However, the following was proved
+by Cartwright and Soardi [7].
+(5.3) Proposition. Suppose that each Xi satisﬁes a local limit theorem of the form
+p(n)
+i (xi, yi) ∼ βi(xi, yi) ρn
+i n−αi as n → ∞ ,
+where ρi = ρ(Pi) for i = 1, 2. Then one has for P = Ps that ρ = ρ(P ) = s ρ1 + (1 − s) ρ2 ,
+p(n)(x1x2 , y1y2) ∼ C β1(x1, y1)β2(x2, y2) ρn n−α1−α2 ,
+where C = θα1(1 − θ)α2 , with θ = sρ1/ρ.
+In particular, in this case the ratio limit kernel for the Car tesian product is also
+H(x1x2 , y1y2) = H1(x1 , y1)H2(x2 , y2), and the ratio limit boundary is the same as for
+the direct product.
+At this point, there is a natural question. Suppose that the ρi -Martin boundary of
+Pi coincides with the respective ratio limit boundary for i = 1 , 2. Is this then also true
+for the ρ-Martin boundary for the direct, resp. Cartesian products? So f ar, there is no
+general answer; the general problem lies in ρ-Martin kernels of the product which are not
+minimal ρ-harmonic functions. Some examples are known. We present three of them,
+which illustrate diﬀerent situations regarding the equivalence relatio n ≈ that appears in
+Lemma 5.2. All three examples are valid for direct as well as Cartesian products, and the
+answer to the above question is “yes”.
+(5.4) Example. Suppose that Xi = Zdi and that the respective irreducible, aperiodic
+random walk is induced by a ﬁnitely supported probability measure µi . Let hi(x) =
+exp⟨ci , x⟩ be the unique ρi -harmonic exponential on Zdi. That is, the vector ci min-
+imises c ↦→∑
+x µi(x) exp⟨c , x⟩, where c ∈ Rdi, and the value of that minimum is the
+corresponding spectral radius ρi . Every positive ρi -harmonic function on Zdi is a con-
+stant multiple of hi, and in the ratio limit theorem, one has by a slight abuse of notation
+hi(x, y) = hi(x − y). Thus, Hi(x, y) = hi(x) for x ∈ Zdi, and the ratio limit kernel
+H(x1x2 , y1y2) = h1(x1)h2(x2) of the direct product also does not depend on y1y2 . That
+is, the equivalence relation ≈ of Lemma 5.2 has a single equivalence class.
+In this case, one also knows that all the involved compactiﬁcations c oincide analytically
+with the Martin compactiﬁcations at the respective spectral radii. □
+(5.5) Example. Let X1 = T, the regular tree with degree q + 1 ≥ 3, and X2 = Z. On
+each of the two, we consider “lazy” simple random walk, that is,
+p1(x1 , x1) = 1
+2 and p1(x1 , y1) = 1
+2q+2 when x1 ∼ y1 ,
+p2(x2 , x2) = 1
+2 and p2(x2 , y2) = 1
+4 when x2 ∼ y2 ,20 W. Woess
+while all other transition probabilities are 0. Then H1(x1 , y1) = Φ( x1 , y1), see §3.A, and
+H2(x2 , y2) = 1. The ratio limit compactiﬁcation of Z is the one-point compactiﬁcation
+Z∪{∞}, and the ratio limit boundary of the product space T×Z is ∆endsT . Convergence
+to the boundary of a sequence
+(
+y1(n)y2(n)
+)
+n∈N is as follows, where K1(·, ·|ρ1) is the Martin
+kernel on T given by (3.4)
+y1(n) → ξ1 ∈ ∂T , y2(n) arbitrary ⇒ H
+(
+x1x2 , y1(n)y2(n)
+)
+→ K1(x1 , ξ1|ρ1) ,
+y1(n) = y1 ∈ T for all n ≥ n0 , |y2(n)| → ∞ ⇒ H
+(
+x1x2 , y1(n)y2(n)
+)
+→ Φ(x1 , y1)
+Φ(o1 , y1) .
+In particular, by Crotti [9], the ratio limit compactiﬁcation coincides analytically with
+the ρ-Martin compactiﬁcation; see [29, Thm. 28.8]. In that reference, t he result is stated
+for Cartesian products; the proof carries over to direct produc ts with some obvious mod-
+iﬁcations. □
+(5.6) Example. Let Xi = Ti be two regular trees with respective degrees qi + 1 ≥ 3. On
+each of the two, we consider “lazy” simple random walk as above, tha t is,
+pi(xi , xi) = 1
+2 and pi(xi , yi) = 1
+2qi+2 when xi ∼ yi ,
+while all other transition probabilities are 0. Then Hi(xi , yi) = Φ i(xi yi), the spherical
+function on the respective tree as in §3.A. The ratio limit compactiﬁcation of the direct
+or any Cartesian product of the two random walks is the product co mpactiﬁcation of the
+ratio limit compactiﬁcations of the two trees. Convergence to the b oundary of a sequence(
+y1(n)y2(n)
+)
+n∈N is as follows, where Ki(·, ·|ρi) is the Martin kernel on Ti given by (3.4)
+y1(n) → ξ1 ∈ ∂T1 , y 2(n) → ξ2 ∈ ∂T2
+⇒ H
+(
+x1x2 , y1(n)y2(n)
+)
+→ K1(x1 , ξ1|ρ1)K2(x2 , ξ2|ρ2) ,
+y1(n) = y1 ∈ T1 for all n ≥ n0 , y 2(n) → ξ2 ∈ ∂T2
+⇒ H
+(
+x1x2 , y1(n)y2(n)
+)
+→ Φ1(x1 , y1)
+Φ1(o1 , y1) K2(x2, ξ2|ρ2) ,
+y1(n) → ξ1 ∈ ∂T1 , y 2(n) = y2 ∈ T2 for all n ≥ n0
+⇒ H
+(
+x1x2 , y1(n)y2(n)
+)
+→ K1(x1, ξ1|ρ1) Φ2(x2 , y2)
+Φ2(o2 , y2) .
+By [26], the ratio limit compactiﬁcation coincides once more analytically w ith the ρ-
+Martin compactiﬁcation. Again, this holds for direct products in the same way as for
+Cartesian products. □
+6. Reduced ratio limit compactification
+The companion paper [11] makes crucial use of the following variant o f the ratio limit
+compactiﬁcation. Let ∼ be the equivalence relation on X such that
+(6.1) y ∼ y′ ⇐ ⇒ H(x, y) = H(x, y′) for all x ∈ X .Ratio limits and Martin boundary 21
+We denote by ~X the set of equivalence classes, and by ˜ y the equivalence class of y ∈ X .
+Then the ratio limit kernel decends to a kernel on X × ~X by
+Hred(x, ˜y) = H(x, y).
+(6.2) Deﬁnition. The reduced ratio limit compactiﬁcation3 ∆ratio( ~X ) associated with X
+and P satisfying (1.1) is the (up to homomorphism) unique compact Hausdo rﬀ space
+which contains ~X as a discrete, dense subset and has the following properties:
+• for each x ∈ X , the function Hred(x, ·) extends continuously to ∆ratio( ~X ) , and
+denoting the extended kernel also by Hred,
+• if ξ, η ∈ R ( ~X ) = ∆ratio( ~X ) \ ~X are distinct, then there is x ∈ X such that
+Hred(x, ξ) ⁄= Hred(x, η).
+If ~X is ﬁnite then it is already compact, and there is no ratio limit boundary a dded to
+that space. The proofs of the following facts are easy exercises.
+(6.3) Lemma. (i) If the equivalence relation (6.1) is extended to all of ∆ratio(X ) via the
+extended ratio limit kernel on X × ∆ratio(X ), then the resulting factor space is ∆ratio( ~X ).
+(ii) The factor map X → ~X extends to a continuous surjection ∆ratio(X ) → ∆ratio( ~X )
+which is one-to-one from R(X ) into the reduced ration limit compactiﬁcation.
+(iii) If an equivalence class ˜y is inﬁnite, then it has a unique accumulation point ξ ∈ R(X ),
+and H(x, y) = H(x, ξ) for all y ∈ ˜y.
+If X = Γ is a countable group and P is a random walk induced by a probability measure
+µ, then
+(6.4) Rµ = {y ∈ Γ : H(x, y) = H(x, e) for every x ∈ Γ }
+is a subgroup of Γ, see [11]. Since the ratio limit kernel h(x, y) in (1.1) satisﬁes h(x, y) =
+f (x−1y), where f (x) = h(x, e), one gets that
+~X
+(
+= Γ red
+)
+= Γ /Rµ .
+Elder and Rogers [14] have extended Avez’ Theorem 1.5: they show that for a sym-
+metric, aperiodic random walk on an arbitrary ﬁnitely generated gro up, the set Aµ of all
+y ∈ Γ for which p(n)(e, y)/p(n)(e, e) → 1 is an amenable subgroup of Γ. This implies at
+least in the symmetric case that Rµ ⊂ Aµ is amenable.
+(6.5) Proposition. Consider a probability measure µ on the ﬁnitely generated group Γ
+which induces an irreducible & aperiodic random walk satisf ying (1.1) and (1.2). Suppose
+that Rµ is inﬁnite, and that the associated element ξ ∈ R(X ) according to Lemma 6.3(iii)
+is such that x ↦→H(x, ξ) is a minimal ρ-harmonic function.
+Then Γ ﬁxes the boundary point ξ.
+3 [11] calls this the (ordinary) ratio limit compactiﬁcation.22 W. Woess
+Proof. Like on the t-Martin compactiﬁcation, the group acts continuously on the ratio
+limit compactiﬁctation, and the extended ratio limit kernel satisﬁes t he cocycle identity
+H(gx, ξ) = H(x, g−1ξ)H(g, ξ) for all x, g ∈ Γ
+(and of course for every boundary element, not only the ξ of the statement).
+By our assumptions, H(x, y) = H(x, e) = h(x, e) = f (x) for all y ∈ Rµ, and as |y| → ∞ ,
+we have y → ξ in the topology of the ratio limit compactiﬁcation. Thus, f (x) = H(x, ξ)
+for all x ∈ Γ. By (1.2), the function
+ˇf (x) = f (x−1) = h(e, x)
+satisﬁes f P = ρ · f , where P is the transition matrix of the random walk. Using the
+cocycle identity, this can be rewritten as
+H(x, ξ) = ˇf (x) = 1
+ρ
+∑
+g∈Γ
+µ(g)H(gx, ξ) =
+∑
+g∈Γ
+µ(g)H(g, ξ)
+ρ/bracehtipupleft/bracehtipdownright/bracehtipdownleft/bracehtipupright
+=: cg
+H(x, g−1ξ)
+for every x ∈ Γ. Since ∑
+g cg = 1, the minimality assumption on H(·, ξ) yields that
+H(x, g−1ξ) = H(x, ξ) for every x ∈ Γ and every g in the support of µ. Therefore gξ = ξ
+for every g ∈ supp(µ), and consequently for every g ∈ Γ. □
+(6.6) Corollary. (a) For random walks on trees and free groups as considered in the orems
+3.3 and 3.12, the subgroup Rµ is trivial.
+(b) For random walks on non-amenable hyperbolic groups as consi dered in Theorem 4.5,
+the subgroup Rµ is ﬁnite. It is trivial when the group is torsion-free.
+Statement (a) can of course also be seen from directly from the re spective form of the ex-
+tended ratio limit kernel, in particlar for the isotropic case. However , in the non-isotropic
+case, the present method is more convenient. Note that in all case s of the corollary, the
+ρ-Martin boundary coincides with the minimal one. Furthermore, in all those cases, the
+entire group cannot ﬁx a single boundary element: this has several diﬀerent proofs, among
+which the author is best acquainted with [28, Prop. 4].
+In examples 5.5 and 5.6, think T (even degree) as the free group. The repective random
+walks are of course induced be probabiliy measure on the respective product groups. In
+Example 5.5, we have Rµ = {e1} × Z, and the reduced ratio limit compactiﬁcation is
+∆ends(T). In Example 5.6, there is no reduction; Rµ is trivial.
+7. Final remarks
+The above material should be seen as a collection of ﬁrst answers to the question
+stated in the Introduction. The next step in the same direction wou ld concern relatively
+hyperbolic groups, see the local limit theorem of [12]. Under the ass umptions of that
+work, there is again a local limit theorem of the same form as for hype rbolic groups (see
+Theorem 4.1 above). It is not so easy to lay hands on the ratio limit ker nel H(x, y) in
+those cases, but one would expect that one also has that the ratio limit compactiﬁcation
+coincides analytically with the ρ-Martin compactiﬁcation.Ratio limits and Martin boundary 23
+(7.1) Questions. (a) Under which general conditions is it true that the ratio limit kerne l
+is the left-sided limit H(x, y) = G(2)(x, y|r−)/G(2)(e, y|r−) ?
+(b) Under which general conditions does the corresponding compa ctiﬁcation coincide an-
+alytically (or only geometrically) with the ρ-Martin compactiﬁcation ?
+For relatively hyperbolic groups, in particular for free products of groups, there also
+are local limit theorems of the form (1.6), but with α > 2, see Cartwright [5] and
+Candellero and Gilch [3]. This may be more challenging.
+In the last decades there has not been much work on ratio limit theor ems for random
+walks on groups; [14] is one of the interesting exceptions. On non-a menable groups, local
+limit theorems have prevailed. In a certain sense, the cases conside red here might also be
+referred to as the “local limit boundary”. Indeed, apart from ver y few exceptions (e.g.
+radial random walks on trees), the author does not know of metho ds which provide a
+ratio limit theorem in the non-amenable environment without ﬁrst pro ving a local limit
+theorem. This may indicate possibilities for future research.
+More generally, let t ≥ ρ = ρ(P ), and suppose that we have a positive t-harmonic
+kernel h(x, y), that is, P h(·, y) = t · h(·, y). In our situation, harmonicity is two-sided,
+i.e., we also have h(x, ·)P = t · h(x, ·). For example, if P is the transition matrix of a
+random walk on a group Γ induced by the probability measure µ, then we may look for
+a solution of the convolution equation µ ∗ σ = t · σ (or the two-sided version) and set
+h(x, y) = σ(x−1y). Then we can normalise by setting H(x, y) = h(x, y)/h(e, y) and try
+to understand the corresponding compactiﬁcation. If K(·, ·|t) is the t-Martin kernel of P ,
+then for each y ∈ X there is a probability measure νy on Mt(X ) such that
+H(x, y) =
+∫
+K(x, ξ|t) dνy(ξ) .
+In the case when Mt(X ) has only minimal boundary elements, the compactiﬁcation in-
+duced by H will coincide analytically with the t-Martin compactiﬁcation when for every
+ξ ∈ M t(X ) , one has that νy → δξ weakly as y → ξ in ∆Mart, t(X ).
+References
+[1] Ancona, A.: Positive harmonic functions and hyperbolicity, Lecture Notes in Math. 1344 (1988)
+1–23.
+[2] Avez, A.: Limite de quotients pour des marches al´ eatoires sur des gro upes, C. R. Acad. Sci. Paris
+S´ er. A-B276 (1973) A317–A320.
+[3] Candellero, E., and Gilch, L. A.: Phase transitions for random walk asymptotics on free produ cts of
+groups, Random Structures Algorithms 40 (2012) 150–181.
+[4] Cartier, P.: Fonctions harmoniques sur un arbre, Symposia Mathematica 9 (1972) 203–270.
+[5] Cartwright, D. I.: On the asymptotic behaviour of convolution powers of probab ilities on discrete
+groups, Monatsh. Math. 107 (1989) 287–290.
+[6] Cartwright, D. I., and Sawyer, St.: The Martin boundary for general isotropic random walks in a
+tree, J. Theoret. Probab. 4 (1991) 111–136.
+[7] Cartwright, D. I., and Soardi, P. M.: A local limit theorem for random walks on the Cartesian produ ct
+of discrete groups, Boll. Un. Mat. Ital. 1-A (1987) 107–115.
+[8] Cartwright, D. I., Soardi, P. M., and Woess, W.: Martin and end compactiﬁcations for non-locally
+ﬁnite graphs, Trans. Amer. Math. Soc. 338 (1993) 679–693.24 W. Woess
+[9] Crotti, S.: La frontiera di Martin del prodotto Cartesiano di un albero e di una retta, Tesi di Laurea
+(Master thesis, in Italian), Univ. Milano, 1995.
+[10] Derriennic, Y.: Marche al´ eatoire sur le groupe libre et fronti` ere de Martin, Z. Wahrscheinlichkeits-
+theorie und Verw. Gebiete 32 (1975) 261–276.
+[11] Dor-On, A.: Toeplitz quotient C∗-algebras and ratio limits for random walks, preprint (2021).
+[12] Dussaule, M.: Local limit theorems in relatively hyperbolic groups II : th e non-spectrally degenerate
+case, preprint (2020), arXiv:2004.13986.
+[13] Dynkin, E. B., and Maljutov, M. B.: Random walk on groups with a ﬁnite number of generators
+(Russian), Dokl. Akad. Nauk SSSR 137 (1961) 1042–1045.
+[14] Elder, M., and Rogers, C.: On a theorem of Avez, J. Group Theory 22 (2019), 383–395.
+[15] Gerl, P.: Irrfahrten auf F2 , Monatsh. Math. 84 (1977) 29–35.
+[16] Gerl, P., and Woess, W.: Local limits and harmonic functions for nonisotropic rando m walks on free
+groups, Probab. Theory Relat. Fields 71 (1986) 341–355.
+[17] Gou¨ ezel, S.: Local limit theorem for symmetric random walks in Gromov-hy perbolic groups, J. Amer.
+Math. Soc. 27 (2014) 893–928.
+[18] Gou¨ ezel, S.: Martin boundary of random walks with unbounded jumps in hype rbolic groups, Ann.
+Probab. 43 (2015) 2374–2404.
+[19] Gou¨ ezel, S., and Lalley, St. P.: Random walks on co-compact Fuchsian groups, Ann. Sci. ´Ec. Norm.
+Sup´ er.46 (2013) 129–173.
+[20] Gromov, M.: Hyperbolic groups, in Essays in Group Theory (ed. S. M. Gersten), pp. 75–263, Math.
+Sci. Res. Inst. Publ. 8, Springer, New York, 1987.
+[21] Kaimanovich, V. A. and Vershik, A. M.: Random walks on discrete groups: boundary and entropy,
+Ann. Probab. 11 (1983) 457–490.
+[22] Kesten, H.: Full Banach mean values on countable groups, Math. Scand. 7 (1959) 146–156.
+[23] Lalley, St. P.: Finite range random walk on free groups and homogeneous tree s, Ann. Probab. 21
+(1993) 2087–2130.
+[24] Picardello, M. A., and Woess, W.: Martin boundaries of random walk s: ends of trees and groups,
+Trans. Amer. Math. Soc. 302 (1987) 185–205.
+[25] Picardello, M. A., and Woess, W.: A converse to the mean value pro perty on homogeneous trees,
+Trans. Amer. Math. Soc. 311 (1989) 209–225.
+[26] Picardello, M. A., and Woess, W.: The full Martin boundary of the b i-tree, Ann. Probab. 22 (1994)
+2203–2222.
+[27] Sawyer, St.: Isotropic random walks in a tree, Z. Wahrsch. Verw. Gebiete 42 (1978) 279–292.
+[28] Woess, W.: Fixed sets and free subgroups of groups acting on metric spac es, Math. Zeitschr. 214
+(1993) 425–440.
+[29] Woess, W.: Random Walks on Inﬁnite Graphs and Groups , Cambridge Tracts in Mathematics 138,
+Cambridge University Press, Cambridge, 2000.
+[30] Woess, W.: Denumerable Markov Chains. Generating Functions, Boundar y Theory, Random Walks
+on Trees, European Math. Soc. Publishing House, 2009.
+[31] Woess, W.: Lamplighters, Diestel-Leader graphs, random walks, and ha rmonic functions, Combin.
+Probab. Comput. 14 (2005) 415–433.
+Institut f ¨ur Diskrete Mathematik,
+Technische Universit ¨at Graz,
+Steyrergasse 30, A-8010 Graz, Austria
+Email address : woess@tugraz.at
