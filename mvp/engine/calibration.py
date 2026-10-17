@@ -36,7 +36,7 @@ class GazeCalibration:
         center_x = self.screen_w / 2.0; center_y = self.screen_h / 2.0
         px_per_mm_x = self.screen_w / max(self.physical_screen_w_mm, 1.0)
         px_per_mm_y = self.screen_h / max(self.physical_screen_h_mm, 1.0)
-        dx_mm = self.user_distance_mm * math.tan(y_rad) * self.gain_x
+        dx_mm = -self.user_distance_mm * math.tan(y_rad) * self.gain_x
         dy_mm = -self.user_distance_mm * math.tan(p_rad) * self.gain_y
         raw_x = center_x + dx_mm * px_per_mm_x
         raw_y = center_y + dy_mm * px_per_mm_y
@@ -73,8 +73,8 @@ class GazeCalibration:
         if has_head:
             Xx = X[:, [0, 1, 3]]
             Xy = X[:, [0, 2, 4]]
-            reg_x = l2_reg * np.eye(3); reg_x[0, 0] = 0.0
-            reg_y = l2_reg * np.eye(3); reg_y[0, 0] = 0.0
+            reg_x = np.diag([0.0, l2_reg, l2_reg * 50.0])
+            reg_y = np.diag([0.0, l2_reg, l2_reg * 50.0])
             wx = np.linalg.solve(Xx.T @ Xx + reg_x, Xx.T @ Y[:, 0])
             wy = np.linalg.solve(Xy.T @ Xy + reg_y, Xy.T @ Y[:, 1])
             self.weights = np.zeros((5, 2), dtype=np.float64)

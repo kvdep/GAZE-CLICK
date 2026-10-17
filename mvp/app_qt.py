@@ -195,6 +195,14 @@ class GazeMainWindow(QMainWindow):
         for y in ys:
             for x in xs:
                 pts.append((float(x), float(y)))
+        extreme_points = [
+            (float(0.06 * self.screen_w), float(0.50 * self.screen_h)),
+            (float(0.94 * self.screen_w), float(0.50 * self.screen_h)),
+            (float(0.50 * self.screen_w), float(0.14 * self.screen_h)),
+            (float(0.50 * self.screen_w), float(0.89 * self.screen_h)),
+        ]
+        for ex_x, ex_y in extreme_points:
+            pts.append((ex_x, ex_y))
         return pts
 
     def _build_ui(self):
@@ -293,7 +301,7 @@ class GazeMainWindow(QMainWindow):
         lbl_ctrl_head = QLabel("CONTROL ACTIONS")
         lbl_ctrl_head.setProperty("class", "title")
         ctrl_layout.addWidget(lbl_ctrl_head)
-        self.btn_calibrate = QPushButton("Start 9-Point Calibration [C]")
+        self.btn_calibrate = QPushButton("Start 13-Point Calibration [C]")
         self.btn_calibrate.setProperty("class", "primary")
         self.btn_calibrate.clicked.connect(self.start_calibration)
         ctrl_layout.addWidget(self.btn_calibrate)
@@ -469,7 +477,7 @@ class GazeMainWindow(QMainWindow):
             self.finish_calibration()
 
     def finish_calibration(self):
-        res = self.calibration.fit(self.calib_final_dataset, l2_reg=0.5)
+        res = self.calibration.fit(self.calib_final_dataset, l2_reg=1.0)
         self.mode = "tracking"
         self.stacked_widget.setCurrentIndex(0)
         if res.get("status", 0) == 1:
@@ -686,7 +694,7 @@ class GazeMainWindow(QMainWindow):
                     cv2.circle(vis, (lex, ley), 4, (59, 130, 246), -1)
                     p_rad = math.radians(p - self.calibration.resting_pitch_deg); y_rad = math.radians(y)
                     arrow_len = 55.0
-                    dx = arrow_len * math.sin(y_rad)
+                    dx = -arrow_len * math.sin(y_rad)
                     dy = -arrow_len * math.sin(p_rad)
                     cv2.arrowedLine(vis, (rex, rey), (int(rex + dx), int(rey + dy)), (239, 68, 68), 2, tipLength=0.25)
                     cv2.arrowedLine(vis, (lex, ley), (int(lex + dx), int(ley + dy)), (239, 68, 68), 2, tipLength=0.25)
