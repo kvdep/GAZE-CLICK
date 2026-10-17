@@ -113,14 +113,22 @@ def run_calibrated_benchmark(checkpoint_path: str, video_path: str, metadata_pat
 if __name__ == "__main__":
     v_path = "mvp/benchmarks/benchmark_test_20261014_115554.mp4"
     m_path = "mvp/benchmarks/benchmark_test_20261014_115554.parquet"
-    checkpoints = [
-        ("RUN 010 (Epoch 10)", "mvp/experiments/yolo26n_gaze_net_yolo26n/run_010_20261015_020142/checkpoints/best_model.pt"),
-        ("RUN 013 BEST (Epoch 1)", "mvp/experiments/yolo26n_gaze_net_yolo26n/run_013_20261016_182944/checkpoints/best_model.pt"),
-        ("RUN 013 LATEST (Epoch 4)", "mvp/experiments/yolo26n_gaze_net_yolo26n/run_013_20261016_182944/checkpoints/latest_model.pt")
-    ]
-    for tag, cp in checkpoints:
-        if os.path.exists(cp):
-            res = run_calibrated_benchmark(cp, v_path, m_path)
-            print(f"--- {tag} ---")
-            for k, v in res.items():
-                print(f"  {k}: {v}")
+    if len(sys.argv) > 1 and os.path.exists(sys.argv[1]):
+        cp = sys.argv[1]
+        res = run_calibrated_benchmark(cp, v_path, m_path)
+        print(f"--- EVAL: {cp} ---")
+        for k, v in res.items():
+            print(f"  {k}: {v}")
+    else:
+        checkpoints = [
+            ("RUN 014 BEST (Epoch 6)", "mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/best_model.pt"),
+            ("RUN 014 LATEST", "mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/latest_model.pt"),
+            ("RUN 013 BEST (Epoch 1)", "mvp/experiments/yolo26n_gaze_net_yolo26n/run_013_20261016_182944/checkpoints/best_model.pt"),
+            ("RUN 010 (Epoch 10)", "mvp/experiments/yolo26n_gaze_net_yolo26n/run_010_20261015_020142/checkpoints/best_model.pt")
+        ]
+        for tag, cp in checkpoints:
+            if os.path.exists(cp):
+                res = run_calibrated_benchmark(cp, v_path, m_path)
+                print(f"--- {tag} ---")
+                for k, v in res.items():
+                    print(f"  {k}: {v}")
