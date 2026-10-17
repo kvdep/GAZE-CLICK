@@ -13,8 +13,8 @@ class GazeCalibration:
         self.user_distance_mm = 600.0
         self.physical_screen_w_mm = 300.0
         self.physical_screen_h_mm = 190.0
-        self.resting_pitch_deg = -8.99
-        self.resting_yaw_deg = 0.0
+        self.resting_pitch_deg = -3.84
+        self.resting_yaw_deg = -6.95
         self.gain_x = 1.85
         self.gain_y = 1.65
         self.offset_x = 0.0

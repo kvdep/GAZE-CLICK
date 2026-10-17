@@ -105,11 +105,15 @@ class TelemetryLogger:
             "mouse_active": int(bool(data.get("mouse_active", False))),
             "click_event": int(bool(data.get("click_event", False)))
         }
+        if self.csv_file is None or self.csv_file.closed:
+            return
         self.writer.writerow(row)
         if self.frames_logged % 30 == 0:
             self.csv_file.flush()
 
     def close(self) -> str:
+        if self.csv_file is None or self.csv_file.closed:
+            return ""
         self.csv_file.flush(); self.csv_file.close()
         total_time = time.perf_counter() - self.start_mono
         mean_fps = float(np.mean(self.fps_records)) if self.fps_records else 0.0

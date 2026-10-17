@@ -1132,9 +1132,14 @@ class GazeMainWindow(QMainWindow):
 
     def closeEvent(self, event):
         self.anim_timer.stop()
-        if hasattr(self, "worker") and self.worker.isRunning():
-            self.worker.stop()
-            self.worker.wait(1500)
+        if hasattr(self, "worker"):
+            try:
+                self.worker.frame_processed.disconnect()
+            except Exception:
+                pass
+            if self.worker.isRunning():
+                self.worker.stop()
+                self.worker.wait(1500)
         self.logger.close()
         super().closeEvent(event)
 

@@ -516,3 +516,16 @@ os.environ["NO_ALBUMENTATIONS_UPDATE"] = "1"
 * **Причина:** В мажорном обновлении NumPy 2.0 метод экземпляра `ndarray.ptp()` был окончательно удален из C-API и интерфейса массива. Допустимым остался только функциональный интерфейс модуля `numpy.ptp(arr)`.
 * **Решение:** Замена всех вызовов `arr.ptp()` на синтаксически совместимую функцию верхнего уровня `np.ptp(arr)` во всех вспомогательных скриптах и модулях оценки.
 
+
+---
+
+### Проблема 61: Исключение ValueError: I/O operation on closed file при завершении приложения PyQt6
+* **Симптом:** При закрытии окна `app_qt.py` в консоли генерируется трассировка `ValueError: I/O operation on closed file` в строке `self.logger.log_frame()`.
+* **Причина:** В обработчике `closeEvent` вызывается метод `self.logger.close()`, немедленно закрывающий дескриптор CSV-файла сессии. Фоновый рабочий поток `PipelineWorker` продолжает генерировать сигналы `frame_processed`, которые остаются в очереди событий GUI-потока. При их доставке метод `_on_frame_processed` обращается к закрытому файлу.
+* **Решение:** 
+  1. В `GazeMainWindow.closeEvent` перед остановкой рабочего потока явно отключается слот приемника: `self.worker.frame_processed.disconnect()`.
+  2. В методах `TelemetryLogger.log_frame` и `TelemetryLogger.close` установлена превентивная проверка состояния дескриптора:
+  ```python
+  if self.csv_file is None or self.csv_file.closed:
+      return
+  ```

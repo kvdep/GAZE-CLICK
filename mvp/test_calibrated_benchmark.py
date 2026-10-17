@@ -111,24 +111,14 @@ def run_calibrated_benchmark(checkpoint_path: str, video_path: str, metadata_pat
     return summary
 
 if __name__ == "__main__":
-    v_path = "mvp/benchmarks/benchmark_test_20261014_115554.mp4"
-    m_path = "mvp/benchmarks/benchmark_test_20261014_115554.parquet"
-    if len(sys.argv) > 1 and os.path.exists(sys.argv[1]):
-        cp = sys.argv[1]
-        res = run_calibrated_benchmark(cp, v_path, m_path)
-        print(f"--- EVAL: {cp} ---")
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--video", type=str, default="mvp/benchmarks/benchmark_test_20261017_152857.mp4")
+    parser.add_argument("--meta", type=str, default="mvp/benchmarks/benchmark_test_20261017_152857.csv")
+    parser.add_argument("--checkpoint", type=str, default="mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/best_model.pt")
+    args = parser.parse_args()
+    if os.path.exists(args.checkpoint) and os.path.exists(args.video) and os.path.exists(args.meta):
+        res = run_calibrated_benchmark(args.checkpoint, args.video, args.meta)
+        print(f"--- EVAL: {args.checkpoint} ON {os.path.basename(args.video)} ---")
         for k, v in res.items():
             print(f"  {k}: {v}")
-    else:
-        checkpoints = [
-            ("RUN 014 BEST (Epoch 6)", "mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/best_model.pt"),
-            ("RUN 014 LATEST", "mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/latest_model.pt"),
-            ("RUN 013 BEST (Epoch 1)", "mvp/experiments/yolo26n_gaze_net_yolo26n/run_013_20261016_182944/checkpoints/best_model.pt"),
-            ("RUN 010 (Epoch 10)", "mvp/experiments/yolo26n_gaze_net_yolo26n/run_010_20261015_020142/checkpoints/best_model.pt")
-        ]
-        for tag, cp in checkpoints:
-            if os.path.exists(cp):
-                res = run_calibrated_benchmark(cp, v_path, m_path)
-                print(f"--- {tag} ---")
-                for k, v in res.items():
-                    print(f"  {k}: {v}")

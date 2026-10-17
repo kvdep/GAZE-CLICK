@@ -215,9 +215,9 @@ class YOLO26nGazeNet(BaseGazeModel):
         g_eye = raw_gaze_eye / torch.clamp(torch.norm(raw_gaze_eye, p=2, dim=-1, keepdim=True), min=1e-8)
         cy = torch.cos(hy_rad); sy = torch.sin(hy_rad)
         cp = torch.cos(hp_rad); sp = torch.sin(hp_rad)
-        g_pred_x = cy * g_eye[:, 0] - sy * sp * g_eye[:, 1] + sy * cp * g_eye[:, 2]
+        g_pred_x = cy * g_eye[:, 0] + sy * sp * g_eye[:, 1] - sy * cp * g_eye[:, 2]
         g_pred_y = cp * g_eye[:, 1] + sp * g_eye[:, 2]
-        g_pred_z = -sy * g_eye[:, 0] - cy * sp * g_eye[:, 1] + cy * cp * g_eye[:, 2]
+        g_pred_z = sy * g_eye[:, 0] - cy * sp * g_eye[:, 1] + cy * cp * g_eye[:, 2]
         gaze_unit = torch.stack([g_pred_x, g_pred_y, g_pred_z], dim=-1)
         gaze_unit = gaze_unit / torch.clamp(torch.norm(gaze_unit, p=2, dim=-1, keepdim=True), min=1e-8)
         gp_rad = torch.asin(torch.clamp(-gaze_unit[:, 1], -0.99999, 0.99999))
