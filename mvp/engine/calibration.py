@@ -55,9 +55,13 @@ class GazeCalibration:
         clamped_y = float(np.clip(raw_y, 0.0, self.screen_h - 1.0))
         return clamped_x, clamped_y
 
-    def predict(self, pitch_deg: float, yaw_deg: float, head_pitch_deg: float = 0.0, head_yaw_deg: float = 0.0) -> Tuple[float, float]:
+    def predict(self, pitch_deg: float, yaw_deg: float, head_pitch_deg: float = 0.0, head_yaw_deg: float = 0.0, ix: Optional[float] = None, iy: Optional[float] = None, eye_diff_x: Optional[float] = None, eye_diff_y: Optional[float] = None) -> Tuple[float, float]:
         if self.is_calibrated and self.weights is not None:
-            if self.weights.shape[0] == 5:
+            if self.weights.shape[0] == 7 and ix is not None and iy is not None:
+                edx = float(eye_diff_x if eye_diff_x is not None else 0.0)
+                edy = float(eye_diff_y if eye_diff_y is not None else 0.0)
+                feat = np.array([1.0, float(ix), float(iy), edx, edy, float(head_yaw_deg), float(head_pitch_deg)], dtype=np.float64)
+            elif self.weights.shape[0] == 5:
                 feat = self._extract_features(pitch_deg, yaw_deg, head_pitch_deg, head_yaw_deg)
             else:
                 feat = np.array([1.0, yaw_deg, pitch_deg], dtype=np.float64)
@@ -77,8 +81,29 @@ class GazeCalibration:
     def fit(self, calibration_data: List[Dict[str, Any]], l2_reg: float = 1.0) -> Dict[str, float]:
         if len(calibration_data) < 5:
             return {"status": 0, "error": "Insufficient samples"}
+        has_iris = all("ix" in s and "iy" in s for s in calibration_data)
         has_head = all("head_yaw_deg" in s and "head_pitch_deg" in s for s in calibration_data)
-        if has_head:
+        if has_iris:
+            X_rows = []
+            Y_rows = []
+            for s in calibration_data:
+                feat = np.array([
+                    1.0,
+                    float(s["ix"]),
+                    float(s["iy"]),
+                    float(s.get("eye_diff_x", 0.0)),
+                    float(s.get("eye_diff_y", 0.0)),
+                    float(s.get("head_yaw_deg", 0.0)),
+                    float(s.get("head_pitch_deg", 0.0))
+                ], dtype=np.float64)
+                X_rows.append(feat)
+                Y_rows.append([float(s["target_x"]), float(s["target_y"])])
+            X = np.array(X_rows, dtype=np.float64)
+            Y = np.array(Y_rows, dtype=np.float64)
+            reg = np.eye(7, dtype=np.float64) * l2_reg
+            reg[0, 0] = 0.0
+            self.weights = np.linalg.solve(X.T @ X + reg, X.T @ Y)
+        elif has_head:
             X_rows = []
             Y_rows = []
             for sample in calibration_data:
@@ -165,7 +190,7 @@ class GazeCalibration:
             with open(self.profile_path, "r", encoding="utf-8") as f:
                 payload = json.load(f)
             self.weights = np.array(payload["weights"], dtype=np.float64)
-            if self.weights.shape[0] not in (3, 5):
+            if self.weights.shape[0] not in (3, 5, 7):
                 return False
             self.mean_residual_px = payload.get("mean_residual_px", 0.0)
             self.r2_score = payload.get("r2_score", 0.0)

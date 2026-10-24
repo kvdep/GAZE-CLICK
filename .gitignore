@@ -16,6 +16,7 @@ DATA/
 *.pt
 *.pth
 *.onnx
+*.task
 *.parquet
 *.h5
 *.hdf5

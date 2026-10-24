@@ -9,10 +9,14 @@ from PyQt6.QtWidgets import (
     QProgressBar, QMessageBox, QDialog, QTextEdit, QScrollArea
 )
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+current_file_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(current_file_dir)
+if os.path.basename(os.getcwd()) == "mvp" and os.path.exists(os.path.join(project_root, "mvp")):
+    os.chdir(project_root)
+sys.path.insert(0, project_root)
+sys.path.insert(0, current_file_dir)
 
-from engine.face_pipeline import GazeTrackingPipeline
+from engine.face_pipeline import create_gaze_pipeline, GazeTrackingPipeline
 from engine.calibration import GazeCalibration
 from engine.filter import PointOneEuroFilter
 from engine.cursor_controller import CursorController
@@ -324,11 +328,12 @@ class PipelineWorker(QThread):
     frame_processed = pyqtSignal(QImage, dict)
     worker_error = pyqtSignal(str)
 
-    def __init__(self, camera_id: int = 0, checkpoint_path: str = "", yunet_path: str = "", parent=None):
+    def __init__(self, camera_id: int = 0, checkpoint_path: str = "", yunet_path: str = "", pipeline_type: str = "mediapipe", parent=None):
         super().__init__(parent)
         self.camera_id = camera_id
         self.checkpoint_path = checkpoint_path
         self.yunet_path = yunet_path
+        self.pipeline_type = pipeline_type
         self.running = False
         self.mirror_camera = True
         self.invert_gaze_x = False
@@ -338,7 +343,11 @@ class PipelineWorker(QThread):
 
     def run(self):
         try:
-            pipeline = GazeTrackingPipeline(checkpoint_path=self.checkpoint_path, yunet_path=self.yunet_path)
+            pipeline = create_gaze_pipeline(
+                pipeline_type=self.pipeline_type,
+                checkpoint_path=self.checkpoint_path,
+                yunet_path=self.yunet_path
+            )
         except Exception as e:
             self.worker_error.emit(f"Failed to initialize AI Pipeline: {str(e)}")
             return
@@ -554,13 +563,14 @@ class BenchmarkCanvas(QWidget):
         painter.drawRoundedRect(QRectF(bar_x, bar_y, fill_w, bar_h), 6.0, 6.0)
 
 class GazeMainWindow(QMainWindow):
-    def __init__(self, camera_id: int = 0, checkpoint_path: str = "mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/best_model.pt", yunet_path: str = "mvp/models/weights/face_detection_yunet_2023mar.onnx", log_dir: str = "mvp/logs") -> None:
+    def __init__(self, camera_id: int = 0, checkpoint_path: str = "mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/best_model.pt", yunet_path: str = "mvp/models/weights/face_detection_yunet_2023mar.onnx", log_dir: str = "mvp/logs", pipeline_type: str = "mediapipe") -> None:
         super().__init__()
         self.setWindowTitle("GAZE-CLICK // NEURAL REAL-TIME GAZE CONTROL")
         self.camera_id = camera_id
         self.checkpoint_path = checkpoint_path
         self.yunet_path = yunet_path
         self.log_dir = log_dir
+        self.pipeline_type = pipeline_type
         self.user32 = ctypes.windll.user32
         try:
             self.user32.SetProcessDPIAware()
@@ -599,6 +609,7 @@ class GazeMainWindow(QMainWindow):
             camera_id=self.camera_id,
             checkpoint_path=self.checkpoint_path,
             yunet_path=self.yunet_path,
+            pipeline_type=self.pipeline_type,
             parent=self
         )
         self.worker.mirror_camera = self.mirror_camera
@@ -837,11 +848,16 @@ class GazeMainWindow(QMainWindow):
         y = telem["gaze_yaw_deg"]
         hp = telem["head_pitch_deg"]
         hy = telem["head_yaw_deg"]
+        mres = telem.get("model_res") or {}
+        ix = mres.get("ix")
+        iy = mres.get("iy")
+        edx = mres.get("eye_diff_x")
+        edy = mres.get("eye_diff_y")
         self.latest_gaze_angles = (p, y)
         self.latest_head_angles = (hp, hy)
         raw_x, raw_y = self.calibration.predict_uncalibrated(p, y)
         if self.calibration.is_calibrated:
-            calib_x, calib_y = self.calibration.predict(p, y, head_pitch_deg=hp, head_yaw_deg=hy)
+            calib_x, calib_y = self.calibration.predict(p, y, head_pitch_deg=hp, head_yaw_deg=hy, ix=ix, iy=iy, eye_diff_x=edx, eye_diff_y=edy)
         else:
             calib_x, calib_y = raw_x, raw_y
         filt_x, filt_y = self.filter.filter(calib_x, calib_y, time.perf_counter())
@@ -885,7 +901,7 @@ class GazeMainWindow(QMainWindow):
             now = time.perf_counter()
             elapsed = now - self.calib_start_t
             if elapsed >= 0.6:
-                self.calib_point_samples.append((p, y, hp, hy))
+                self.calib_point_samples.append((p, y, hp, hy, ix, iy, edx, edy))
         elif self.mode == "benchmark":
             self.benchmark.record_frame(
                 telem["raw_frame"],
@@ -1054,16 +1070,22 @@ class GazeMainWindow(QMainWindow):
             return
         curr_pt = self.calib_points[self.calib_idx]
         if len(self.calib_point_samples) >= 3:
-            s_arr = np.array(self.calib_point_samples)
-            med_p = float(np.median(s_arr[:, 0]))
-            med_y = float(np.median(s_arr[:, 1]))
-            med_hp = float(np.median(s_arr[:, 2])) if s_arr.shape[1] >= 4 else 0.0
-            med_hy = float(np.median(s_arr[:, 3])) if s_arr.shape[1] >= 4 else 0.0
-            self.calib_final_dataset.append({
+            s_arr = np.array(self.calib_point_samples, dtype=object)
+            med_p = float(np.median([s[0] for s in self.calib_point_samples if s[0] is not None]))
+            med_y = float(np.median([s[1] for s in self.calib_point_samples if s[1] is not None]))
+            med_hp = float(np.median([s[2] for s in self.calib_point_samples if s[2] is not None]))
+            med_hy = float(np.median([s[3] for s in self.calib_point_samples if s[3] is not None]))
+            sample_entry = {
                 "target_x": curr_pt[0], "target_y": curr_pt[1],
                 "pitch_deg": med_p, "yaw_deg": med_y,
                 "head_pitch_deg": med_hp, "head_yaw_deg": med_hy
-            })
+            }
+            if len(self.calib_point_samples[0]) >= 8 and self.calib_point_samples[0][4] is not None:
+                sample_entry["ix"] = float(np.median([s[4] for s in self.calib_point_samples]))
+                sample_entry["iy"] = float(np.median([s[5] for s in self.calib_point_samples]))
+                sample_entry["eye_diff_x"] = float(np.median([s[6] for s in self.calib_point_samples]))
+                sample_entry["eye_diff_y"] = float(np.median([s[7] for s in self.calib_point_samples]))
+            self.calib_final_dataset.append(sample_entry)
         self.calib_point_samples = []
         self.calib_idx += 1
         self.calib_start_t = time.perf_counter()
@@ -1157,12 +1179,13 @@ def main():
     parser = argparse.ArgumentParser(description="GAZE-CLICK PyQt6 Real-Time System")
     parser.add_argument("--camera-id", type=int, default=0)
     parser.add_argument("--checkpoint", type=str, default="mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/best_model.pt")
+    parser.add_argument("--pipeline", type=str, default="mediapipe", choices=["mediapipe", "yolo26n"])
     parser.add_argument("--fullscreen", action="store_true")
     args = parser.parse_args()
     app = QApplication(sys.argv)
     app.setApplicationName("GAZE-CLICK")
     app.setStyleSheet(GLOBAL_QSS)
-    win = GazeMainWindow(camera_id=args.camera_id, checkpoint_path=args.checkpoint)
+    win = GazeMainWindow(camera_id=args.camera_id, checkpoint_path=args.checkpoint, pipeline_type=args.pipeline)
     if args.fullscreen:
         win.showFullScreen()
     else:

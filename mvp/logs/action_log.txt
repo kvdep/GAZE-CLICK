@@ -4531,3 +4531,30 @@
 [17:22:14] [00:00:00] [GPU] [18.9] [6.9] [registry.py:77] Loaded model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
 [17:22:49] [00:00:00] [GPU] [19.0] [6.9] [registry.py:65] Loading model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
 [17:22:50] [00:00:00] [GPU] [18.9] [6.9] [registry.py:77] Loaded model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
+[15:25:56] [00:00:12] [GPU] [22.0] [6.9] [memory.py:33] Runtime verified: Free VRAM = 6.89 GB, Free RAM = 22.01 GB
+[15:25:56] [00:00:00] [GPU] [22.0] [6.9] [main.py:213] Experiment execution initiated: backbone=yolo26n, epochs=150, lr=0.0005, save_interval_min=20.0, free_vram=6.89 GB
+[15:25:56] [00:00:00] [GPU] [22.0] [6.9] [unification.py:312] Starting data unification across 3 dataset configurations
+[15:25:56] [00:00:00] [GPU] [22.0] [6.9] [unification.py:67] Loading Columbia Gaze: labels='DATA/columbia_gaze/processed/columbia_gaze_full.parquet', images_base='DATA/columbia_gaze'
+[13:55:23] [00:00:12] [GPU] [21.5] [6.9] [memory.py:33] Runtime verified: Free VRAM = 6.89 GB, Free RAM = 21.54 GB
+[13:55:23] [00:00:00] [GPU] [21.5] [6.9] [main.py:213] Experiment execution initiated: backbone=yolo26n, epochs=150, lr=0.0005, save_interval_min=20.0, free_vram=6.89 GB
+[13:55:23] [00:00:00] [GPU] [21.5] [6.9] [unification.py:312] Starting data unification across 3 dataset configurations
+[13:55:23] [00:00:00] [GPU] [21.5] [6.9] [unification.py:67] Loading Columbia Gaze: labels='DATA/columbia_gaze/processed/columbia_gaze_full.parquet', images_base='DATA/columbia_gaze'
+[14:01:22] [00:00:05] [GPU] [20.4] [6.9] [memory.py:33] Runtime verified: Free VRAM = 6.89 GB, Free RAM = 20.40 GB
+[14:01:22] [00:00:00] [GPU] [20.4] [6.9] [main.py:173] Starting data unification process for all configured datasets
+[14:01:22] [00:00:00] [GPU] [20.4] [6.9] [unification.py:334] Starting data unification across 3 dataset configurations
+[14:01:22] [00:00:00] [GPU] [20.4] [6.9] [unification.py:85] Loading Columbia Gaze: labels='C:\Users\jack_\MAIN\ВУЗ\ВКР\DATA\columbia_gaze\processed\columbia_gaze_full.parquet', images_base='C:\Users\jack_\MAIN\ВУЗ\ВКР\DATA\columbia_gaze'
+[14:01:24] [00:00:02] [GPU] [20.3] [6.9] [unification.py:155] Columbia Gaze loaded in 2.500s: 5880 verified real images on disk out of 5880 label records
+[14:01:24] [00:00:00] [GPU] [20.3] [6.9] [unification.py:350] Dataset [columbia_gaze] processed: 5880 real image samples from 56 subjects
+[14:01:24] [00:00:00] [GPU] [20.3] [6.9] [unification.py:163] Loading MPIIFaceGaze: labels='C:\Users\jack_\MAIN\ВУЗ\ВКР\DATA\mpiifacegaze\processed\mpiifacegaze_full.parquet', images_base='C:\Users\jack_\MAIN\ВУЗ\ВКР\DATA\mpiifacegaze'
+[14:01:38] [00:00:14] [GPU] [20.1] [6.9] [unification.py:231] MPIIFaceGaze loaded in 14.047s: 37667 verified real images on disk out of 37667 label records
+[14:01:38] [00:00:00] [GPU] [20.2] [6.9] [unification.py:350] Dataset [mpiifacegaze] processed: 37667 real image samples from 15 subjects
+[14:01:38] [00:00:00] [GPU] [20.2] [6.9] [unification.py:239] Loading RT-GENE: labels='C:\Users\jack_\MAIN\ВУЗ\ВКР\DATA\rtgene\rtgene_dataset\processed\rtgene_full_labels.parquet', images_base='C:\Users\jack_\MAIN\ВУЗ\ВКР\DATA\rtgene\rtgene_dataset'
+[14:01:40] [00:00:01] [GPU] [20.0] [6.9] [unification.py:319] RT-GENE loaded in 1.578s: 114558 verified real images on disk out of 114558 label records
+[14:01:40] [00:00:00] [GPU] [20.0] [6.9] [unification.py:350] Dataset [rtgene] processed: 114537 real image samples from 15 subjects
+[14:01:40] [00:00:00] [GPU] [20.0] [6.9] [unification.py:357] Data unification completed in 18.281s: total 158084 verified real images across 3 datasets and 86 subjects
+[14:01:41] [00:00:00] [GPU] [20.0] [6.9] [unification.py:361] Saved unified dataset to: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\mvp\experiments\unified_gaze_dataset.parquet
+[14:01:41] [00:00:00] [GPU] [20.1] [6.9] [main.py:194] Data unification process completed in 18.91s: 158084 real image rows across 3 datasets.
+[14:05:01] [00:00:08] [GPU] [20.8] [6.9] [registry.py:65] Loading model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
+[14:05:02] [00:00:00] [GPU] [20.6] [6.9] [registry.py:77] Loaded model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
+[14:09:17] [00:00:02] [GPU] [20.1] [6.9] [registry.py:65] Loading model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
+[14:09:17] [00:00:00] [GPU] [20.0] [6.9] [registry.py:77] Loaded model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt

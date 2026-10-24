@@ -16,6 +16,26 @@ def _resolve_path(p: str) -> str:
                 return os.path.abspath(cand2)
     return p
 
+def _safe_model_path(p: str) -> str:
+    resolved = _resolve_path(p)
+    try:
+        resolved.encode("ascii")
+        return resolved
+    except UnicodeEncodeError:
+        try:
+            rel = os.path.relpath(resolved)
+            rel.encode("ascii")
+            if os.path.exists(rel):
+                return rel
+        except Exception:
+            pass
+        import tempfile, shutil
+        t_dir = tempfile.gettempdir()
+        t_path = os.path.join(t_dir, os.path.basename(resolved))
+        if not os.path.exists(t_path) or os.path.getsize(t_path) != os.path.getsize(resolved):
+            shutil.copyfile(resolved, t_path)
+        return t_path
+
 class GazeTrackingPipeline:
     def __init__(self, checkpoint_path: str = "mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/best_model.pt", yunet_path: str = "mvp/models/weights/face_detection_yunet_2023mar.onnx", device_str: Optional[str] = None) -> None:
         if device_str is None:
@@ -23,7 +43,7 @@ class GazeTrackingPipeline:
         else:
             self.device = torch.device(device_str)
         checkpoint_path = _resolve_path(checkpoint_path)
-        yunet_path = _resolve_path(yunet_path)
+        yunet_path = _safe_model_path(yunet_path)
         if not os.path.exists(checkpoint_path):
             raise FileNotFoundError(f"Gaze checkpoint not found: {checkpoint_path}")
         if not os.path.exists(yunet_path):
@@ -140,3 +160,130 @@ class GazeTrackingPipeline:
                 "left_mouth": l_mouth
             }
         }
+
+class MediaPipeIrisPipeline:
+    def __init__(self, task_path: str = "mvp/models/weights/face_landmarker.task") -> None:
+        import mediapipe as mp
+        resolved = _resolve_path(task_path)
+        if not os.path.exists(resolved):
+            raise FileNotFoundError(f"MediaPipe task asset not found: {resolved}")
+        with open(resolved, "rb") as f:
+            task_bytes = f.read()
+        base_options = mp.tasks.BaseOptions(model_asset_buffer=task_bytes)
+        options = mp.tasks.vision.FaceLandmarkerOptions(
+            base_options=base_options,
+            running_mode=mp.tasks.vision.RunningMode.VIDEO,
+            num_faces=1,
+            output_face_blendshapes=True,
+            output_facial_transformation_matrixes=True
+        )
+        self.landmarker = mp.tasks.vision.FaceLandmarker.create_from_options(options)
+        self.frame_count = 0
+        self.ema_pitch = None
+        self.ema_yaw = None
+        self.ema_alpha = 0.35
+
+    def process_frame(self, frame_bgr: np.ndarray, timestamp_ms: Optional[int] = None) -> Dict[str, Any]:
+        import mediapipe as mp
+        h, w = frame_bgr.shape[:2]
+        self.frame_count += 1
+        ts = int(timestamp_ms if timestamp_ms is not None else self.frame_count * 16.666)
+        rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
+        mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
+        t_start = time.perf_counter()
+        res = self.landmarker.detect_for_video(mp_img, ts)
+        latency_ms = (time.perf_counter() - t_start) * 1000.0
+        if not res.face_landmarks or not res.face_blendshapes or len(res.face_landmarks) == 0:
+            return {
+                "face_detected": False,
+                "latency_model_ms": latency_ms,
+                "gaze_pitch_deg": 0.0,
+                "gaze_yaw_deg": 0.0,
+                "raw_pitch_deg": 0.0,
+                "raw_yaw_deg": 0.0,
+                "head_pitch_deg": 0.0,
+                "head_yaw_deg": 0.0,
+                "gaze_vector": np.array([0.0, 0.0, -1.0]),
+                "head_vector": np.array([0.0, 0.0, -1.0]),
+                "face_bbox": None,
+                "face_crop_coords": None,
+                "landmarks": None,
+                "attention_variance": 0.020,
+                "ix": 0.5,
+                "iy": -0.18,
+                "eye_diff_x": 0.0,
+                "eye_diff_y": 0.0
+            }
+        lm = res.face_landmarks[0]
+        bs = {b.category_name: b.score for b in res.face_blendshapes[0]}
+        r_iris = lm[468]; l_iris = lm[473]
+        r_c_in = lm[133]; r_c_out = lm[33]
+        l_c_in = lm[362]; l_c_out = lm[263]
+        r_w = max(1e-4, math.sqrt((r_c_out.x - r_c_in.x)**2 + (r_c_out.y - r_c_in.y)**2))
+        l_w = max(1e-4, math.sqrt((l_c_out.x - l_c_in.x)**2 + (l_c_out.y - l_c_in.y)**2))
+        r_ix = (r_iris.x - r_c_out.x) / r_w
+        r_iy = (r_iris.y - (r_c_out.y + r_c_in.y) / 2.0) / r_w
+        l_ix = (l_iris.x - l_c_in.x) / l_w
+        l_iy = (l_iris.y - (l_c_out.y + l_c_in.y) / 2.0) / l_w
+        ix = float((r_ix + l_ix) / 2.0)
+        iy = float((r_iy + l_iy) / 2.0)
+        eye_diff_x = float((bs.get("eyeLookOutLeft", 0.0) + bs.get("eyeLookInRight", 0.0)) - (bs.get("eyeLookInLeft", 0.0) + bs.get("eyeLookOutRight", 0.0)))
+        eye_diff_y = float((bs.get("eyeLookDownLeft", 0.0) + bs.get("eyeLookDownRight", 0.0)) - (bs.get("eyeLookUpLeft", 0.0) + bs.get("eyeLookUpRight", 0.0)))
+        mat = res.facial_transformation_matrixes[0] if res.facial_transformation_matrixes else np.eye(4)
+        hp_deg = float(math.degrees(math.asin(-max(-1.0, min(1.0, float(mat[1, 2]))))))
+        hy_deg = float(math.degrees(math.atan2(float(mat[0, 2]), float(mat[2, 2]))))
+        p_deg = float(-(iy + 0.18) * 75.0 + hp_deg * 0.4)
+        y_deg = float(-(ix - 0.50) * 85.0 + hy_deg * 0.4)
+        if self.ema_pitch is None:
+            self.ema_pitch = p_deg; self.ema_yaw = y_deg
+        else:
+            self.ema_pitch = self.ema_alpha * p_deg + (1.0 - self.ema_alpha) * self.ema_pitch
+            self.ema_yaw = self.ema_alpha * y_deg + (1.0 - self.ema_alpha) * self.ema_yaw
+        xs = [p.x * w for p in lm]
+        ys = [p.y * h for p in lm]
+        min_x = min(xs); max_x = max(xs)
+        min_y = min(ys); max_y = max(ys)
+        box_w = max_x - min_x; box_h = max_y - min_y
+        r_eye_px = (float(r_iris.x * w), float(r_iris.y * h))
+        l_eye_px = (float(l_iris.x * w), float(l_iris.y * h))
+        nose_px = (float(lm[1].x * w), float(lm[1].y * h))
+        r_mouth_px = (float(lm[61].x * w), float(lm[61].y * h))
+        l_mouth_px = (float(lm[291].x * w), float(lm[291].y * h))
+        rad_p = math.radians(self.ema_pitch)
+        rad_y = math.radians(self.ema_yaw)
+        gz_v = np.array([-math.sin(rad_y), -math.sin(rad_p), -math.cos(rad_y) * math.cos(rad_p)], dtype=np.float32)
+        hd_rad_p = math.radians(hp_deg)
+        hd_rad_y = math.radians(hy_deg)
+        hd_v = np.array([-math.sin(hd_rad_y), -math.sin(hd_rad_p), -math.cos(hd_rad_y) * math.cos(hd_rad_p)], dtype=np.float32)
+        return {
+            "face_detected": True,
+            "latency_model_ms": latency_ms,
+            "gaze_pitch_deg": self.ema_pitch,
+            "gaze_yaw_deg": self.ema_yaw,
+            "raw_pitch_deg": p_deg,
+            "raw_yaw_deg": y_deg,
+            "head_pitch_deg": hp_deg,
+            "head_yaw_deg": hy_deg,
+            "gaze_vector": gz_v,
+            "head_vector": hd_v,
+            "face_bbox": (min_x, min_y, box_w, box_h),
+            "face_crop_coords": (int(max(0, min_x)), int(max(0, min_y)), int(min(w, max_x)), int(min(h, max_y))),
+            "face_score": 0.99,
+            "attention_variance": 0.015,
+            "ix": ix,
+            "iy": iy,
+            "eye_diff_x": eye_diff_x,
+            "eye_diff_y": eye_diff_y,
+            "landmarks": {
+                "right_eye": r_eye_px,
+                "left_eye": l_eye_px,
+                "nose": nose_px,
+                "right_mouth": r_mouth_px,
+                "left_mouth": l_mouth_px
+            }
+        }
+
+def create_gaze_pipeline(pipeline_type: str = "mediapipe", checkpoint_path: str = "mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/best_model.pt", yunet_path: str = "mvp/models/weights/face_detection_yunet_2023mar.onnx", task_path: str = "mvp/models/weights/face_landmarker.task", device_str: Optional[str] = None):
+    if pipeline_type == "mediapipe":
+        return MediaPipeIrisPipeline(task_path=task_path)
+    return GazeTrackingPipeline(checkpoint_path=checkpoint_path, yunet_path=yunet_path, device_str=device_str)
