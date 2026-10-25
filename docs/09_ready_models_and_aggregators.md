@@ -33,89 +33,115 @@
 
 > **Связанные документы:**
 > - Систематический анализ 7 архитектурных парадигм: [`docs/10_architectural_approaches_gaze_and_facial_gestures.md`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/10_architectural_approaches_gaze_and_facial_gestures.md).
-> - Детальный разбор структуры каждой модели (стадии, бэкбоны, тензоры, лоссы): [`docs/11_detailed_model_architectures.md`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/11_detailed_model_architectures.md).
+> - Детальный разбор структуры каждой модели (стадии, бэкбоны, тензоры, лоссы), ранжированный по метрикам: [`docs/11_detailed_model_architectures.md`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/11_detailed_model_architectures.md).
 
-### 2.1. Модели на платформе Hugging Face Hub
-
-#### 1. `akgulburak/gaze-estimation-diversity`
-- **Репозиторий:** `https://huggingface.co/akgulburak/gaze-estimation-diversity`
-- **Лицензия:** Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (**CC BY-NC-SA 4.0**). Разрешено некоммерческое использование, дообучение и публикация при сохранении авторства.
-- **Архитектурный состав репозитория:**
-  - **L2CS-Net:** файлы весов `L2CSNet/L2CSNet_baseline_1.pkl` $\dots$ `_5.pkl`. Обучены на GazeCapture ($2.45\text{ млн}$) и MPIIFaceGaze ($45\text{ тыс.}$), классификационно-регрессионная схема с $K=90$ бинами.
-  - **GazeTR:** файлы `GazeTR/GazeTR-baseline-1.pt` $\dots$ `_5.pt`. Гибридная модель ResNet-18 + 6-слойный Multi-Head Self-Attention.
-  - **PureGaze:** файлы `PureGaze/PureGaze_baseline_1.pt` $\dots$ `_5.pt`. Модель с очисткой латентного пространства от индивидуальных признаков внешности.
-  - **CrossGaze:** `CrossGaze/pretrained-multimodal-crossatention_baseline_1.pth` $\dots$ `_5.pth`.
-  - **MCGaze:** `MCGaze/MCGaze_baseline_1.pth` $\dots$ `_5.pth`.
-- **Формат хранения:** Файлы весов PyTorch (`.pt`, `.pth`, `.pkl`), готовые к загрузке через `torch.load()`.
-
-#### 2. `UniGaze/UniGaze-models` (WACV 2025)
-- **Репозиторий:** `https://huggingface.co/UniGaze/UniGaze-models`
-- **Лицензия:** ModelGo Attribution-NonCommercial-ResponsibleAI License 2.0 (**Non-Commercial Academic**). Разрешает локальный запуск, научный бенчмаркинг и Fine-Tuning.
-- **Файлы весов в репозитории:**
-  - `unigaze_b16_joint.safetensors` ($345\text{ МБ}$): ViT-Base ($86\text{ млн}$ параметров, предобучен на смеси из $1.65\text{ млн}$ лиц).
-  - `unigaze_l16_joint.safetensors` ($1.2\text{ ГБ}$): ViT-Large ($307\text{ млн}$ параметров).
-  - `unigaze_h14_joint.safetensors` ($2.5\text{ ГБ}$): ViT-Huge ($632\text{ млн}$ параметров, кросс-доменная ошибка на ETH-XGaze $3.96^\circ$, на MPIIFaceGaze $4.07^\circ$).
-  - `unigaze_h14_cross_X.safetensors`: Специфический кросс-доменный чекпоинт ViT-Huge.
-- **Формат:** `safetensors` и `.pth.tar`.
-
-#### 3. `Idiap/resnet18-gaze360`
-- **Репозиторий:** `https://huggingface.co/Idiap/resnet18-gaze360`
-- **Лицензия:** **CC BY-NC 4.0** (Creative Commons Non-Commercial).
-- **Файл весов:** `gaze360_resnet18.pt` ($44.7\text{ МБ}$, $11.7\text{ млн}$ параметров).
-- **Специфика:** Сверточный бэкбон ResNet-18, предобученный исследовательским институтом Idiap (Швейцария) на панорамном датасете Gaze360 ($172\,000$ размеченных кадров, 238 участников).
-- **Применимость:** Полностью укладывается в норматив задержки ($7.8\text{ мс}$ на CPU, $2.0\text{ мс}$ на GPU). Базовый кандидат для замены детектора YOLO26n.
-
-#### 4. `py-feat/l2cs`
-- **Репозиторий:** `https://huggingface.co/py-feat/l2cs`
-- **Лицензия:** MIT License.
-- **Файл весов:** `l2cs_gaze360_resnet50.safetensors` ($94.5\text{ МБ}$, $25.6\text{ млн}$ параметров).
-- **Специфика:** Стандартизированный порт L2CS-Net на ResNet-50 для библиотеки анализа лиц Py-Feat.
+### 2.1. Автоматизированный парсер платформы Hugging Face
+Сбор моделей реализован через автономный Python-скрипт [`scripts/parse_huggingface_gaze.py`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/scripts/parse_huggingface_gaze.py), выполняющий прямые HTTP-запросы к REST API `https://huggingface.co/api/models` без использования устаревших внутренних поисковых кэшей. Скрипт опрашивает 25 ключевых поисковых запросов (`gaze-estimation`, `gaze360`, `mpiigaze`, `eth-xgaze`, `l2cs`, `gazetr`, `puregaze`, `unigaze`, `omnigaze`, `eyetag`, `eye-tracking`, `ptgaze`, `crossgaze`, `mcgaze` и др.), отсекает нерелевантные текстовые/аудио репозитории (NLP, ASR, ирландский язык "irish", сводки новостей "gazeta") и сохраняет верифицированный реестр в [`scripts/huggingface_gaze_models.json`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/scripts/huggingface_gaze_models.json).
 
 ---
 
-### 2.2. Модели в открытых репозиториях GitHub
+### 2.2. Хронологический реестр моделей Hugging Face (от 2026 г. в прошлое)
 
-#### 1. `yakhyo/gaze-estimation` (Рекомендуемый легковесный бэкбон)
-- **Репозиторий:** `https://github.com/yakhyo/gaze-estimation`
-- **Лицензия:** **MIT License** (свободная коммерческая и академическая эксплуатация).
-- **Архитектура:** MobileOne (s0, s1, s2) со структурной перепараметризацией (Structural Reparameterization) и MobileNetV2.
-- **Готовые контрольные точки:**
-  - `mobileone_s0_gaze.pt` / `mobileone_s0_gaze.onnx` ($4.2\text{ МБ}$, $2.1\text{ млн}$ параметров).
-  - `mobilenet_v2_gaze.pt` / `mobilenet_v2_gaze.onnx` ($9.1\text{ МБ}$, $3.5\text{ млн}$ параметров).
-- **Задержка инференса:** **$4.2\text{ мс}$** на CPU (4 потока ONNX Runtime), **$1.2\text{ мс}$** на GPU DirectML/CUDA. Пропускная способность: свыше $180\text{ FPS}$ на процессоре.
-- **Точность:** $\mathcal{E}_{ang} = 4.35^\circ$ на MPIIFaceGaze.
+#### [2026] Модели текущего года
+1. **`akgulburak/gaze-estimation-diversity`** (Август 2026)
+   - **Репозиторий:** `https://huggingface.co/akgulburak/gaze-estimation-diversity`
+   - **Лицензия:** CC BY-NC-SA 4.0.
+   - **Форматы весов:** PyTorch (`.pt`, `.pth`, `.pkl`).
+   - **Состав чекпоинтов:**
+     - PureGaze: `PureGaze/PureGaze_baseline_1.pt` $\dots$ `_5.pt` (ResNet-50 + ResGazeEs).
+     - GazeTR: `GazeTR/GazeTR-baseline-1.pt` $\dots$ `_5.pt` (ResNet-18 + 6-слойный Transformer Encoder).
+     - L2CS-Net: `L2CSNet/L2CSNet_baseline_1.pkl` $\dots$ `_5.pkl` (ResNet-50, 90 бинов).
+     - CrossGaze: `CrossGaze/pretrained-multimodal-crossatention_baseline_1.pth` $\dots$ `_5.pth`.
+     - MCGaze: `MCGaze/MCGaze_baseline_1.pth` $\dots$ `_5.pth`.
+   - **Локальный инференс:** Полная поддержка через PyTorch CPU/CUDA.
+2. **`litert-community/L2CS-Gaze360-LiteRT`** (Июнь 2026)
+   - **Репозиторий:** `https://huggingface.co/litert-community/L2CS-Gaze360-LiteRT`
+   - **Лицензия:** MIT.
+   - **Формат:** `gaze_fp16.tflite` ($48.2\text{ МБ}$, FP16 квантование).
+   - **Специфика:** Модель L2CS-Net на базе ResNet-50, квантованная для фреймворка Google LiteRT / TFLite. Поддерживает запуск на CPU без сборки PyTorch.
+3. **`hysts/ptgaze-eth-xgaze-resnet18`** (Июль 2026)
+   - **Репозиторий:** `https://huggingface.co/hysts/ptgaze-eth-xgaze-resnet18`
+   - **Лицензия:** MIT.
+   - **Формат:** `model.safetensors` ($46.8\text{ МБ}$, $11.7\text{ млн}$ параметров).
+   - **Специфика:** Канонический ResNet-18, обученный на ETH-XGaze ($1.08\text{M}$ кадров, 110 чел.), 3D-нормализация камеры. Задержка $8.5\text{ мс}$ на CPU.
+4. **`hysts/ptgaze-mpiifacegaze-resnet-simple`** (Июль 2026)
+   - **Репозиторий:** `https://huggingface.co/hysts/ptgaze-mpiifacegaze-resnet-simple`
+   - **Лицензия:** MIT.
+   - **Формат:** `model.safetensors` ($46.8\text{ МБ}$).
+   - **Специфика:** ResNet-18 на MPIIFaceGaze ($45\text{k}$ кадров, 15 чел.). Выход: 2 угла $(\theta, \phi)$.
+5. **`hysts/ptgaze-mpiigaze-resnet-preact`** (Июль 2026)
+   - **Репозиторий:** `https://huggingface.co/hysts/ptgaze-mpiigaze-resnet-preact`
+   - **Лицензия:** MIT.
+   - **Формат:** `model.safetensors` ($44.2\text{ МБ}$). PreAct ResNet для кропов глаз.
+6. **`py-feat/l2cs`** (Май 2026)
+   - **Репозиторий:** `https://huggingface.co/py-feat/l2cs`
+   - **Лицензия:** MIT.
+   - **Формат:** `l2cs_gaze360_resnet50.safetensors` ($94.5\text{ МБ}$, $25.6\text{ млн}$ параметров).
+   - **Специфика:** Стандартизированный порт L2CS-Net на ResNet-50 для библиотеки Py-Feat.
+7. **`Idiap/resnet18-gaze360`** (Февраль 2026)
+   - **Репозиторий:** `https://huggingface.co/Idiap/resnet18-gaze360`
+   - **Лицензия:** CC BY-NC 4.0.
+   - **Формат:** `gaze360_resnet18.pt` ($44.7\text{ МБ}$, $11.7\text{ млн}$ параметров).
+   - **Специфика:** ResNet-18, обученный институтом Idiap на панорамном датасете Gaze360.
+8. **`Jason-42195/asd-eye-tracking-models`** (2026)
+   - **Репозиторий:** `https://huggingface.co/Jason-42195/asd-eye-tracking-models`
+   - **Форматы:** `mobilenetv4_small/best.pth` ($15.2\text{ МБ}$), `convnexttiny_v2/best.pth` ($112\text{ МБ}$).
+   - **Специфика:** Архитектуры MobileNetV4-Small и ConvNeXt-Tiny v2 с блоками внимания Ghost+CBAM для трекинга взгляда.
 
-#### 2. `Ahmednull/L2CS-Net` (Канонический L2CS)
-- **Репозиторий:** `https://github.com/Ahmednull/L2CS-Net`
-- **Лицензия:** **MIT License**.
-- **Готовые веса:** Доступны по ссылкам в репозитории: `L2CSNet_gaze360.pkl` и `L2CSNet_mpiigaze.pkl`.
-- **Точность:** $3.92^\circ$ на MPIIFaceGaze, $10.41^\circ$ на Gaze360 ($9.02^\circ$ на фронтальном секторе).
+#### [2025] Модели 2025 года
+1. **`UniGaze/UniGaze-models`** (Август 2025, WACV 2025)
+   - **Репозиторий:** `https://huggingface.co/UniGaze/UniGaze-models`
+   - **Лицензия:** ModelGo Non-Commercial.
+   - **Форматы:** `safetensors`, `.pth.tar`.
+   - **Чекпоинты:**
+     - `unigaze_b16_joint.safetensors` ($345\text{ МБ}$, ViT-Base, $86\text{ млн}$ параметров). Запускается локально на GPU/CPU.
+     - `unigaze_l16_joint.safetensors` ($1.2\text{ ГБ}$, ViT-Large, $307\text{ млн}$ параметров).
+     - `unigaze_h14_cross_X.safetensors` ($2.5\text{ ГБ}$, ViT-Huge, $632\text{ млн}$ параметров — отсекается из-за $T_{CPU} > 150\text{ мс}$).
+2. **`qualcomm/EyeGaze`** (2025)
+   - **Репозиторий:** `https://huggingface.co/qualcomm/EyeGaze`
+   - **Лицензия:** BSD 3-Clause.
+   - **Форматы:** ONNX, TFLite, PyTorch, QNN DLC ($9.6\text{ МБ}$ float, $3.3\text{ МБ}$ w8a16).
+   - **Параметры:** **$2.58\text{ млн}$** параметров.
+   - **Вход:** $96 \times 160$ (кропы глаз и лица).
+   - **Задержка:** **$0.588 - 1.24\text{ мс}$** на NPU/ONNX, $3.5\text{ мс}$ на CPU.
+3. **`tianfxc/l2cs`** (Ноябрь 2025)
+   - **Репозиторий:** `https://huggingface.co/tianfxc/l2cs`
+   - **Формат:** `L2CSNet_gaze360.pkl` ($94.5\text{ МБ}$).
 
-#### 3. `zkcys001/GazeTR`
-- **Репозиторий:** `https://github.com/zkcys001/GazeTR`
-- **Лицензия:** **MIT License**.
-- **Готовые веса:** `model_eth.pt`, `model_mpii.pt` (ResNet-18 + Transformer Encoder).
-- **Точность:** $3.82^\circ$ на ETH-XGaze, $4.00^\circ$ на MPIIFaceGaze.
-
-#### 4. `google-ai-edge/mediapipe` (Детектор радужки и 3D-ориентиров)
-- **Репозиторий:** `https://github.com/google-ai-edge/mediapipe`
-- **Лицензия:** **Apache 2.0**.
-- **Готовые веса:** `iris_landmark.tflite` / `face_landmarker.task`.
-- **Специфика:** Модуль локализации 478 трехмерных ландмарок лица и 10 точек контура радужки. Задержка $8-12\text{ мс}$ на CPU. Готовое извлечение признаков без необходимости обучения.
+#### [2024] Модели 2024 года
+1. **`wahidww/vit-base-patch16-224-finetuned-mobile-eye-tracking-dataset-v2`** (Ноябрь 2024)
+   - **Репозиторий:** `https://huggingface.co/wahidww/vit-base-patch16-224-finetuned-mobile-eye-tracking-dataset-v2`
+   - **Формат:** `model.safetensors` ($343\text{ МБ}$, ViT-Base).
+   - **Специфика:** Оценка фиксации взгляда на мобильном экране планшета/смартфона.
+2. **`asad-cse/vit-base-patch16-224-finetuned-mobile-eye-tracking-dataset-v2`** (Ноябрь 2024)
+   - **Репозиторий:** `https://huggingface.co/asad-cse/vit-base-patch16-224-finetuned-mobile-eye-tracking-dataset-v2`
+   - **Формат:** `model.safetensors` ($343\text{ МБ}$, ViT-Base).
 
 ---
 
-### 2.3. Сводная матрица готовых моделей для дообучения
+### 2.3. Приоритетный рейтинг моделей за 2024–2026 гг. (Локальный запуск)
 
-| Архитектура / Модель | Хостинг весов | Параметры | Объем файла | Задержка CPU (ONNX / JIT) | Задержка GPU (CUDA / FP16) | Ошибка $\mathcal{E}_{ang}$ | Лицензия | Пригодность к ТЗ ($\le 8.0\text{ мс}$ CPU) |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **MobileOne-s0 Gaze** | GitHub (`yakhyo`) | **$2.1\text{M}$** | $4.2\text{ МБ}$ | **$4.2\text{ мс}$** | **$1.2\text{ мс}$** | $4.35^\circ$ | **MIT** | **Превосходит норматив ($2\times$ запас)** |
-| **ResNet-18 Gaze360** | HF (`Idiap`) | **$11.7\text{M}$** | $44.7\text{ МБ}$ | **$7.8\text{ мс}$** | **$2.0\text{ мс}$** | $4.05^\circ$ | **CC BY-NC 4.0** | **Полное соответствие нормативу** |
-| **L2CS-Net ResNet-50** | HF / GitHub (`Ahmednull`) | $25.6\text{M}$ | $94.5\text{ МБ}$ | $45-65\text{ мс}$ | $6.5\text{ мс}$ | $3.92^\circ$ | **MIT** | Только при наличии дискретного GPU |
-| **GazeTR (ResNet18+ViT)**| HF (`akgulburak`) / GitHub | $14.2\text{M}$ | $56.0\text{ МБ}$ | $48.5\text{ мс}$ | $11.4\text{ мс}$ | $3.82^\circ$ | **MIT** | Превышает допустимую задержку CPU |
-| **UniGaze-Base** | HF (`UniGaze`) | $86.0\text{M}$ | $345\text{ МБ}$ | $> 120\text{ мс}$ | $18.0\text{ мс}$ | $4.07^\circ$ | **ModelGo NC** | Превышает допустимую задержку CPU |
-| **UniGaze-Huge** | HF (`UniGaze`) | $632.0\text{M}$ | $2.5\text{ ГБ}$ | $> 450\text{ мс}$ | $45.0\text{ мс}$ | **$3.96^\circ$** | **ModelGo NC** | Непригодна для реалтайма |
-| **Текущая yolo26n (Run 012)**| Локально (`best_model.pt`)| **$1.8\text{M}$** | $7.2\text{ МБ}$ | **$4.84\text{ мс}$** | **$1.4\text{ мс}$** | $6.85^\circ$ ($R_x=0.69$)| **MIT** | **Интегрирована в кодовую базу** |
+Ранжирование выполнено по строгому критерию: **Метрика (наименьшая угловая ошибка $\mathcal{E}_{ang}$ / наивысшая точность)** $\to$ **Год публикации (новее)** $\to$ **Размер датасета обучения**. Все модели отфильтрованы по критерию автономного локального инференса на потребительском ПК (без инфракрасных датчиков и без моделей $> 1.5\text{ ГБ}$):
+
+| Ранг | Архитектура / Модель | Хостинг / Источник | Год | Метрика $\mathcal{E}_{ang}$ (Бенчмарк 9 сессий) | Метрика $\mathcal{E}_{ang}$ (Литература) | Датасет обучения | Параметры | Задержка CPU | Лицензия |
+|:---:|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **1** | **PureGaze** (ResNet-50 + ResGazeEs) | HF: `akgulburak` | 2026/22 | **$1.85^\circ \pm 0.44^\circ$** (Med: **$1.70^\circ$**) | $3.88^\circ$ (ETH-XGaze) | ETH-XGaze ($1.08\text{M}$) + MPII ($45\text{k}$) | $25.6\text{M}$ | **$13.63\text{ мс}$** | CC BY-NC-SA 4.0 |
+| **2** | **GazeTR-Hybrid** (ResNet-18 + ViT-6L) | HF: `akgulburak` / GH | 2026/22 | **$2.26^\circ \pm 0.47^\circ$** (Med: **$2.03^\circ$**) | $3.69^\circ$ (MPII), $3.88^\circ$ (XGaze) | ETH-XGaze ($1.08\text{M}$) + MPII ($45\text{k}$) | $18.4\text{M}$ | **$15.21\text{ мс}$** | MIT |
+| **3** | **MediaPipe Iris + FaceMesh** | Google Research / GH | 2020 | **$3.64^\circ \pm 0.75^\circ$** (Med: **$3.51^\circ$**) | $3.80^\circ$ (Geometry) | $50\text{k}$ лиц + $10\text{k}$ радужек | **$4.0\text{M}$** | **$14.97\text{ мс}$** | Apache 2.0 |
+| **4** | **UniGaze-Base** (ViT-Base 12L) | HF: `UniGaze` | 2025 | — | **$3.96^\circ$** (XGaze), **$4.07^\circ$** (MPII) | **$1.65\text{ млн}$** (264k персон) | $86.0\text{M}$ | $35-50\text{ мс}$ (GPU: $22\text{ мс}$) | ModelGo NC |
+| **5** | **YOLO26n (4D Head Comp)** | Локально (Run 014) | 2026 | **$4.00^\circ \pm 1.33^\circ$** (Med: **$3.44^\circ$**) | — | $158\,084$ (RT-GENE, MPII, Columbia) | **$1.8\text{M}$** | **$19.55\text{ мс}$** (GPU: $4.2\text{ мс}$) | MIT |
+| **6** | **ptgaze ETH-XGaze** (ResNet-18) | HF: `hysts` | 2026 | — | **$4.20^\circ$** (ETH-XGaze) | ETH-XGaze ($1.08\text{M}$) | $11.7\text{M}$ | **$8.50\text{ мс}$** | MIT |
+| **7** | **Qualcomm EyeGaze / MobileOne** | HF: `qualcomm` / GH | 2025/24 | — | **$4.35^\circ$** (MPIIFaceGaze) | MPIIFaceGaze ($45\text{k}$) + GazeCapture | **$2.1\text{M} - 2.58\text{M}$** | **$0.6 - 4.2\text{ мс}$** | BSD-3 / MIT |
+| **8** | **ptgaze MPIIFaceGaze** (ResNet-18) | HF: `hysts` | 2026 | — | **$4.80^\circ$** (MPIIFaceGaze) | MPIIFaceGaze ($45\text{k}$) | $11.7\text{M}$ | **$8.50\text{ мс}$** | MIT |
+| **9** | **Idiap ResNet-18 Gaze360** | HF: `Idiap` | 2026 | **$5.75^\circ \pm 0.03^\circ$** (Med: **$5.75^\circ$**) | $9.02^\circ$ (Gaze360 Frontal) | Gaze360 ($172\text{k}$) | $11.7\text{M}$ | **$17.60\text{ мс}$** (GPU: $2.0\text{ мс}$) | CC BY-NC 4.0 |
+| **10** | **EMC-Gaze** (EGNN Landmark Graph) | arXiv:2603.12388 | 2026 | — | **$5.79^\circ$** (Dynamic Head) | Граф MediaPipe + сессионный калибратор | **$1.8\text{M}$** | **$14.00\text{ мс}$** | Открытый код |
+| **11** | **L2CS-Net (LiteRT / PyFeat)** | HF: `litert`, `py-feat` | 2026 | **$6.59^\circ \pm 0.95^\circ$** (Med: **$6.25^\circ$**) | $3.92^\circ$ (MPII), $10.41^\circ$ (Gaze360) | Gaze360 ($172\text{k}$) + MPII ($45\text{k}$) | $25.6\text{M}$ | **$13.89\text{ мс}$** | MIT |
+| **12** | **CrossGaze** (Multimodal Attention) | HF: `akgulburak` | 2024 | — | **$9.94^\circ$** (Gaze360) | Gaze360 ($172\text{k}$) | $22.3\text{M}$ | **$19.00\text{ мс}$** | CC BY-NC-SA 4.0 |
+| **13** | **MCGaze / RSP-MCGaze** | HF: `akgulburak` | 2024 | — | **$10.74^\circ$** (Gaze360) | Gaze360 ($172\text{k}$) | $14.6\text{M}$ | **$18.50\text{ мс}$** | CC BY-NC-SA 4.0 |
+| **14** | **Ghost-CBAM MobileNetV4** | HF: `Jason-42195` | 2026 | — | Зоны фиксации взгляда | ASD Eye-Tracking | **$3.8\text{M}$** | **$5.00\text{ мс}$** | Не указана |
+| **15** | **MAGE** (6-DoF Multi-Decoder) | IEEE 2025 | 2025 | — | 6-DoF ($\mathbf{g}, \mathbf{o}, \mathbf{s}$) | MPIIFaceGaze ($45\text{k}$) + EYEDIAP | $15.2\text{M}$ | **$16.50\text{ мс}$** | Открытый код |
+| **16** | **EyeTAG** (Differential Kinematics)| arXiv:2610.00922 | 2026 | — | Кинематический инвариант | PRECOG ($144\text{k}$) | $16.8\text{M}$ | **$18.00\text{ мс}$** | Открытый код |
+| **17** | **ViT-Base Mobile Gaze** | HF: `wahidww` | 2024 | — | Точность зон $88.4\%$ | Mobile Eye Tracking v2 ($28\text{k}$) | $86.0\text{M}$ | $45.00\text{ мс}$ | Не указана |
 
 ---
 
