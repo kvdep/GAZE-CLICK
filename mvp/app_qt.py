@@ -570,7 +570,8 @@ class GazeMainWindow(QMainWindow):
         checkpoint_path: Optional[str] = None,
         yunet_path: str = "mvp/models/weights/face_detection_yunet_2023mar.onnx",
         log_dir: str = "mvp/logs",
-        pipeline_type: Optional[str] = None
+        pipeline_type: Optional[str] = None,
+        enable_mouse: bool = False
     ) -> None:
         super().__init__()
         self.setWindowTitle("GAZE-CLICK // NEURAL REAL-TIME GAZE CONTROL")
@@ -580,6 +581,7 @@ class GazeMainWindow(QMainWindow):
         self.yunet_path = yunet_path
         self.log_dir = log_dir
         self.pipeline_type = self.model_name
+        self.initial_enable_mouse = enable_mouse
         self.user32 = ctypes.windll.user32
         try:
             self.user32.SetProcessDPIAware()
@@ -597,7 +599,7 @@ class GazeMainWindow(QMainWindow):
             model_name=self.model_name
         )
         self.filter = PointOneEuroFilter(min_cutoff=0.5, beta=0.005, d_cutoff=1.0, deadzone_radius_px=8.0)
-        self.cursor_ctrl = CursorController(screen_w=self.screen_w, screen_h=self.screen_h, enable_control=False)
+        self.cursor_ctrl = CursorController(screen_w=self.screen_w, screen_h=self.screen_h, enable_control=enable_mouse)
         self.logger = TelemetryLogger(log_dir=self.log_dir, session_prefix="session")
         self.benchmark = BenchmarkRecorder(
             output_dir="mvp/benchmarks",

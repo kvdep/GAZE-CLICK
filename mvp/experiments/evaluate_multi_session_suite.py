@@ -2,14 +2,14 @@ import os, sys, time, math, glob
 import cv2
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import Ridge
 
 sys.path.insert(0, os.path.abspath("mvp"))
 import torch
 from adapters.factory import create_adapter
+from engine.calibration import GazeCalibration
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"[Suite] Initializing 9-session benchmark suite on {device}...")
+print(f"[Suite] Initializing 9-session benchmark suite with GazeCalibration on {device}...")
 
 SCREEN_W = 2880
 SCREEN_H = 1800
@@ -102,7 +102,7 @@ def eval_session(session_id: str, adapter, use_head_pose: bool = False) -> dict:
     if len(df_calib) < 10 or len(df_test) < 10:
         return None
 
-    # Calibration fit
+    # Calibration fit using production GazeCalibration
     calib_samples = []
     for phase_name, grp in df_calib.groupby("phase"):
         tx = float(grp["target_gt_x"].iloc[0])
@@ -111,31 +111,35 @@ def eval_session(session_id: str, adapter, use_head_pose: bool = False) -> dict:
         p_med = float(grp["raw_pitch_deg"].median())
         hy_med = float(grp["head_yaw_deg"].median())
         hp_med = float(grp["head_pitch_deg"].median())
-        calib_samples.append((y_med, p_med, hy_med, hp_med, tx, ty))
+        entry = {
+            "target_x": tx,
+            "target_y": ty,
+            "yaw_deg": y_med,
+            "pitch_deg": p_med
+        }
+        if use_head_pose:
+            entry["head_yaw_deg"] = hy_med
+            entry["head_pitch_deg"] = hp_med
+        calib_samples.append(entry)
 
-    if use_head_pose:
-        X_train = np.array([[s[0], s[1], s[2], s[3]] for s in calib_samples])
-        X_test = np.column_stack([
-            df_test["raw_yaw_deg"].values,
-            df_test["raw_pitch_deg"].values,
-            df_test["head_yaw_deg"].values,
-            df_test["head_pitch_deg"].values
-        ])
-    else:
-        X_train = np.array([[s[0], s[1]] for s in calib_samples])
-        X_test = np.column_stack([df_test["raw_yaw_deg"].values, df_test["raw_pitch_deg"].values])
+    calib = GazeCalibration(screen_w=SCREEN_W, screen_h=SCREEN_H, model_name=adapter.name)
+    calib.fit(calib_samples, l2_reg=1.0)
 
-    Y_tx = np.array([s[4] for s in calib_samples])
-    Y_ty = np.array([s[5] for s in calib_samples])
-
-    reg_x = Ridge(alpha=1.0).fit(X_train, Y_tx)
-    reg_y = Ridge(alpha=1.0).fit(X_train, Y_ty)
-
-    pred_x = reg_x.predict(X_test)
-    pred_y = reg_y.predict(X_test)
+    pred_xs, pred_ys = [], []
+    for _, row in df_test.iterrows():
+        px, py = calib.predict(
+            pitch_deg=row["raw_pitch_deg"],
+            yaw_deg=row["raw_yaw_deg"],
+            head_pitch_deg=row["head_pitch_deg"] if use_head_pose else 0.0,
+            head_yaw_deg=row["head_yaw_deg"] if use_head_pose else 0.0
+        )
+        pred_xs.append(px)
+        pred_ys.append(py)
 
     gt_x = df_test["target_gt_x"].values
     gt_y = df_test["target_gt_y"].values
+    pred_x = np.array(pred_xs)
+    pred_y = np.array(pred_ys)
 
     err_px = np.sqrt((pred_x - gt_x)**2 + (pred_y - gt_y)**2)
     err_mm = err_px / PX_PER_MM
@@ -162,6 +166,9 @@ def eval_session(session_id: str, adapter, use_head_pose: bool = False) -> dict:
     ss_tot = np.sum((gt_x - np.mean(gt_x))**2 + (gt_y - np.mean(gt_y))**2)
     r2 = float(1.0 - ss_res / (ss_tot + 1e-8))
 
+    slope_x = float(calib.weights[1, 0]) if calib.weights is not None and calib.weights.shape[0] > 1 else 0.0
+    slope_y = float(calib.weights[2, 1]) if calib.weights is not None and calib.weights.shape[0] > 2 else 0.0
+
     return {
         "session_id": session_id,
         "n_test_frames": len(df_test),
@@ -176,12 +183,12 @@ def eval_session(session_id: str, adapter, use_head_pose: bool = False) -> dict:
         "r_y": ry,
         "r2": r2,
         "mean_latency_ms": float(np.mean(latencies)),
-        "slope_x_yaw": float(reg_x.coef_[0]),
-        "slope_y_pitch": float(reg_y.coef_[1])
+        "slope_x_yaw": slope_x,
+        "slope_y_pitch": slope_y
     }
 
 records = []
-print(f"Starting 9-session benchmark across models ({len(MODELS)} models x {len(SESSIONS)} sessions = {len(MODELS)*len(SESSIONS)} evaluations).")
+print(f"Starting 9-session benchmark using production GazeCalibration ({len(MODELS)} models x {len(SESSIONS)} sessions).")
 
 for model_name in MODELS:
     print(f"\n==================== Initializing model '{model_name}' ====================")

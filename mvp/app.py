@@ -425,7 +425,8 @@ def main() -> None:
         win = app_qt.GazeMainWindow(
             camera_id=args.camera_id,
             model_name=args.model_name,
-            checkpoint_path=args.checkpoint
+            checkpoint_path=args.checkpoint,
+            enable_mouse=args.enable_mouse
         )
         if args.test:
             win.showFullScreen()

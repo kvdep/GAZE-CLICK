@@ -119,9 +119,9 @@ class PureGazeAdapter(BaseGazeAdapter):
                 torch.cuda.synchronize()
             latency_ms = (time.perf_counter() - t0) * 1000.0
 
-            # angles shape [1, 2]: [pitch (elevation), yaw (azimuth)] in radians
-            pitch_rad = float(angles[0, 0].item())
-            yaw_rad = float(angles[0, 1].item())
+            # PureGaze output tensor shape [1, 2]: [yaw (azimuth), pitch (elevation)] in radians
+            yaw_rad = float(angles[0, 0].item())
+            pitch_rad = float(angles[0, 1].item())
 
         pitch_deg = math.degrees(pitch_rad)
         yaw_deg = math.degrees(yaw_rad)
