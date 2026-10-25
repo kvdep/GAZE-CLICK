@@ -1,0 +1,855 @@
+[
+  {
+    "repo": "yakhyo/uniface",
+    "url": "https://github.com/yakhyo/uniface",
+    "year": 2024,
+    "stars": 2153,
+    "license": "MIT",
+    "description": "UniFace: A Unified Face Analysis Library for Python | Detection, alignment, landmarks, face-mesh, recognition, parsing, gaze, attributes and anti-spoofing under one API.",
+    "weight_links": [
+      "https://huggingface.co/spaces/yakhyo/uniface"
+    ],
+    "backbones": [
+      "yolo",
+      "mobilenet",
+      "resnet-18"
+    ],
+    "datasets": [],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "fkryan/gazelle",
+    "url": "https://github.com/fkryan/gazelle",
+    "year": 2024,
+    "stars": 880,
+    "license": "MIT",
+    "description": "Gaze-LLE: Gaze Target Estimation via Large-Scale Learned Encoders (CVPR 2025, Highlight)",
+    "weight_links": [
+      "https://github.com/fkryan/gazelle/releases/download/v1.0.0/gazelle_dinov2_vitb14_inout_childplay.pt",
+      "https://github.com/fkryan/gazelle/releases/download/v1.0.0/gazelle_dinov2_vitl14_inout.pt",
+      "https://github.com/fkryan/gazelle/releases/download/v1.0.0/gazelle_dinov2_vitl14_inout_childplay.pt",
+      "https://github.com/fkryan/gazelle/releases/download/v1.0.0/gazelle_dinov2_vitb14.pt",
+      "https://github.com/fkryan/gazelle/releases/download/v1.0.0/gazelle_dinov2_vitb14_inout.pt"
+    ],
+    "backbones": [
+      "transformer",
+      "vit"
+    ],
+    "datasets": [
+      "eve"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "Ahmednull/L2CS-Net",
+    "url": "https://github.com/Ahmednull/L2CS-Net",
+    "year": 2024,
+    "stars": 534,
+    "license": "MIT",
+    "description": "The official PyTorch implementation of L2CS-Net for gaze estimation and tracking",
+    "weight_links": [
+      "https://drive.google.com/drive/folders/17p6ORr-JQJcw-eYtG2WGNiuS_qVKwdWd?usp=sharing"
+    ],
+    "backbones": [
+      "resnet50"
+    ],
+    "datasets": [
+      "mpiigaze",
+      "gaze360",
+      "mpiifacegaze"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "Tobias-Fischer/rt_gene",
+    "url": "https://github.com/Tobias-Fischer/rt_gene",
+    "year": 2024,
+    "stars": 446,
+    "license": "NOASSERTION",
+    "description": "RT-GENE: Real-Time Eye Gaze and Blink Estimation in Natural Environments",
+    "weight_links": [
+      "https://zenodo.org/record/2529036",
+      "https://zenodo.org/record/3685316"
+    ],
+    "backbones": [],
+    "datasets": [
+      "rt-gene"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "hysts/pytorch_mpiigaze",
+    "url": "https://github.com/hysts/pytorch_mpiigaze",
+    "year": 2024,
+    "stars": 383,
+    "license": "MIT",
+    "description": "An unofficial PyTorch implementation of MPIIGaze and MPIIFaceGaze",
+    "weight_links": [],
+    "backbones": [],
+    "datasets": [
+      "mpiigaze",
+      "eve",
+      "mpiifacegaze"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "hysts/pytorch_mpiigaze_demo",
+    "url": "https://github.com/hysts/pytorch_mpiigaze_demo",
+    "year": 2024,
+    "stars": 376,
+    "license": "MIT",
+    "description": "Gaze estimation using MPIIGaze and MPIIFaceGaze",
+    "weight_links": [
+      "https://huggingface.co/hysts/ptgaze-eth-xgaze-resnet18",
+      "https://huggingface.co/hysts/ptgaze-mpiifacegaze-resnet-simple",
+      "https://huggingface.co/hysts/ptgaze-mpiigaze-resnet-preact"
+    ],
+    "backbones": [
+      "resnet18"
+    ],
+    "datasets": [
+      "xgaze",
+      "mpiigaze",
+      "mpiifacegaze",
+      "eth-xgaze"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "yakhyo/gaze-estimation",
+    "url": "https://github.com/yakhyo/gaze-estimation",
+    "year": 2024,
+    "stars": 215,
+    "license": "MIT",
+    "description": "Real-time gaze estimation with ResNet, MobileNet and MobileOne - PyTorch training, ONNX Runtime inference, pretrained weights.",
+    "weight_links": [
+      "https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet18.pt",
+      "https://github.com/yakhyo/gaze-estimation/releases/download/weights/mobilenetv2.pt",
+      "https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet34_gaze.onnx",
+      "https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet34.pt",
+      "https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet50.pt"
+    ],
+    "backbones": [
+      "resnet18",
+      "resnet-50",
+      "mobileone",
+      "resnet-18",
+      "resnet50",
+      "mobilenet"
+    ],
+    "datasets": [
+      "eve",
+      "mpiigaze",
+      "gaze360",
+      "mpiifacegaze"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "CMU-MultiComp-Lab/OpenFace-3.0",
+    "url": "https://github.com/CMU-MultiComp-Lab/OpenFace-3.0",
+    "year": 2024,
+    "stars": 198,
+    "license": "NOASSERTION",
+    "description": "OpenFace 3.0 – open-source toolkit for facial landmark detection, action unit detection, eye-gaze estimation, and emotion recognition.",
+    "weight_links": [
+      "https://huggingface.co/nutPace/openface_weights",
+      "https://drive.google.com/drive/folders/1aBEol-zG_blHSavKFVBH9dzc9U9eJ92p"
+    ],
+    "backbones": [
+      "vit"
+    ],
+    "datasets": [],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "escudero/brandpose",
+    "url": "https://github.com/escudero/brandpose",
+    "year": 2026,
+    "stars": 181,
+    "license": "MIT",
+    "description": "Personal project: where shoppers look, estimated from an ordinary security camera and open source AI (YOLO11, Gaze-LLE, Depth Anything V2)",
+    "weight_links": [],
+    "backbones": [
+      "yolo",
+      "vit"
+    ],
+    "datasets": [
+      "eve"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "PINTO0309/gazelle-dinov3",
+    "url": "https://github.com/PINTO0309/gazelle-dinov3",
+    "year": 2025,
+    "stars": 153,
+    "license": "MIT",
+    "description": "Gaze-LLE-DINOv3: Gaze Target Estimation via Large-Scale Learned Encoders with DINOv3.",
+    "weight_links": [
+      "https://github.com/PINTO0309/gazelle-dinov3/releases/download/weights/gazelle_dinov3_vit_tinyplus.pt",
+      "https://github.com/PINTO0309/gazelle-dinov3/releases/download/weights/gazelle_hgnetv2_n_distill_1x3x640x640_1xNx4.onnx",
+      "https://github.com/PINTO0309/gazelle-dinov3/releases/download/weights/gazelle_dinov3_vit_tinyplus_inout.pt",
+      "https://github.com/PINTO0309/gazelle-dinov3/releases/download/weights/gazelle_hgnetv2_pico_inout_distill.pt",
+      "https://github.com/PINTO0309/gazelle-dinov3/releases/download/weights/gazelle_hgnetv2_n_inout_distill.pt"
+    ],
+    "backbones": [
+      "yolo",
+      "vit"
+    ],
+    "datasets": [
+      "eve"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "yihuacheng/GazeTR",
+    "url": "https://github.com/yihuacheng/GazeTR",
+    "year": 2024,
+    "stars": 152,
+    "license": "Not specified",
+    "description": "The codes and models in 'Gaze Estimation using Transformer, ICPR2022'.",
+    "weight_links": [
+      "https://pan.baidu.com/s/1GEbjbNgXvVkisVWGtTJm7g",
+      "https://drive.google.com/file/d/1WEiKZ8Ga0foNmxM7xFabI4D5ajThWAWj/view?usp=sharing"
+    ],
+    "backbones": [
+      "transformer"
+    ],
+    "datasets": [
+      "eve",
+      "rt-gene",
+      "eth-xgaze",
+      "xgaze",
+      "mpiigaze",
+      "gaze360"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "WangWilly/gaze-correction-cam",
+    "url": "https://github.com/WangWilly/gaze-correction-cam",
+    "year": 2025,
+    "stars": 113,
+    "license": "BSD-3-Clause",
+    "description": "The Gaze Correction Camera project is an advanced real-time gaze correction system designed to enhance video communication by improving eye contact. Leveraging state-of-the-art computer vision and deep learning techniques, this system dynamically adjusts the user's eye gaze direction during live video calls.",
+    "weight_links": [
+      "https://drive.google.com/file/d/1E47OZ66YPab1QuTbxN97hL2u3GYwyUbz/view?usp=drive_link"
+    ],
+    "backbones": [],
+    "datasets": [
+      "eve"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "zgchen33/MCGaze",
+    "url": "https://github.com/zgchen33/MCGaze",
+    "year": 2024,
+    "stars": 79,
+    "license": "MIT",
+    "description": "[IEEE SPL] End-to-end Video Gaze Estimation via Capturing Head-face-eye Spatial-temporal Interaction Context",
+    "weight_links": [
+      "https://drive.google.com/file/d/1ru0xhuB5N9kwvN9XLvZMQvVSfOgtbxmq/view?usp=drive_link",
+      "https://drive.google.com/drive/folders/1OX_nuxXYTH5i8E11UCyEcAsp6ExHDMra?usp=sharing",
+      "https://drive.google.com/file/d/1frp_rmER8_hf2xC0hbtjRTLA4TBqYePq/view?usp=drive_link",
+      "https://drive.google.com/drive/folders/1tNvXMn52bth8zSCGZK_syP6gdt7VLjGq?usp=drive_link"
+    ],
+    "backbones": [
+      "yolo",
+      "vit"
+    ],
+    "datasets": [
+      "gaze360"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "ut-vision/UniGaze",
+    "url": "https://github.com/ut-vision/UniGaze",
+    "year": 2024,
+    "stars": 71,
+    "license": "NOASSERTION",
+    "description": "Official PyTorch implementation of the paper: UniGaze: Towards Universal Gaze Estimation via Large-scale Pre-Training.",
+    "weight_links": [
+      "https://huggingface.co/spaces/UniGaze/UniGaze",
+      "https://huggingface.co/papers/2502.02307"
+    ],
+    "backbones": [
+      "vit"
+    ],
+    "datasets": [
+      "xgaze",
+      "eth-xgaze"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "yihuacheng/IVGaze",
+    "url": "https://github.com/yihuacheng/IVGaze",
+    "year": 2024,
+    "stars": 54,
+    "license": "Apache-2.0",
+    "description": "What Do You See in Vehicle? Comprehensive Vision Solution for In-Vehicle Gaze Estimation",
+    "weight_links": [
+      "https://drive.google.com/file/d/1uc5OkwZJO-KfMSuFAW0Hl-JSwTrfPURq/view?usp=sharing"
+    ],
+    "backbones": [
+      "transformer"
+    ],
+    "datasets": [
+      "eve"
+    ],
+    "reported_error_deg": 7.04
+  },
+  {
+    "repo": "BolinLai/GLC",
+    "url": "https://github.com/BolinLai/GLC",
+    "year": 2024,
+    "stars": 35,
+    "license": "Not specified",
+    "description": "[BMVC2022, IJCV2023, Best Student Paper, Spotlight] Official codes for the paper \"In the Eye of Transformer: Global-Local Correlation for Egocentric Gaze Estimation\".",
+    "weight_links": [
+      "https://drive.google.com/file/d/1cZjY9jK7urPxvZfYumIVVVvdXLmVsiJk/view?usp=drive_link",
+      "https://drive.google.com/file/d/15XVipU1CqoosyvPU1vfcG0w2LuLQecF1/view?usp=sharing",
+      "https://drive.google.com/file/d/1zQdZuV4OowEJxBZAAWr_MuZcN7LJujOw/view?usp=sharing"
+    ],
+    "backbones": [
+      "transformer",
+      "vit"
+    ],
+    "datasets": [],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "jswati31/gazeclr",
+    "url": "https://github.com/jswati31/gazeclr",
+    "year": 2024,
+    "stars": 29,
+    "license": "Not specified",
+    "description": "PyTorch implementation for Contrastive Representation Learning for Gaze Estimation",
+    "weight_links": [
+      "https://drive.google.com/file/d/1qGwQnCLkxHitrj1QLhBGDVLfmvEYU0r1/view?usp=sharing",
+      "https://drive.google.com/file/d/17_BdB-mnsZEw33yaqHZxJYX8YLArfcq9/view?usp=sharing"
+    ],
+    "backbones": [],
+    "datasets": [
+      "eve"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "neelabhsinha/flame",
+    "url": "https://github.com/neelabhsinha/flame",
+    "year": 2024,
+    "stars": 28,
+    "license": "Not specified",
+    "description": "Original Pytorch Implementation of FLAME: Facial Landmark Heatmap Activated Multimodal Gaze Estimation",
+    "weight_links": [],
+    "backbones": [],
+    "datasets": [
+      "eyediap",
+      "eve",
+      "columbia"
+    ],
+    "reported_error_deg": 4.64
+  },
+  {
+    "repo": "idiap/gaze3d",
+    "url": "https://github.com/idiap/gaze3d",
+    "year": 2025,
+    "stars": 22,
+    "license": "Not specified",
+    "description": "Enhancing 3D Gaze Estimation in the Wild using Weak Supervision with Gaze Following Labels.",
+    "weight_links": [],
+    "backbones": [
+      "yolo",
+      "swin",
+      "transformer"
+    ],
+    "datasets": [
+      "gaze360"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "pbonazzi/tinytracker",
+    "url": "https://github.com/pbonazzi/tinytracker",
+    "year": 2024,
+    "stars": 22,
+    "license": "Not specified",
+    "description": "[SENSORS 2023] TinyTracker is a highly efficient, fully quantized model for 2D gaze estimation deployed on the Sony IMX500, the Coral Dev Micro and Sony Sprensense.",
+    "weight_links": [],
+    "backbones": [],
+    "datasets": [
+      "gazecapture",
+      "eve"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "mobina-zibandehpoor/L2CS-Net-Gaze-Detection",
+    "url": "https://github.com/mobina-zibandehpoor/L2CS-Net-Gaze-Detection",
+    "year": 2026,
+    "stars": 1,
+    "license": "MIT",
+    "description": "Video gaze estimation with L2CS-Net and Gaze360 model",
+    "weight_links": [],
+    "backbones": [],
+    "datasets": [
+      "gaze360"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "AIPMLab/Gaze360",
+    "url": "https://github.com/AIPMLab/Gaze360",
+    "year": 2026,
+    "stars": 0,
+    "license": "Not specified",
+    "description": "",
+    "weight_links": [],
+    "backbones": [
+      "resnet-18",
+      "vit"
+    ],
+    "datasets": [
+      "gaze360"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "Shay2208/HFGAD-Gaze-Estimation",
+    "url": "https://github.com/Shay2208/HFGAD-Gaze-Estimation",
+    "year": 2025,
+    "stars": 0,
+    "license": "NOASSERTION",
+    "description": "Official PyTorch code for HFGAD (Algorithms 2025) — hierarchical fine-grained attention decoder for gaze estimation. 10.46° / 3.88° / 7.02° on Gaze360, ETH-XGaze, MPIIFaceGaze.",
+    "weight_links": [],
+    "backbones": [
+      "resnet18",
+      "mobilenet",
+      "resnet-18",
+      "vit"
+    ],
+    "datasets": [
+      "eve",
+      "rt-gene",
+      "mpiigaze",
+      "gaze360",
+      "mpiifacegaze"
+    ],
+    "reported_error_deg": 14.99
+  },
+  {
+    "repo": "Zhuqiben/Gaze-DMS",
+    "url": "https://github.com/Zhuqiben/Gaze-DMS",
+    "year": 2026,
+    "stars": 1,
+    "license": "GPL-3.0",
+    "description": "基于 PyTorch 的驾驶员监控原型：视线估计 (MPIIGaze/MPIIFaceGaze) + YOLO 行为检测 (face/phone) + 疲劳分心分析 + Tkinter 桌面界面",
+    "weight_links": [],
+    "backbones": [
+      "yolo"
+    ],
+    "datasets": [
+      "mpiigaze",
+      "mpiifacegaze"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "Sepax/gazelle",
+    "url": "https://github.com/Sepax/gazelle",
+    "year": 2026,
+    "stars": 0,
+    "license": "Apache-2.0",
+    "description": "Appearance-based gaze estimation from face images, trained on MPIIFaceGaze.",
+    "weight_links": [],
+    "backbones": [
+      "resnet18"
+    ],
+    "datasets": [
+      "mpiigaze",
+      "eve",
+      "mpiifacegaze"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "LORIASMITH/gaze_prediction_seminar_The-Tripartite-Pipeline",
+    "url": "https://github.com/LORIASMITH/gaze_prediction_seminar_The-Tripartite-Pipeline",
+    "year": 2026,
+    "stars": 0,
+    "license": "Not specified",
+    "description": "Tripartite Synthesis for Cross-Domain Gaze Estimation: Progressive ablation integrating FSCI, GFAL, and AGG on normalized MPIIFaceGaze (GazeHub format), cross-person protocol.",
+    "weight_links": [],
+    "backbones": [
+      "transformer",
+      "resnet-18",
+      "vit"
+    ],
+    "datasets": [
+      "mpiifacegaze"
+    ],
+    "reported_error_deg": 5.18
+  },
+  {
+    "repo": "memrecolak/landmark-support-sets",
+    "url": "https://github.com/memrecolak/landmark-support-sets",
+    "year": 2026,
+    "stars": 0,
+    "license": "MIT",
+    "description": "Intervention-based per-landmark importance matrix and minimum support sets for facial landmark detection. Code, influence matrices, and HRNet-W18 checkpoints. WFLW + MPIIFaceGaze, 3 seeds.",
+    "weight_links": [],
+    "backbones": [
+      "vit"
+    ],
+    "datasets": [
+      "eve",
+      "mpiifacegaze"
+    ],
+    "reported_error_deg": 0.23
+  },
+  {
+    "repo": "xucong-zhang/ETH-XGaze",
+    "url": "https://github.com/xucong-zhang/ETH-XGaze",
+    "year": 2024,
+    "stars": 232,
+    "license": "Not specified",
+    "description": "Official implementation of ETH-XGaze dataset baseline",
+    "weight_links": [
+      "https://drive.google.com/file/d/1Ma6zJrECNTjo_mToZ5GKk7EF-0FS4nEC/view?usp=sharing"
+    ],
+    "backbones": [],
+    "datasets": [
+      "xgaze",
+      "gaze360",
+      "mpiifacegaze",
+      "eth-xgaze"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "SametGundz/DriveSafe",
+    "url": "https://github.com/SametGundz/DriveSafe",
+    "year": 2025,
+    "stars": 9,
+    "license": "Not specified",
+    "description": "Real-time driver drowsiness and distraction detection system. EU regulation C(2023)4523 compliant gaze zone detection.",
+    "weight_links": [],
+    "backbones": [],
+    "datasets": [
+      "xgaze",
+      "eth-xgaze"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "yunhanwang1105/ETH-XGaze-tech",
+    "url": "https://github.com/yunhanwang1105/ETH-XGaze-tech",
+    "year": 2024,
+    "stars": 4,
+    "license": "Not specified",
+    "description": "This repository is an extended version of the ETH-XGaze official implementation to train gaze estimation models on ETH-XGaze. This framework serves to create baselines and benchmark new full face or multi-region gaze estimation models.",
+    "weight_links": [
+      "https://drive.google.com/drive/folders/1v8TGgP2ahDQHZyQAHf_k0V7uvm6aXY06?usp=sharing",
+      "https://drive.google.com/drive/folders/1kIibMDek8k4FvWAvsNM6Gfvu8s99UMWD?usp=sharing"
+    ],
+    "backbones": [],
+    "datasets": [
+      "xgaze",
+      "eth-xgaze"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "TWWinde/ETH--XGAZE",
+    "url": "https://github.com/TWWinde/ETH--XGAZE",
+    "year": 2024,
+    "stars": 0,
+    "license": "Not specified",
+    "description": "",
+    "weight_links": [
+      "https://drive.google.com/file/d/1Ma6zJrECNTjo_mToZ5GKk7EF-0FS4nEC/view?usp=sharing"
+    ],
+    "backbones": [],
+    "datasets": [
+      "xgaze",
+      "eth-xgaze"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "Nikos-Prinios/ETH-XGaze",
+    "url": "https://github.com/Nikos-Prinios/ETH-XGaze",
+    "year": 2024,
+    "stars": 0,
+    "license": "Not specified",
+    "description": "Gaze estimation using ETH-XGaze pretrained model",
+    "weight_links": [
+      "https://drive.google.com/file/d/1Ma6zJrECNTjo_mToZ5GKk7EF-0FS4nEC/view"
+    ],
+    "backbones": [],
+    "datasets": [
+      "xgaze",
+      "eth-xgaze"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "rahuljishu/eth_xgaze_eye",
+    "url": "https://github.com/rahuljishu/eth_xgaze_eye",
+    "year": 2025,
+    "stars": 0,
+    "license": "Not specified",
+    "description": "",
+    "weight_links": [
+      "https://drive.google.com/file/d/1Ma6zJrECNTjo_mToZ5GKk7EF-0FS4nEC/view?usp=sharing"
+    ],
+    "backbones": [],
+    "datasets": [
+      "xgaze",
+      "gaze360",
+      "mpiifacegaze",
+      "eth-xgaze"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "rlleshi/L2CS-Net",
+    "url": "https://github.com/rlleshi/L2CS-Net",
+    "year": 2025,
+    "stars": 1,
+    "license": "MIT",
+    "description": "The official PyTorch implementation of L2CS-Net for gaze estimation and tracking",
+    "weight_links": [
+      "https://drive.google.com/drive/folders/17p6ORr-JQJcw-eYtG2WGNiuS_qVKwdWd?usp=sharing"
+    ],
+    "backbones": [
+      "resnet50"
+    ],
+    "datasets": [
+      "mpiigaze",
+      "gaze360",
+      "mpiifacegaze"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "melaka-ybbae/L2CSNet-GazeTracking",
+    "url": "https://github.com/melaka-ybbae/L2CSNet-GazeTracking",
+    "year": 2026,
+    "stars": 0,
+    "license": "Not specified",
+    "description": "L2CS-Net Gaze Tracking with 9-point Screen Calibration, One Euro Filter, and Unity Integration Guide",
+    "weight_links": [
+      "https://drive.google.com/drive/folders/17p6ORr-JQJcw-eYtG2WGNiuS_qVKwdWd"
+    ],
+    "backbones": [],
+    "datasets": [
+      "mpiigaze",
+      "gaze360"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "dunyanong/l2cs_gaze_perception",
+    "url": "https://github.com/dunyanong/l2cs_gaze_perception",
+    "year": 2026,
+    "stars": 0,
+    "license": "Not specified",
+    "description": "ROS2: Lightweight and-or combined classification and regression for Continuous Space gaze estimation",
+    "weight_links": [],
+    "backbones": [
+      "resnet50"
+    ],
+    "datasets": [
+      "gaze360",
+      "eve"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "tensorboy/hawkeye-gaze",
+    "url": "https://github.com/tensorboy/hawkeye-gaze",
+    "year": 2026,
+    "stars": 0,
+    "license": "Not specified",
+    "description": "End-to-end trainable gaze estimation for macOS — SigLIP 2 + L2CS head",
+    "weight_links": [],
+    "backbones": [
+      "mobileone",
+      "vit"
+    ],
+    "datasets": [
+      "gazecapture",
+      "eve",
+      "eth-xgaze",
+      "xgaze",
+      "gaze360",
+      "mpiifacegaze"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "mohammad-mehrabi-habibabadi/urban-nature-Gaze-Emotion-tracker",
+    "url": "https://github.com/mohammad-mehrabi-habibabadi/urban-nature-Gaze-Emotion-tracker",
+    "year": 2025,
+    "stars": 0,
+    "license": "MIT",
+    "description": "A computer vision platform using L2CS-Net and DeepFace to measure visual attention in urban environments.",
+    "weight_links": [],
+    "backbones": [
+      "resnet50"
+    ],
+    "datasets": [
+      "gaze360",
+      "eve"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "JiananWang624/head_gaze_analysis",
+    "url": "https://github.com/JiananWang624/head_gaze_analysis",
+    "year": 2026,
+    "stars": 0,
+    "license": "Not specified",
+    "description": "Video head pose and gaze extraction with 6DRepNet and L2CS-Net; pinned dependencies and reproducible setup",
+    "weight_links": [
+      "https://drive.google.com/drive/folders/17p6ORr-JQJcw-eYtG2WGNiuS_qVKwdWd?usp=sharing"
+    ],
+    "backbones": [
+      "mobilenet"
+    ],
+    "datasets": [
+      "gaze360"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "dggarciguti/biosecure-banking-demo",
+    "url": "https://github.com/dggarciguti/biosecure-banking-demo",
+    "year": 2026,
+    "stars": 0,
+    "license": "Not specified",
+    "description": "Desktop banking demo with facial authentication and active gaze/eye-openness verification using DeepFace, L2CS-Net, TensorFlow, PyTorch, OpenCV, and Tkinter.",
+    "weight_links": [],
+    "backbones": [],
+    "datasets": [
+      "gaze360",
+      "eve"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "PraneetKSahoo/DGMA-Driver-Glance-and-Mode-Analysis",
+    "url": "https://github.com/PraneetKSahoo/DGMA-Driver-Glance-and-Mode-Analysis",
+    "year": 2026,
+    "stars": 0,
+    "license": "Not specified",
+    "description": "Deep learning pipeline for driver glance and mode analysis — classifies On-Road/Off-Road gaze using L2CS-Net, detects Automated/Manual driving mode from instrument cluster imagery, and exports per-frame gaze data, glance history, and statistical reports.",
+    "weight_links": [],
+    "backbones": [
+      "resnet50"
+    ],
+    "datasets": [
+      "gaze360",
+      "eve"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "peter8366/EyeTAG",
+    "url": "https://github.com/peter8366/EyeTAG",
+    "year": 2026,
+    "stars": 0,
+    "license": "See repo",
+    "description": "From arXiv: EyeTAG: Eye Trajectory-Aware Gaze Estimation",
+    "weight_links": [],
+    "backbones": [
+      "resnet18",
+      "resnet-50",
+      "resnet-18",
+      "resnet50",
+      "transformer"
+    ],
+    "datasets": [
+      "gaze360",
+      "eve"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "gazeshift3/gazeshift",
+    "url": "https://github.com/gazeshift3/gazeshift",
+    "year": 2026,
+    "stars": 0,
+    "license": "See repo",
+    "description": "From arXiv: GazeShift: Unsupervised Gaze Estimation and Dataset for VR",
+    "weight_links": [
+      "https://drive.google.com/file/d/1U-txJpQUm7YTXd13n2lYXAQ8zkz3iieC/view?usp=drive_link",
+      "https://huggingface.co/datasets/gazeshift/VRGaze"
+    ],
+    "backbones": [],
+    "datasets": [
+      "mpiigaze",
+      "eve"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "zdai257/DisengageNet",
+    "url": "https://github.com/zdai257/DisengageNet",
+    "year": 2025,
+    "stars": 0,
+    "license": "See repo",
+    "description": "From arXiv: GazeTarget360: Towards Gaze Target Estimation in 360-Degree for Robot Perception",
+    "weight_links": [
+      "https://drive.google.com/drive/folders/1_JR-gMJtT1pV00BsO_0Q1Y6PA1qNzSkq?usp=sharing"
+    ],
+    "backbones": [
+      "transformer"
+    ],
+    "datasets": [
+      "eyediap",
+      "columbia",
+      "mpiifacegaze"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "stevenlin510/GazeNLQ",
+    "url": "https://github.com/stevenlin510/GazeNLQ",
+    "year": 2025,
+    "stars": 0,
+    "license": "See repo",
+    "description": "From arXiv: GazeNLQ @ Ego4D Natural Language Queries Challenge 2025",
+    "weight_links": [],
+    "backbones": [],
+    "datasets": [
+      "eve"
+    ],
+    "reported_error_deg": null
+  },
+  {
+    "repo": "jswati31/stage",
+    "url": "https://github.com/jswati31/stage",
+    "year": 2024,
+    "stars": 0,
+    "license": "See repo",
+    "description": "From arXiv: Spatio-Temporal Attention and Gaussian Processes for Personalized Video Gaze Estimation",
+    "weight_links": [
+      "https://drive.google.com/file/d/17_BdB-mnsZEw33yaqHZxJYX8YLArfcq9/view?usp=drive_link",
+      "https://drive.google.com/drive/folders/16re0UoAnmaqQcqjXSkQ8u63iz_Tm9fwd?usp=sharing"
+    ],
+    "backbones": [],
+    "datasets": [
+      "eyediap",
+      "gaze360",
+      "eve"
+    ],
+    "reported_error_deg": null
+  }
+]
