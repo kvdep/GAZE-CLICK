@@ -47,16 +47,15 @@ class L2CS(nn.Module):
         x = self.conv1(x); x = self.bn1(x); x = self.relu(x); x = self.maxpool(x)
         x = self.layer1(x); x = self.layer2(x); x = self.layer3(x); x = self.layer4(x)
         x = self.avgpool(x).flatten(1)
-        # In Ahmednull/L2CS-Net training, the model forward returned (pre_yaw_gaze, pre_pitch_gaze)
-        # but in train.py it was unpacked as `pitch, yaw = model(images)`.
-        # Therefore, fc_yaw_gaze was trained against pitch labels (vertical),
-        # and fc_pitch_gaze was trained against yaw labels (horizontal).
-        pitch_logits = self.fc_yaw_gaze(x)
-        yaw_logits = self.fc_pitch_gaze(x)
-        pitch_probs = F.softmax(pitch_logits, dim=-1)
+        # In L2CS-Net (ResNet-50 Gaze360 / py-feat):
+        # fc_yaw_gaze predicts yaw (horizontal gaze angle),
+        # fc_pitch_gaze predicts pitch (vertical gaze angle).
+        yaw_logits = self.fc_yaw_gaze(x)
+        pitch_logits = self.fc_pitch_gaze(x)
         yaw_probs = F.softmax(yaw_logits, dim=-1)
-        pitch_deg = torch.sum(pitch_probs * self.bin_centers_deg, dim=-1)
+        pitch_probs = F.softmax(pitch_logits, dim=-1)
         yaw_deg = torch.sum(yaw_probs * self.bin_centers_deg, dim=-1)
+        pitch_deg = torch.sum(pitch_probs * self.bin_centers_deg, dim=-1)
         pitch_rad = pitch_deg * (math.pi / 180.0)
         yaw_rad = yaw_deg * (math.pi / 180.0)
         gx = -torch.sin(yaw_rad) * torch.cos(pitch_rad)
