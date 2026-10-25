@@ -4568,3 +4568,13 @@
 [22:00:33] [00:00:00] [GPU] [19.3] [6.6] [registry.py:77] Loaded model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
 [22:03:05] [00:00:02] [GPU] [19.9] [6.9] [registry.py:65] Loading model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
 [22:03:06] [00:00:00] [GPU] [19.8] [6.9] [registry.py:77] Loaded model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
+[22:23:02] [00:00:00] [GPU] [19.9] [6.9] [registry.py:65] Loading model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
+[22:23:04] [00:00:02] [GPU] [19.7] [6.9] [registry.py:77] Loaded model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
+[22:29:00] [00:00:00] [GPU] [19.5] [6.9] [registry.py:65] Loading model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
+[22:29:00] [00:00:00] [GPU] [19.5] [6.9] [registry.py:77] Loaded model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
+[22:29:39] [00:00:00] [GPU] [19.6] [6.9] [registry.py:65] Loading model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
+[22:29:39] [00:00:00] [GPU] [19.6] [6.9] [registry.py:77] Loaded model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
+[22:31:23] [00:00:00] [GPU] [19.8] [6.9] [registry.py:65] Loading model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
+[22:31:23] [00:00:00] [GPU] [19.8] [6.9] [registry.py:77] Loaded model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
+[22:43:21] [00:00:00] [GPU] [18.7] [6.7] [registry.py:65] Loading model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt
+[22:43:21] [00:00:00] [GPU] [18.7] [6.7] [registry.py:77] Loaded model weights from file: C:\Users\jack_\MAIN\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_014_20261017_121921\checkpoints\best_model.pt

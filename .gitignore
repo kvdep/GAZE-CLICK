@@ -37,6 +37,8 @@ mvp/scratch/remote_repo/
 mvp/scratch/*.jpg
 mvp/scratch/*.png
 mvp/scratch/eval_visualizations/
+mvp/experiments/_cache_face_*.npz
+mvp/experiments/*.png
 
 # IDE and OS
 .vscode/
