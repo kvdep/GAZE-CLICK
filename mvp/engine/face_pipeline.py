@@ -3,6 +3,10 @@ from typing import Dict, Any, Optional, Tuple
 from models.registry import ModelRegistry
 import models.yolo26n_gaze_net
 from models.hf_models import load_gaze_model
+try:
+    from adapters.factory import create_adapter
+except ImportError:
+    from mvp.adapters.factory import create_adapter
 
 # 3D canonical coordinates for 5 facial landmarks (right eye, left eye, nose, right mouth, left mouth)
 _FACE_3D_PTS = np.array([
@@ -63,42 +67,15 @@ class GazeTrackingPipeline:
         if not os.path.exists(yunet_path):
             raise FileNotFoundError(f"YuNet face model not found: {yunet_path}")
 
-        # Check for legacy resnet18 checkpoint with model_source.py
-        if checkpoint_path and "resnet18" in checkpoint_path.lower() and os.path.exists(os.path.join(os.path.dirname(os.path.dirname(checkpoint_path)), "model_source.py")):
-            model_src_path = os.path.join(os.path.dirname(os.path.dirname(checkpoint_path)), "model_source.py")
-            spec = importlib.util.spec_from_file_location("res_model_mod", model_src_path)
-            mod = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(mod)
-            self.model = mod.L2CSGazeNet(backbone_name="resnet18").to(self.device)
-            chk = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
-            self.model.load_state_dict(chk["model_state_dict"])
-            self.model.eval()
-            self.model_info = {"name": "L2CS ResNet-18 (Legacy)", "type": "single_crop", "checkpoint_path": checkpoint_path}
-            self.model_name = self.model_info["name"]
-        else:
-            self.model, self.model_info = load_gaze_model(
-                model_name=model_name,
-                checkpoint_path=checkpoint_path,
-                device=self.device
-            )
-            self.model_name = self.model_info["name"]
+        # Modular Adapter architecture: delegates crop extraction, normalization, and model forward
+        self.adapter = create_adapter(model_name=model_name, device=self.device, checkpoint_path=checkpoint_path)
+        self.model = self.adapter.model
+        self.model_name = getattr(self.adapter, "name", model_name)
+        self.model_info = {"name": self.model_name, "type": "adapter", "crop_size": 224}
 
-        self.model_type = self.model_info.get("type", "single_crop")
         self.detector = cv2.FaceDetectorYN.create(yunet_path, "", (320, 320), 0.6, 0.3, 5000)
         self.current_input_size = (320, 320)
-        self.mean_tensor = torch.tensor([0.485, 0.456, 0.406], dtype=torch.float32, device=self.device).view(1, 3, 1, 1)
-        self.std_tensor = torch.tensor([0.229, 0.224, 0.225], dtype=torch.float32, device=self.device).view(1, 3, 1, 1)
         self.ema_pitch = None; self.ema_yaw = None; self.ema_alpha = 0.35
-
-        # Warmup forward pass
-        with torch.no_grad():
-            dummy_in = torch.zeros(1, 3, 224, 224, dtype=torch.float32, device=self.device)
-            if self.model_type == "dual_stream":
-                _ = self.model(dummy_in, dummy_in, dummy_in)
-            else:
-                _ = self.model(dummy_in)
-            if self.device.type == "cuda":
-                torch.cuda.synchronize()
 
     def process_frame(self, frame_bgr: np.ndarray) -> Dict[str, Any]:
         h, w = frame_bgr.shape[:2]
@@ -144,59 +121,25 @@ class GazeTrackingPipeline:
         half_side = box_side // 2
         cx1 = int(max(0, cx - half_side)); cy1 = int(max(0, cy - half_side))
         cx2 = int(min(w, cx + half_side)); cy2 = int(min(h, cy + half_side))
-        face_crop = frame_bgr[cy1:cy2, cx1:cx2]
-        if face_crop.size == 0:
-            return {"face_detected": False, "latency_model_ms": 0.0}
 
-        crop_res = int(self.model_info.get("crop_size", 224))
-        face_resized = cv2.resize(face_crop, (crop_res, crop_res), interpolation=cv2.INTER_LINEAR)
-        face_rgb = cv2.cvtColor(face_resized, cv2.COLOR_BGR2RGB)
-        tensor_in = torch.from_numpy(face_rgb).permute(2, 0, 1).unsqueeze(0).float().to(self.device) / 255.0
-        tensor_in = (tensor_in - self.mean_tensor) / self.std_tensor
+        landmarks_2d = np.array([r_eye, l_eye, nose, r_mouth, l_mouth], dtype=np.float32)
+        adapter_res = self.adapter.predict_gaze(
+            frame_bgr=frame_bgr,
+            face_bbox=(int(fx), int(fy), int(fw), int(fh)),
+            landmarks_5pts=landmarks_2d
+        )
+        latency_model_ms = adapter_res["latency_model_ms"]
+        p_deg = adapter_res["pitch_deg"]
+        y_deg = adapter_res["yaw_deg"]
+        gaze_v = adapter_res["gaze_vector"]
+        var_val = adapter_res.get("attention_variance", 0.020)
 
-        t_model_start = time.perf_counter()
-        with torch.no_grad():
-            if self.model_type == "dual_stream":
-                eye_side = int(max(fw, fh) * 0.40)
-                half_eye = eye_side // 2
-                rex, rey = int(r_eye[0]), int(r_eye[1])
-                rcx1, rcy1 = max(0, rex - half_eye), max(0, rey - half_eye)
-                rcx2, rcy2 = min(w, rex + half_eye), min(h, rey + half_eye)
-                r_crop = frame_bgr[rcy1:rcy2, rcx1:rcx2]
-                if r_crop.size == 0:
-                    r_crop = face_crop
-                r_resized = cv2.resize(r_crop, (224, 224), interpolation=cv2.INTER_LINEAR)
-                r_tensor = torch.from_numpy(cv2.cvtColor(r_resized, cv2.COLOR_BGR2RGB)).permute(2, 0, 1).unsqueeze(0).float().to(self.device) / 255.0
-                r_tensor = (r_tensor - self.mean_tensor) / self.std_tensor
-
-                lex, ley = int(l_eye[0]), int(l_eye[1])
-                lcx1, lcy1 = max(0, lex - half_eye), max(0, ley - half_eye)
-                lcx2, lcy2 = min(w, lex + half_eye), min(h, ley + half_eye)
-                l_crop = frame_bgr[lcy1:lcy2, lcx1:lcx2]
-                if l_crop.size == 0:
-                    l_crop = face_crop
-                l_resized = cv2.resize(l_crop, (224, 224), interpolation=cv2.INTER_LINEAR)
-                l_tensor = torch.from_numpy(cv2.cvtColor(l_resized, cv2.COLOR_BGR2RGB)).permute(2, 0, 1).unsqueeze(0).float().to(self.device) / 255.0
-                l_tensor = (l_tensor - self.mean_tensor) / self.std_tensor
-
-                outputs = self.model(tensor_in, l_tensor, r_tensor)
-            else:
-                outputs = self.model(tensor_in)
-
-        if self.device.type == "cuda":
-            torch.cuda.synchronize()
-        latency_model_ms = (time.perf_counter() - t_model_start) * 1000.0
-
-        p_deg = float(outputs["pitch_deg"].item() if "pitch_deg" in outputs else outputs["pitch_rad"].item() * (180.0 / math.pi))
-        y_deg = float(outputs["yaw_deg"].item() if "yaw_deg" in outputs else outputs["yaw_rad"].item() * (180.0 / math.pi))
-
-        if "head_pitch_rad" in outputs and "head_yaw_rad" in outputs and outputs["head_pitch_rad"].numel() > 0:
-            hp_deg = float(outputs["head_pitch_rad"].item() * (180.0 / math.pi))
-            hy_deg = float(outputs["head_yaw_rad"].item() * (180.0 / math.pi))
-            head_v = outputs.get("head_vector", torch.zeros(1, 3))[0].detach().cpu().numpy()
+        # Head pose: use adapter head pose if available, else 5-point solvePnP
+        if "head_pitch_deg" in adapter_res and "head_yaw_deg" in adapter_res and "head_vector" in adapter_res:
+            hp_deg = float(adapter_res["head_pitch_deg"])
+            hy_deg = float(adapter_res["head_yaw_deg"])
+            head_v = adapter_res["head_vector"]
         else:
-            # Estimate head pose using 5-point solvePnP
-            landmarks_2d = np.array([r_eye, l_eye, nose, r_mouth, l_mouth], dtype=np.float32)
             focal_len = float(w)
             cam_matrix = np.array([
                 [focal_len, 0.0, w / 2.0],
@@ -226,9 +169,6 @@ class GazeTrackingPipeline:
         else:
             self.ema_pitch = self.ema_alpha * p_deg + (1.0 - self.ema_alpha) * self.ema_pitch
             self.ema_yaw = self.ema_alpha * y_deg + (1.0 - self.ema_alpha) * self.ema_yaw
-
-        gaze_v = outputs["gaze_vector"][0].detach().cpu().numpy()
-        var_val = float(outputs["attention_variance"][0].item()) if "attention_variance" in outputs else 0.020
 
         return {
             "face_detected": True,

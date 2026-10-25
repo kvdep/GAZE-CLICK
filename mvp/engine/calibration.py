@@ -59,10 +59,10 @@ class GazeCalibration:
         px_per_mm_x = self.screen_w / max(self.physical_screen_w_mm, 1.0)
         px_per_mm_y = self.screen_h / max(self.physical_screen_h_mm, 1.0)
         # In screen pixel coordinates, +X is right, +Y is down.
-        # For L2CS/GazeTR/MediaPipe, +yaw is rightwards, +pitch is downwards.
-        # Both displacements must be added with positive signs:
+        # Elevation (pitch): theta > 0 is UP, which corresponds to smaller Y in screen space (subtract dy).
+        # Azimuth (yaw): phi > 0 is RIGHT, which corresponds to larger X in screen space (add dx).
         dx_mm = self.user_distance_mm * math.tan(y_rad) * self.gain_x
-        dy_mm = self.user_distance_mm * math.tan(p_rad) * self.gain_y
+        dy_mm = -self.user_distance_mm * math.tan(p_rad) * self.gain_y
         raw_x = center_x + dx_mm * px_per_mm_x + self.offset_x
         raw_y = center_y + dy_mm * px_per_mm_y + self.offset_y
         clamped_x = float(np.clip(raw_x, 0.0, self.screen_w - 1.0))
@@ -158,20 +158,10 @@ class GazeCalibration:
             Y = np.array(Y_rows, dtype=np.float64)
             Xx = X[:, [0, 1, 3]]
             Xy = X[:, [0, 2, 4]]
-            reg_x = np.diag([0.0, l2_reg, l2_reg])
-            reg_y = np.diag([0.0, l2_reg, l2_reg])
+            reg_x = np.diag([0.0, l2_reg, 50.0])
+            reg_y = np.diag([0.0, l2_reg, 50.0])
             wx = np.linalg.solve(Xx.T @ Xx + reg_x, Xx.T @ Y[:, 0])
             wy = np.linalg.solve(Xy.T @ Xy + reg_y, Xy.T @ Y[:, 1])
-
-            # Enforce positive slope constraint (gaze direction must follow eye rotation)
-            if wx[1] <= 0.15 * geo_bx:
-                wx[1] = geo_bx
-                wx[2] = 0.0
-                wx[0] = float(np.mean(Y[:, 0])) - wx[1] * self.resting_yaw_deg
-            if wy[1] <= 0.15 * geo_by:
-                wy[1] = geo_by
-                wy[2] = 0.0
-                wy[0] = float(np.mean(Y[:, 1])) - wy[1] * self.resting_pitch_deg
 
             self.weights = np.zeros((5, 2), dtype=np.float64)
             self.weights[0, 0] = wx[0]
@@ -180,8 +170,8 @@ class GazeCalibration:
             self.weights[0, 1] = wy[0]
             self.weights[2, 1] = wy[1]
             self.weights[4, 1] = wy[2]
-            self.gain_x = float(np.clip(wx[1] / geo_bx, 0.2, 4.0))
-            self.gain_y = float(np.clip(wy[1] / geo_by, 0.2, 4.0))
+            self.gain_x = float(np.clip(abs(wx[1]) / max(abs(geo_bx), 1e-4), 0.2, 4.0))
+            self.gain_y = float(np.clip(abs(wy[1]) / max(abs(geo_by), 1e-4), 0.2, 4.0))
         else:
             X_rows = []; Y_rows = []
             for sample in calibration_data:
@@ -197,20 +187,13 @@ class GazeCalibration:
             wx = np.linalg.solve(Xx.T @ Xx + reg_x, Xx.T @ Y[:, 0])
             wy = np.linalg.solve(Xy.T @ Xy + reg_y, Xy.T @ Y[:, 1])
 
-            if wx[1] <= 0.15 * geo_bx:
-                wx[1] = geo_bx
-                wx[0] = float(np.mean(Y[:, 0])) - wx[1] * self.resting_yaw_deg
-            if wy[1] <= 0.15 * geo_by:
-                wy[1] = geo_by
-                wy[0] = float(np.mean(Y[:, 1])) - wy[1] * self.resting_pitch_deg
-
             self.weights = np.zeros((3, 2), dtype=np.float64)
             self.weights[0, 0] = wx[0]
             self.weights[1, 0] = wx[1]
             self.weights[0, 1] = wy[0]
             self.weights[2, 1] = wy[1]
-            self.gain_x = float(np.clip(wx[1] / geo_bx, 0.2, 4.0))
-            self.gain_y = float(np.clip(wy[1] / geo_by, 0.2, 4.0))
+            self.gain_x = float(np.clip(abs(wx[1]) / max(abs(geo_bx), 1e-4), 0.2, 4.0))
+            self.gain_y = float(np.clip(abs(wy[1]) / max(abs(geo_by), 1e-4), 0.2, 4.0))
         self.offset_x = 0.0; self.offset_y = 0.0
         Y_pred = X @ self.weights
         residuals = np.linalg.norm(Y - Y_pred, axis=-1)
