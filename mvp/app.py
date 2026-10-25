@@ -4,16 +4,33 @@ from typing import Optional, Dict, Any, Tuple, List
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-from engine.face_pipeline import GazeTrackingPipeline
+from engine.face_pipeline import create_gaze_pipeline, GazeTrackingPipeline, MediaPipeIrisPipeline
 from engine.calibration import GazeCalibration
 from engine.filter import PointOneEuroFilter
 from engine.cursor_controller import CursorController
 from engine.telemetry_logger import TelemetryLogger
+from engine.benchmark_recorder import BenchmarkRecorder
 
 class GazeApplication:
-    def __init__(self, camera_id: int = 0, cam_w: int = 1280, cam_h: int = 720, enable_mouse: bool = False, checkpoint_path: str = "mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/best_model.pt", yunet_path: str = "mvp/models/weights/face_detection_yunet_2023mar.onnx", log_dir: str = "mvp/logs", headless: bool = False) -> None:
+    def __init__(
+        self,
+        camera_id: int = 0,
+        cam_w: int = 1280,
+        cam_h: int = 720,
+        enable_mouse: bool = False,
+        model_name: str = "l2cs",
+        checkpoint_path: Optional[str] = None,
+        yunet_path: str = "mvp/models/weights/face_detection_yunet_2023mar.onnx",
+        task_path: str = "mvp/models/weights/face_landmarker.task",
+        log_dir: str = "mvp/logs",
+        headless: bool = False,
+        test_mode: bool = False
+    ) -> None:
         self.camera_id = camera_id; self.req_cam_w = cam_w; self.req_cam_h = cam_h
         self.headless = headless
+        self.model_name = model_name
+        self.checkpoint_path = checkpoint_path
+        self.test_mode = test_mode
         self.user32 = ctypes.windll.user32
         try:
             self.user32.SetProcessDPIAware()
@@ -23,8 +40,18 @@ class GazeApplication:
         self.screen_h = int(self.user32.GetSystemMetrics(1))
         if self.screen_w <= 0 or self.screen_h <= 0:
             self.screen_w = 2880; self.screen_h = 1800
-        self.pipeline = GazeTrackingPipeline(checkpoint_path=checkpoint_path, yunet_path=yunet_path)
-        self.calibration = GazeCalibration(screen_w=self.screen_w, screen_h=self.screen_h, profile_path="mvp/calibration_profile.json")
+        self.pipeline = create_gaze_pipeline(
+            model_name=model_name,
+            checkpoint_path=checkpoint_path,
+            yunet_path=yunet_path,
+            task_path=task_path
+        )
+        self.calibration = GazeCalibration(
+            screen_w=self.screen_w,
+            screen_h=self.screen_h,
+            profile_path="mvp/calibration_profile.json",
+            model_name=self.model_name
+        )
         self.filter = PointOneEuroFilter(min_cutoff=0.5, beta=0.005, d_cutoff=1.0, deadzone_radius_px=25.0)
         self.cursor_ctrl = CursorController(screen_w=self.screen_w, screen_h=self.screen_h, enable_control=enable_mouse)
         self.logger = TelemetryLogger(log_dir=log_dir, session_prefix="session")
@@ -54,8 +81,20 @@ class GazeApplication:
         self.calib_settle_sec = 0.7
         self.calib_point_samples = []
         self.calib_final_dataset = []
+        self.prev_space_down = False
         self.window_hud_name = "GAZE-CLICK MVP [Tracker & Telemetry]"
         self.window_calib_name = "GAZE-CLICK Calibration"
+        self.window_test_name = "GAZE-CLICK Accuracy Test"
+        self.benchmark = BenchmarkRecorder(
+            output_dir="mvp/benchmarks",
+            screen_w=self.screen_w,
+            screen_h=self.screen_h,
+            cam_w=self.actual_cam_w,
+            cam_h=self.actual_cam_h,
+            model_name=getattr(self.pipeline, "model_name", self.model_name)
+        )
+        if self.test_mode:
+            self.benchmark.start_recording(model_name=getattr(self.pipeline, "model_name", self.model_name))
 
     def _generate_calibration_grid(self) -> list:
         pts = []
@@ -88,11 +127,11 @@ class GazeApplication:
                 y_rad = math.radians(result.get("gaze_yaw_deg", 0.0))
                 arrow_len = 65.0
                 dx = -arrow_len * math.sin(y_rad)
-                dy = -arrow_len * math.sin(p_rad)
+                dy = arrow_len * math.sin(p_rad)
                 cv2.arrowedLine(vis, (rex, rey), (int(rex + dx), int(rey + dy)), (0, 0, 255), 2, tipLength=0.25)
-                cv2.arrowedLine(vis, (lex, ley), (int(lex + dx), int(rey + dy)), (0, 0, 255), 2, tipLength=0.25)
+                cv2.arrowedLine(vis, (lex, ley), (int(lex + dx), int(ley + dy)), (0, 0, 255), 2, tipLength=0.25)
         overlay = vis.copy()
-        cv2.rectangle(overlay, (10, 10), (370, 220), (20, 20, 20), -1)
+        cv2.rectangle(overlay, (10, 10), (420, 246), (20, 20, 20), -1)
         cv2.addWeighted(overlay, 0.75, vis, 0.25, 0, vis)
         vram_mb = 0.0
         if torch.cuda.is_available():
@@ -102,7 +141,9 @@ class GazeApplication:
         ctrl_color = (0, 255, 0) if self.cursor_ctrl.enable_control else (0, 165, 255)
         calib_status = f"CALIBRATED (R2={self.calibration.r2_score:.2f})" if self.calibration.is_calibrated else "UNCALIBRATED (Press C)"
         calib_color = (0, 255, 0) if self.calibration.is_calibrated else (0, 0, 255)
+        model_display = getattr(self.pipeline, "model_name", self.model_name)
         lines = [
+            (f"Model: {model_display}", (255, 215, 0)),
             (f"FPS: {fps:.1f} | Pipeline: {lat_total:.1f} ms", (255, 255, 255)),
             (f"Model Forward: {result.get('latency_model_ms', 0.0):.2f} ms", (255, 255, 255)),
             (f"VRAM: {vram_mb:.1f} MB | Cam: {w}x{h}", (255, 255, 255)),
@@ -185,7 +226,13 @@ class GazeApplication:
             hp_deg = result.get("head_pitch_deg", 0.0)
             hy_deg = result.get("head_yaw_deg", 0.0)
             raw_x, raw_y = self.calibration.predict_uncalibrated(p_deg, y_deg)
-            calib_x, calib_y = self.calibration.predict(p_deg, y_deg, hp_deg, hy_deg)
+            calib_x, calib_y = self.calibration.predict(
+                p_deg, y_deg, hp_deg, hy_deg,
+                ix=result.get("ix"),
+                iy=result.get("iy"),
+                eye_diff_x=result.get("eye_diff_x"),
+                eye_diff_y=result.get("eye_diff_y")
+            )
             filt_x, filt_y = self.filter.filter(calib_x, calib_y, now_mono)
             click_event = False
             if result.get("face_detected", False):
@@ -219,6 +266,56 @@ class GazeApplication:
                 "click_event": click_event
             }
             self.logger.log_frame(log_data)
+            if self.test_mode:
+                if self.headless:
+                    if self.benchmark.stage == "calibration":
+                        if self.benchmark.waiting_for_key_release:
+                            self.benchmark.trigger_space_release()
+                        else:
+                            self.benchmark.trigger_space_press()
+                    elif self.benchmark.stage == "dynamic_test":
+                        self.benchmark.is_holding_trajectory_key = True
+
+                tx, ty, status_str, prog, is_finished = self.benchmark.update_state(
+                    is_holding_trajectory_key=self.benchmark.is_holding_trajectory_key,
+                    dt=dt
+                )
+                self.benchmark.record_frame(
+                    frame_bgr=frame,
+                    pred_raw=(raw_x, raw_y),
+                    pred_calib=(calib_x, calib_y),
+                    pred_filtered=(filt_x, filt_y),
+                    model_res=result,
+                    fps=fps_avg,
+                    mirror_camera=False,
+                    is_holding_trajectory_key=self.benchmark.is_holding_trajectory_key
+                )
+                if not self.headless:
+                    test_img = np.zeros((self.screen_h, self.screen_w, 3), dtype=np.uint8)
+                    itx, ity = int(tx), int(ty)
+                    col = (0, 255, 0) if self.benchmark.is_capturing_active else (0, 165, 255)
+                    cv2.circle(test_img, (itx, ity), 42, col, 2, cv2.LINE_AA)
+                    cv2.circle(test_img, (itx, ity), 8, col, -1, cv2.LINE_AA)
+                    cv2.putText(test_img, status_str, (int(self.screen_w / 2 - 380), 70), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 2, cv2.LINE_AA)
+                    cv2.imshow(self.window_test_name, test_img)
+                if is_finished:
+                    res = self.benchmark.stop_recording_and_evaluate()
+                    if self.benchmark.session_calibration is not None:
+                        self.calibration = self.benchmark.session_calibration
+                    print("\n" + "="*75)
+                    print(f" ПАСПОРТ ТЕСТА ТОЧНОСТИ: {res.get('model_name')}")
+                    print(f" Источник оценки:          {res.get('eval_source')}")
+                    print(f" Калиброванная угловая:    {res.get('angular_err_mean_deg', 0.0):.2f}°")
+                    print(f" Сырая угловая ошибка:     {res.get('raw_angular_err_mean_deg', 0.0):.2f}°")
+                    print(f" Экранная ошибка (мм):     {res.get('screen_err_mean_mm', 0.0):.1f} мм ({res.get('screen_err_mean_px', 0.0):.1f} px)")
+                    print(f" Дрейф калибровки (Δ):     {res.get('drift_ang_deg', 0.0):+.2f}° (коэф. {res.get('drift_ratio', 1.0):.2f}x)")
+                    print(f" Качество регрессии R²:    {res.get('r2_score', 0.0):.3f}")
+                    print(f" Корреляция X / Y:         {res.get('corr_x', 0.0):.3f} / {res.get('corr_y', 0.0):.3f}")
+                    print(f" Видеозапись с телеметрией:{res.get('video_path')}")
+                    print(f" Полный Markdown отчет:    {res.get('report_path')}")
+                    print("="*75 + "\n")
+                    self.is_running = False
+
             if self.in_calibration_mode:
                 elapsed_pt = now_mono - self.calib_point_start_time
                 target = self.calib_points[self.calib_idx]
@@ -250,18 +347,46 @@ class GazeApplication:
                 key = cv2.waitKey(1) & 0xFF
                 if key in (27, ord('q'), ord('Q')):
                     self.is_running = False
-                elif key in (ord('m'), ord('M'), 32):
-                    self.cursor_ctrl.toggle_control()
-                elif key in (ord('c'), ord('C')):
-                    if not self.in_calibration_mode:
-                        self.start_calibration()
-                elif key in (ord('r'), ord('R')):
-                    self.calibration.reset()
+
+                if self.test_mode:
+                    # Physical hardware keyboard state via Windows API to prevent auto-repeat bugs
+                    space_down = bool(self.user32.GetAsyncKeyState(0x20) & 0x8000)
+                    shift_down = bool(self.user32.GetAsyncKeyState(0x10) & 0x8000)
+                    g_down = bool(self.user32.GetAsyncKeyState(0x47) & 0x8000)
+
+                    if self.benchmark.stage == "calibration":
+                        # Transition from UP to DOWN: start capture
+                        if space_down and not self.prev_space_down:
+                            self.benchmark.trigger_space_press()
+                        # Transition from DOWN to UP: advance to next point
+                        elif not space_down and self.prev_space_down:
+                            self.benchmark.trigger_space_release()
+                    elif self.benchmark.stage == "dynamic_test":
+                        self.benchmark.is_holding_trajectory_key = (space_down or shift_down or g_down)
+
+                    self.prev_space_down = space_down
+                else:
+                    if key == 32:  # Space
+                        self.cursor_ctrl.toggle_control()
+                    elif key in (ord('m'), ord('M')):
+                        self.cursor_ctrl.toggle_control()
+                    elif key in (ord('c'), ord('C')):
+                        if not self.in_calibration_mode:
+                            self.start_calibration()
+                    elif key in (ord('r'), ord('R')):
+                        self.calibration.reset()
             if max_frames is not None and frame_counter >= max_frames:
                 self.is_running = False
         self.cleanup()
 
     def cleanup(self) -> None:
+        if hasattr(self, "benchmark") and self.benchmark and getattr(self.benchmark, "is_recording", False):
+            try:
+                res = self.benchmark.stop_recording_and_evaluate()
+                if res and "error" not in res:
+                    print(f"\n[Benchmark] Accuracy Test finalized: Mean Angular Error = {res.get('angular_err_mean_deg', 0.0):.2f} deg")
+            except Exception as e:
+                print(f"[Benchmark] Cleanup warning: {e}")
         if self.cap.isOpened():
             self.cap.release()
         if not self.headless:
@@ -271,6 +396,10 @@ class GazeApplication:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="GAZE-CLICK Real-Time System")
+    parser.add_argument("--model_name", "--model-name", "--model", dest="model_name", type=str, default="l2cs",
+                        help="Gaze model: 'l2cs' (py-feat), 'idiap_resnet18', 'gazetr', 'puregaze', 'l2cs_diversity', 'mediapipe', 'yolo26n', or path to checkpoint")
+    parser.add_argument("--checkpoint", type=str, default=None,
+                        help="Optional override path to custom checkpoint (.pt/.pth/.safetensors/.pkl)")
     parser.add_argument("--camera-id", type=int, default=0)
     parser.add_argument("--width", type=int, default=1280)
     parser.add_argument("--height", type=int, default=720)
@@ -279,28 +408,45 @@ def main() -> None:
     parser.add_argument("--max-frames", type=int, default=None)
     parser.add_argument("--headless", action="store_true")
     parser.add_argument("--cv", action="store_true")
+    parser.add_argument("--test", "--benchmark", action="store_true",
+                        help="Run automated accuracy test, recording visualized video, computing per-point metrics, and outputting named report/video files")
     parser.add_argument("--fullscreen", action="store_true")
-    parser.add_argument("--checkpoint", type=str, default="mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/best_model.pt")
     args = parser.parse_args()
+
+    # If --checkpoint was given and --model-name was default, and file is YOLO/ResNet, adjust appropriately
+    if args.checkpoint and args.model_name == "l2cs":
+        if "yolo" in args.checkpoint.lower():
+            args.model_name = "yolo26n"
+
     if not args.cv and not args.headless:
         import app_qt
         qt_app = app_qt.QApplication(sys.argv)
         qt_app.setApplicationName("GAZE-CLICK")
-        win = app_qt.GazeMainWindow(camera_id=args.camera_id, checkpoint_path=args.checkpoint)
-        if args.fullscreen or args.calibrate:
+        win = app_qt.GazeMainWindow(
+            camera_id=args.camera_id,
+            model_name=args.model_name,
+            checkpoint_path=args.checkpoint
+        )
+        if args.test:
+            win.showFullScreen()
+            win.start_benchmark()
+        elif args.fullscreen or args.calibrate:
             win.showFullScreen()
             if args.calibrate:
                 win.start_calibration()
         else:
             win.show()
         sys.exit(qt_app.exec())
+
     app = GazeApplication(
         camera_id=args.camera_id,
         cam_w=args.width,
         cam_h=args.height,
         enable_mouse=args.enable_mouse,
+        model_name=args.model_name,
         checkpoint_path=args.checkpoint,
-        headless=args.headless
+        headless=args.headless,
+        test_mode=args.test
     )
     if args.calibrate:
         app.start_calibration()

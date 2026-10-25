@@ -328,23 +328,24 @@ class PipelineWorker(QThread):
     frame_processed = pyqtSignal(QImage, dict)
     worker_error = pyqtSignal(str)
 
-    def __init__(self, camera_id: int = 0, checkpoint_path: str = "", yunet_path: str = "", pipeline_type: str = "mediapipe", parent=None):
+    def __init__(self, camera_id: int = 0, model_name: str = "l2cs", checkpoint_path: Optional[str] = None, yunet_path: str = "", pipeline_type: Optional[str] = None, parent=None):
         super().__init__(parent)
         self.camera_id = camera_id
         self.checkpoint_path = checkpoint_path
         self.yunet_path = yunet_path
-        self.pipeline_type = pipeline_type
+        self.model_name = model_name or pipeline_type or "l2cs"
+        self.pipeline_type = self.model_name
         self.running = False
         self.mirror_camera = True
         self.invert_gaze_x = False
-        self.resting_pitch_deg = -8.99
+        self.resting_pitch_deg: float = 0.0
         self.actual_cam_w = 1280
         self.actual_cam_h = 720
 
     def run(self):
         try:
             pipeline = create_gaze_pipeline(
-                pipeline_type=self.pipeline_type,
+                model_name=self.model_name,
                 checkpoint_path=self.checkpoint_path,
                 yunet_path=self.yunet_path
             )
@@ -392,10 +393,11 @@ class PipelineWorker(QThread):
                         lex, ley = int(fw - 1.0 - le[0]), int(le[1])
                         cv2.circle(vis, (rex, rey), 4, (59, 130, 246), -1)
                         cv2.circle(vis, (lex, ley), 4, (59, 130, 246), -1)
-                        p_rad = math.radians(p - self.resting_pitch_deg); y_rad = math.radians(y)
+                        resting_p = float(self.resting_pitch_deg if self.resting_pitch_deg is not None else 0.0)
+                        p_rad = math.radians(p - resting_p); y_rad = math.radians(y)
                         arrow_len = 55.0
                         dx = arrow_len * math.sin(y_rad)
-                        dy = -arrow_len * math.sin(p_rad)
+                        dy = arrow_len * math.sin(p_rad)
                         cv2.arrowedLine(vis, (rex, rey), (int(rex + dx), int(rey + dy)), (239, 68, 68), 2, tipLength=0.25)
                         cv2.arrowedLine(vis, (lex, ley), (int(lex + dx), int(ley + dy)), (239, 68, 68), 2, tipLength=0.25)
             else:
@@ -410,10 +412,11 @@ class PipelineWorker(QThread):
                         lex, ley = int(le[0]), int(le[1])
                         cv2.circle(vis, (rex, rey), 4, (59, 130, 246), -1)
                         cv2.circle(vis, (lex, ley), 4, (59, 130, 246), -1)
-                        p_rad = math.radians(p - self.resting_pitch_deg); y_rad = math.radians(y)
+                        resting_p = float(self.resting_pitch_deg if self.resting_pitch_deg is not None else 0.0)
+                        p_rad = math.radians(p - resting_p); y_rad = math.radians(y)
                         arrow_len = 55.0
                         dx = -arrow_len * math.sin(y_rad)
-                        dy = -arrow_len * math.sin(p_rad)
+                        dy = arrow_len * math.sin(p_rad)
                         cv2.arrowedLine(vis, (rex, rey), (int(rex + dx), int(rey + dy)), (239, 68, 68), 2, tipLength=0.25)
                         cv2.arrowedLine(vis, (lex, ley), (int(lex + dx), int(ley + dy)), (239, 68, 68), 2, tipLength=0.25)
             rgb = cv2.cvtColor(vis, cv2.COLOR_BGR2RGB)
@@ -508,14 +511,14 @@ class BenchmarkCanvas(QWidget):
         self.target_pt: Tuple[float, float] = (0.0, 0.0)
         self.progress: float = 0.0
         self.status_text: str = ""
-        self.is_holding_key: bool = False
+        self.is_capturing: bool = False
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
-    def set_state(self, target_pt: Tuple[float, float], progress: float, status_text: str, is_holding_key: bool = False):
+    def set_state(self, target_pt: Tuple[float, float], progress: float, status_text: str, is_capturing: bool = False):
         self.target_pt = target_pt
         self.progress = progress
         self.status_text = status_text
-        self.is_holding_key = is_holding_key
+        self.is_capturing = is_capturing
         self.update()
 
     def paintEvent(self, event):
@@ -529,7 +532,7 @@ class BenchmarkCanvas(QWidget):
         painter.setPen(pen_cross)
         painter.drawLine(QPointF(0, draw_y), QPointF(w, draw_y))
         painter.drawLine(QPointF(draw_x, 0), QPointF(draw_x, h))
-        target_color = QColor(16, 185, 129) if "RECORDING" in self.status_text or self.is_holding_key else QColor(239, 68, 68)
+        target_color = QColor(16, 185, 129) if self.is_capturing else QColor(245, 158, 11)
         pen_outer = QPen(target_color, 3)
         painter.setPen(pen_outer)
         painter.setBrush(Qt.BrushStyle.NoBrush)
@@ -539,8 +542,8 @@ class BenchmarkCanvas(QWidget):
         painter.drawEllipse(QPointF(draw_x, draw_y), 10.0, 10.0)
         font_warn = QFont("Segoe UI", 11, QFont.Weight.Bold)
         painter.setFont(font_warn)
-        painter.setPen(QColor(239, 68, 68))
-        warn_text = "[GROUND TRUTH BENCHMARK - STRICT EVALUATION - NO TRAINING DATA]"
+        painter.setPen(QColor(56, 189, 248))
+        warn_text = "[ТЕСТ ТОЧНОСТИ МОДЕЛИ: КАЛИБРОВКА И ДИНАМИЧЕСКИЙ ТРЕКИНГ]"
         painter.drawText(QRectF(0, 15, float(w), 24), Qt.AlignmentFlag.AlignCenter, warn_text)
         font_info = QFont("Segoe UI", 20, QFont.Weight.Bold)
         painter.setFont(font_info)
@@ -549,10 +552,7 @@ class BenchmarkCanvas(QWidget):
         font_hint = QFont("Segoe UI", 13)
         painter.setFont(font_hint)
         painter.setPen(QColor(156, 163, 175))
-        if "TRAJECTORY" in self.status_text or "SHIFT" in self.status_text or "Circle" in self.status_text:
-            hint = "HOLD [SHIFT] or [G] to move target continuously. Follow with eyes. Release to pause. [ESC] to exit."
-        else:
-            hint = "Fixate on the red target, then PRESS [SPACE] to capture ground truth. [ESC] to exit."
+        hint = "Этап 1: Нажмите [ПРОБЕЛ] на каждой точке отдельно. | Этап 2: Удерживайте [SHIFT], [G] или [ПРОБЕЛ] для движения точки. [ESC] — завершить."
         painter.drawText(QRectF(0, 80, float(w), 26), Qt.AlignmentFlag.AlignCenter, hint)
         bar_w = 620.0; bar_h = 12.0
         bar_x = (w - bar_w) / 2.0; bar_y = h - 60.0
@@ -563,14 +563,23 @@ class BenchmarkCanvas(QWidget):
         painter.drawRoundedRect(QRectF(bar_x, bar_y, fill_w, bar_h), 6.0, 6.0)
 
 class GazeMainWindow(QMainWindow):
-    def __init__(self, camera_id: int = 0, checkpoint_path: str = "mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/best_model.pt", yunet_path: str = "mvp/models/weights/face_detection_yunet_2023mar.onnx", log_dir: str = "mvp/logs", pipeline_type: str = "mediapipe") -> None:
+    def __init__(
+        self,
+        camera_id: int = 0,
+        model_name: str = "l2cs",
+        checkpoint_path: Optional[str] = None,
+        yunet_path: str = "mvp/models/weights/face_detection_yunet_2023mar.onnx",
+        log_dir: str = "mvp/logs",
+        pipeline_type: Optional[str] = None
+    ) -> None:
         super().__init__()
         self.setWindowTitle("GAZE-CLICK // NEURAL REAL-TIME GAZE CONTROL")
         self.camera_id = camera_id
+        self.model_name = model_name or pipeline_type or "l2cs"
         self.checkpoint_path = checkpoint_path
         self.yunet_path = yunet_path
         self.log_dir = log_dir
-        self.pipeline_type = pipeline_type
+        self.pipeline_type = self.model_name
         self.user32 = ctypes.windll.user32
         try:
             self.user32.SetProcessDPIAware()
@@ -581,11 +590,21 @@ class GazeMainWindow(QMainWindow):
         if self.screen_w <= 0 or self.screen_h <= 0:
             self.screen_w = 2880; self.screen_h = 1800
 
-        self.calibration = GazeCalibration(screen_w=self.screen_w, screen_h=self.screen_h, profile_path="mvp/calibration_profile.json")
+        self.calibration = GazeCalibration(
+            screen_w=self.screen_w,
+            screen_h=self.screen_h,
+            profile_path="mvp/calibration_profile.json",
+            model_name=self.model_name
+        )
         self.filter = PointOneEuroFilter(min_cutoff=0.5, beta=0.005, d_cutoff=1.0, deadzone_radius_px=8.0)
         self.cursor_ctrl = CursorController(screen_w=self.screen_w, screen_h=self.screen_h, enable_control=False)
         self.logger = TelemetryLogger(log_dir=self.log_dir, session_prefix="session")
-        self.benchmark = BenchmarkRecorder(output_dir="mvp/benchmarks", screen_w=self.screen_w, screen_h=self.screen_h)
+        self.benchmark = BenchmarkRecorder(
+            output_dir="mvp/benchmarks",
+            screen_w=self.screen_w,
+            screen_h=self.screen_h,
+            model_name=self.model_name
+        )
 
         self.mirror_camera: bool = True
         self.invert_gaze_x: bool = False
@@ -607,14 +626,14 @@ class GazeMainWindow(QMainWindow):
 
         self.worker = PipelineWorker(
             camera_id=self.camera_id,
+            model_name=self.model_name,
             checkpoint_path=self.checkpoint_path,
             yunet_path=self.yunet_path,
-            pipeline_type=self.pipeline_type,
             parent=self
         )
         self.worker.mirror_camera = self.mirror_camera
         self.worker.invert_gaze_x = self.invert_gaze_x
-        self.worker.resting_pitch_deg = self.calibration.resting_pitch_deg
+        self.worker.resting_pitch_deg = float(self.calibration.resting_pitch_deg or 0.0)
         self.worker.frame_processed.connect(self._on_frame_processed)
         self.worker.worker_error.connect(self._on_worker_error)
         self.worker.start()
@@ -779,7 +798,7 @@ class GazeMainWindow(QMainWindow):
         self.btn_calibrate.clicked.connect(self.start_calibration)
         ctrl_layout.addWidget(self.btn_calibrate)
 
-        self.btn_benchmark = QPushButton("Record Final Test Dataset [B]")
+        self.btn_benchmark = QPushButton("Run Final Accuracy Test [B]")
         self.btn_benchmark.setProperty("class", "danger")
         self.btn_benchmark.clicked.connect(self.start_benchmark)
         ctrl_layout.addWidget(self.btn_benchmark)
@@ -830,8 +849,11 @@ class GazeMainWindow(QMainWindow):
         dt = max(1e-4, t_now - self.prev_anim_t)
         self.prev_anim_t = t_now
         if self.mode == "benchmark":
-            tx, ty, status_str, progress_val, is_finished = self.benchmark.update_state(self.is_holding_trajectory_key, dt)
-            self.view_benchmark.set_state((tx, ty), progress_val, status_str, self.is_holding_trajectory_key)
+            tx, ty, status_str, progress_val, is_finished = self.benchmark.update_state(
+                is_holding_trajectory_key=self.is_holding_trajectory_key,
+                dt=dt
+            )
+            self.view_benchmark.set_state((tx, ty), progress_val, status_str, is_capturing=self.benchmark.is_capturing_active)
             if is_finished:
                 self.finish_benchmark()
         elif self.mode == "calibration":
@@ -904,11 +926,13 @@ class GazeMainWindow(QMainWindow):
                 self.calib_point_samples.append((p, y, hp, hy, ix, iy, edx, edy))
         elif self.mode == "benchmark":
             self.benchmark.record_frame(
-                telem["raw_frame"],
+                frame_bgr=telem["raw_frame"],
                 pred_raw=(raw_x, raw_y),
                 pred_calib=(calib_x, calib_y),
                 pred_filtered=(filt_x, filt_y),
                 model_res=telem["model_res"],
+                fps=self.fps_val,
+                mirror_camera=self.mirror_camera,
                 is_holding_trajectory_key=self.is_holding_trajectory_key
             )
 
@@ -959,18 +983,23 @@ class GazeMainWindow(QMainWindow):
         )
         self.filter.reset()
         if hasattr(self, "worker"):
-            self.worker.resting_pitch_deg = self.calibration.resting_pitch_deg
+            self.worker.resting_pitch_deg = float(self.calibration.resting_pitch_deg or 0.0)
         status_msg = f"Recentered [Offset X: {ox:+.0f}px, Y: {oy:+.0f}px]"
         self.val_calib_status.setText(status_msg)
         self.val_calib_status.setStyleSheet("color: #38bdf8; font-weight: bold;")
 
     def keyPressEvent(self, event: QKeyEvent):
+        if event.isAutoRepeat():
+            return
         key = event.key()
         if key == Qt.Key.Key_F11:
             self.toggle_fullscreen()
         elif key == Qt.Key.Key_Space:
             if self.mode == "benchmark":
-                self.benchmark.trigger_space_press()
+                if self.benchmark.stage == "calibration":
+                    self.benchmark.trigger_space_press()
+                elif self.benchmark.stage == "dynamic_test":
+                    self.is_holding_trajectory_key = True
             elif self.mode == "calibration":
                 self._confirm_calib_point()
             elif self.mode == "tracking":
@@ -1012,8 +1041,14 @@ class GazeMainWindow(QMainWindow):
         super().keyPressEvent(event)
 
     def keyReleaseEvent(self, event: QKeyEvent):
+        if event.isAutoRepeat():
+            return
         key = event.key()
-        if key in (Qt.Key.Key_Shift, Qt.Key.Key_G, Qt.Key.Key_H):
+        if key == Qt.Key.Key_Space:
+            if self.mode == "benchmark":
+                self.benchmark.trigger_space_release()
+                self.is_holding_trajectory_key = False
+        elif key in (Qt.Key.Key_Shift, Qt.Key.Key_G, Qt.Key.Key_H):
             self.is_holding_trajectory_key = False
         super().keyReleaseEvent(event)
 
@@ -1116,8 +1151,10 @@ class GazeMainWindow(QMainWindow):
 
     def start_benchmark(self):
         self.mode = "benchmark"
+        self.is_holding_trajectory_key = False
+        active_model_name = getattr(self.worker, "model_name", self.model_name)
+        session_id = self.benchmark.start_recording(model_name=active_model_name)
         self.benchmark.on_calibration_updated = self._on_benchmark_calibration_updated
-        session_id = self.benchmark.start_recording()
         self.stacked_widget.setCurrentIndex(2)
 
     def _on_benchmark_calibration_updated(self, calib):
@@ -1177,15 +1214,24 @@ class GazeMainWindow(QMainWindow):
 
 def main():
     parser = argparse.ArgumentParser(description="GAZE-CLICK PyQt6 Real-Time System")
+    parser.add_argument("--model_name", "--model-name", "--model", dest="model_name", type=str, default="l2cs",
+                        help="Gaze model: 'l2cs' (py-feat), 'idiap_resnet18', 'gazetr', 'puregaze', 'l2cs_diversity', 'mediapipe', 'yolo26n', or path")
     parser.add_argument("--camera-id", type=int, default=0)
-    parser.add_argument("--checkpoint", type=str, default="mvp/experiments/yolo26n_gaze_net_yolo26n/run_014_20261017_121921/checkpoints/best_model.pt")
-    parser.add_argument("--pipeline", type=str, default="mediapipe", choices=["mediapipe", "yolo26n"])
+    parser.add_argument("--checkpoint", type=str, default=None,
+                        help="Optional override path to checkpoint (.pt/.pth/.safetensors/.pkl)")
+    parser.add_argument("--pipeline", type=str, default=None,
+                        help="Legacy alias for --model-name")
     parser.add_argument("--fullscreen", action="store_true")
     args = parser.parse_args()
+    selected_model = args.pipeline if args.pipeline else args.model_name
     app = QApplication(sys.argv)
     app.setApplicationName("GAZE-CLICK")
     app.setStyleSheet(GLOBAL_QSS)
-    win = GazeMainWindow(camera_id=args.camera_id, checkpoint_path=args.checkpoint, pipeline_type=args.pipeline)
+    win = GazeMainWindow(
+        camera_id=args.camera_id,
+        model_name=selected_model,
+        checkpoint_path=args.checkpoint
+    )
     if args.fullscreen:
         win.showFullScreen()
     else:

@@ -2,9 +2,16 @@ import os, json, math, numpy as np
 from typing import List, Tuple, Dict, Any, Optional
 
 class GazeCalibration:
-    def __init__(self, screen_w: int = 2880, screen_h: int = 1800, profile_path: str = "mvp/calibration_profile.json") -> None:
+    def __init__(self, screen_w: int = 2880, screen_h: int = 1800, profile_path: str = "mvp/calibration_profile.json", model_name: Optional[str] = None) -> None:
         self.screen_w = screen_w; self.screen_h = screen_h
-        self.profile_path = profile_path
+        self.model_name = model_name or "default"
+        if model_name:
+            import re
+            clean_name = re.sub(r"[^a-zA-Z0-9_\-]", "_", model_name).strip("_").lower()
+            base_dir = os.path.dirname(profile_path) or "mvp"
+            self.profile_path = os.path.join(base_dir, f"calibration_profile_{clean_name}.json")
+        else:
+            self.profile_path = profile_path
         self.is_calibrated = False
         self.weights = None
         self.points_recorded = 0
@@ -13,10 +20,10 @@ class GazeCalibration:
         self.user_distance_mm = 600.0
         self.physical_screen_w_mm = 300.0
         self.physical_screen_h_mm = 190.0
-        self.resting_pitch_deg = -3.84
-        self.resting_yaw_deg = -6.95
-        self.gain_x = 1.85
-        self.gain_y = 1.65
+        self.resting_pitch_deg: float = 0.0
+        self.resting_yaw_deg: float = 0.0
+        self.gain_x = 1.0
+        self.gain_y = 1.0
         self.offset_x = 0.0
         self.offset_y = 0.0
         self.load_profile()
@@ -25,6 +32,8 @@ class GazeCalibration:
         tx = float(target_x if target_x is not None else self.screen_w / 2.0)
         ty = float(target_y if target_y is not None else self.screen_h / 2.0)
         self.offset_x = 0.0; self.offset_y = 0.0
+        self.resting_pitch_deg = float(pitch_deg)
+        self.resting_yaw_deg = float(yaw_deg)
         cur_x, cur_y = self.predict(pitch_deg, yaw_deg, head_pitch_deg=head_pitch_deg, head_yaw_deg=head_yaw_deg)
         self.offset_x = tx - cur_x
         self.offset_y = ty - cur_y
@@ -42,13 +51,18 @@ class GazeCalibration:
         return np.array([1.0, yaw_deg, pitch_deg, head_yaw_deg, head_pitch_deg], dtype=np.float64)
 
     def predict_uncalibrated(self, pitch_deg: float, yaw_deg: float) -> Tuple[float, float]:
-        p_rad = math.radians(pitch_deg - self.resting_pitch_deg)
-        y_rad = math.radians(yaw_deg - self.resting_yaw_deg)
+        rp = float(self.resting_pitch_deg if self.resting_pitch_deg is not None else 0.0)
+        ry = float(self.resting_yaw_deg if self.resting_yaw_deg is not None else 0.0)
+        p_rad = math.radians(pitch_deg - rp)
+        y_rad = math.radians(yaw_deg - ry)
         center_x = self.screen_w / 2.0; center_y = self.screen_h / 2.0
         px_per_mm_x = self.screen_w / max(self.physical_screen_w_mm, 1.0)
         px_per_mm_y = self.screen_h / max(self.physical_screen_h_mm, 1.0)
-        dx_mm = -self.user_distance_mm * math.tan(y_rad) * self.gain_x
-        dy_mm = -self.user_distance_mm * math.tan(p_rad) * self.gain_y
+        # In screen pixel coordinates, +X is right, +Y is down.
+        # For L2CS/GazeTR/MediaPipe, +yaw is rightwards, +pitch is downwards.
+        # Both displacements must be added with positive signs:
+        dx_mm = self.user_distance_mm * math.tan(y_rad) * self.gain_x
+        dy_mm = self.user_distance_mm * math.tan(p_rad) * self.gain_y
         raw_x = center_x + dx_mm * px_per_mm_x + self.offset_x
         raw_y = center_y + dy_mm * px_per_mm_y + self.offset_y
         clamped_x = float(np.clip(raw_x, 0.0, self.screen_w - 1.0))
@@ -57,14 +71,19 @@ class GazeCalibration:
 
     def predict(self, pitch_deg: float, yaw_deg: float, head_pitch_deg: float = 0.0, head_yaw_deg: float = 0.0, ix: Optional[float] = None, iy: Optional[float] = None, eye_diff_x: Optional[float] = None, eye_diff_y: Optional[float] = None) -> Tuple[float, float]:
         if self.is_calibrated and self.weights is not None:
-            if self.weights.shape[0] == 7 and ix is not None and iy is not None:
-                edx = float(eye_diff_x if eye_diff_x is not None else 0.0)
-                edy = float(eye_diff_y if eye_diff_y is not None else 0.0)
-                feat = np.array([1.0, float(ix), float(iy), edx, edy, float(head_yaw_deg), float(head_pitch_deg)], dtype=np.float64)
+            if self.weights.shape[0] == 7:
+                if ix is not None and iy is not None:
+                    edx = float(eye_diff_x if eye_diff_x is not None else 0.0)
+                    edy = float(eye_diff_y if eye_diff_y is not None else 0.0)
+                    feat = np.array([1.0, float(ix), float(iy), edx, edy, float(head_yaw_deg), float(head_pitch_deg)], dtype=np.float64)
+                else:
+                    return self.predict_uncalibrated(pitch_deg, yaw_deg)
             elif self.weights.shape[0] == 5:
                 feat = self._extract_features(pitch_deg, yaw_deg, head_pitch_deg, head_yaw_deg)
-            else:
+            elif self.weights.shape[0] == 3:
                 feat = np.array([1.0, yaw_deg, pitch_deg], dtype=np.float64)
+            else:
+                return self.predict_uncalibrated(pitch_deg, yaw_deg)
             pred = feat @ self.weights
             pred_x = float(np.clip(pred[0] + self.offset_x, 0.0, self.screen_w - 1.0))
             pred_y = float(np.clip(pred[1] + self.offset_y, 0.0, self.screen_h - 1.0))
@@ -81,8 +100,27 @@ class GazeCalibration:
     def fit(self, calibration_data: List[Dict[str, Any]], l2_reg: float = 1.0) -> Dict[str, float]:
         if len(calibration_data) < 5:
             return {"status": 0, "error": "Insufficient samples"}
-        has_iris = all("ix" in s and "iy" in s for s in calibration_data)
+        has_iris = all("ix" in s and s.get("ix") is not None and "iy" in s and s.get("iy") is not None for s in calibration_data)
         has_head = all("head_yaw_deg" in s and "head_pitch_deg" in s for s in calibration_data)
+        # Determine resting angles from fixation closest to screen center
+        cx_target = self.screen_w / 2.0
+        cy_target = self.screen_h / 2.0
+        center_samples = sorted(
+            calibration_data,
+            key=lambda s: (float(s.get("target_x", cx_target)) - cx_target) ** 2 + (float(s.get("target_y", cy_target)) - cy_target) ** 2
+        )
+        if center_samples:
+            self.resting_yaw_deg = float(center_samples[0].get("yaw_deg", 0.0))
+            self.resting_pitch_deg = float(center_samples[0].get("pitch_deg", 0.0))
+        else:
+            self.resting_yaw_deg = float(np.median([float(s.get("yaw_deg", 0.0)) for s in calibration_data]))
+            self.resting_pitch_deg = float(np.median([float(s.get("pitch_deg", 0.0)) for s in calibration_data]))
+
+        px_per_mm_x = self.screen_w / max(self.physical_screen_w_mm, 1.0)
+        px_per_mm_y = self.screen_h / max(self.physical_screen_h_mm, 1.0)
+        geo_bx = self.user_distance_mm * (math.pi / 180.0) * px_per_mm_x
+        geo_by = self.user_distance_mm * (math.pi / 180.0) * px_per_mm_y
+
         if has_iris:
             X_rows = []
             Y_rows = []
@@ -124,6 +162,17 @@ class GazeCalibration:
             reg_y = np.diag([0.0, l2_reg, l2_reg])
             wx = np.linalg.solve(Xx.T @ Xx + reg_x, Xx.T @ Y[:, 0])
             wy = np.linalg.solve(Xy.T @ Xy + reg_y, Xy.T @ Y[:, 1])
+
+            # Enforce positive slope constraint (gaze direction must follow eye rotation)
+            if wx[1] <= 0.15 * geo_bx:
+                wx[1] = geo_bx
+                wx[2] = 0.0
+                wx[0] = float(np.mean(Y[:, 0])) - wx[1] * self.resting_yaw_deg
+            if wy[1] <= 0.15 * geo_by:
+                wy[1] = geo_by
+                wy[2] = 0.0
+                wy[0] = float(np.mean(Y[:, 1])) - wy[1] * self.resting_pitch_deg
+
             self.weights = np.zeros((5, 2), dtype=np.float64)
             self.weights[0, 0] = wx[0]
             self.weights[1, 0] = wx[1]
@@ -131,12 +180,14 @@ class GazeCalibration:
             self.weights[0, 1] = wy[0]
             self.weights[2, 1] = wy[1]
             self.weights[4, 1] = wy[2]
+            self.gain_x = float(np.clip(wx[1] / geo_bx, 0.2, 4.0))
+            self.gain_y = float(np.clip(wy[1] / geo_by, 0.2, 4.0))
         else:
             X_rows = []; Y_rows = []
             for sample in calibration_data:
-                feat = np.array([1.0, sample["yaw_deg"], sample["pitch_deg"]], dtype=np.float64)
+                feat = np.array([1.0, float(sample["yaw_deg"]), float(sample["pitch_deg"])], dtype=np.float64)
                 X_rows.append(feat)
-                Y_rows.append([sample["target_x"], sample["target_y"]])
+                Y_rows.append([float(sample["target_x"]), float(sample["target_y"])])
             X = np.array(X_rows, dtype=np.float64)
             Y = np.array(Y_rows, dtype=np.float64)
             Xx = X[:, [0, 1]]
@@ -145,11 +196,21 @@ class GazeCalibration:
             reg_y = np.diag([0.0, l2_reg])
             wx = np.linalg.solve(Xx.T @ Xx + reg_x, Xx.T @ Y[:, 0])
             wy = np.linalg.solve(Xy.T @ Xy + reg_y, Xy.T @ Y[:, 1])
+
+            if wx[1] <= 0.15 * geo_bx:
+                wx[1] = geo_bx
+                wx[0] = float(np.mean(Y[:, 0])) - wx[1] * self.resting_yaw_deg
+            if wy[1] <= 0.15 * geo_by:
+                wy[1] = geo_by
+                wy[0] = float(np.mean(Y[:, 1])) - wy[1] * self.resting_pitch_deg
+
             self.weights = np.zeros((3, 2), dtype=np.float64)
             self.weights[0, 0] = wx[0]
             self.weights[1, 0] = wx[1]
             self.weights[0, 1] = wy[0]
             self.weights[2, 1] = wy[1]
+            self.gain_x = float(np.clip(wx[1] / geo_bx, 0.2, 4.0))
+            self.gain_y = float(np.clip(wy[1] / geo_by, 0.2, 4.0))
         self.offset_x = 0.0; self.offset_y = 0.0
         Y_pred = X @ self.weights
         residuals = np.linalg.norm(Y - Y_pred, axis=-1)
@@ -178,7 +239,13 @@ class GazeCalibration:
             "mean_residual_px": self.mean_residual_px,
             "r2_score": self.r2_score,
             "points_recorded": self.points_recorded,
-            "is_calibrated": self.is_calibrated
+            "is_calibrated": self.is_calibrated,
+            "resting_pitch_deg": float(self.resting_pitch_deg if self.resting_pitch_deg is not None else 0.0),
+            "resting_yaw_deg": float(self.resting_yaw_deg if self.resting_yaw_deg is not None else 0.0),
+            "gain_x": float(self.gain_x),
+            "gain_y": float(self.gain_y),
+            "offset_x": float(self.offset_x),
+            "offset_y": float(self.offset_y)
         }
         with open(self.profile_path, "w", encoding="utf-8") as f:
             json.dump(payload, f, indent=2)
@@ -192,10 +259,16 @@ class GazeCalibration:
             self.weights = np.array(payload["weights"], dtype=np.float64)
             if self.weights.shape[0] not in (3, 5, 7):
                 return False
-            self.mean_residual_px = payload.get("mean_residual_px", 0.0)
-            self.r2_score = payload.get("r2_score", 0.0)
-            self.points_recorded = payload.get("points_recorded", 0)
-            self.is_calibrated = payload.get("is_calibrated", True)
+            self.mean_residual_px = float(payload.get("mean_residual_px", 0.0))
+            self.r2_score = float(payload.get("r2_score", 0.0))
+            self.points_recorded = int(payload.get("points_recorded", 0))
+            self.is_calibrated = bool(payload.get("is_calibrated", True))
+            self.resting_pitch_deg = float(payload.get("resting_pitch_deg", 0.0))
+            self.resting_yaw_deg = float(payload.get("resting_yaw_deg", 0.0))
+            self.gain_x = float(payload.get("gain_x", 1.0))
+            self.gain_y = float(payload.get("gain_y", 1.0))
+            self.offset_x = float(payload.get("offset_x", 0.0))
+            self.offset_y = float(payload.get("offset_y", 0.0))
             return True
         except Exception:
             return False
