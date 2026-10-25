@@ -31,6 +31,10 @@
 
 ## 2. Каталог готовых моделей (Ready Pretrained SOTA Models)
 
+> **Связанные документы:**
+> - Систематический анализ 7 архитектурных парадигм: [`docs/10_architectural_approaches_gaze_and_facial_gestures.md`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/10_architectural_approaches_gaze_and_facial_gestures.md).
+> - Детальный разбор структуры каждой модели (стадии, бэкбоны, тензоры, лоссы): [`docs/11_detailed_model_architectures.md`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/11_detailed_model_architectures.md).
+
 ### 2.1. Модели на платформе Hugging Face Hub
 
 #### 1. `akgulburak/gaze-estimation-diversity`
