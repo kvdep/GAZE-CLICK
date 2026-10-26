@@ -743,32 +743,36 @@ $$\text{Метрика качества (наименьшая угловая о�
 
 ## 28. Итоговая матрица ранжирования архитектур (Метрика > Год > Датасет)
 
-| Ранг | Модель | Год | Метрика $\mathcal{E}_{ang}$ (Бенчмарк / Лит.) | Размер обучающей выборки | Число стадий ($N$) | Бэкбон | Задержка CPU ($T_{inf}$) | Параметры | Ссылка на веса |
+| Ранг | Модель | Год | Метрика $\mathcal{E}_{ang}$ (Бенчмарк / Лит.) | Размер обучающей выборки | Число стадий ($N$) | Бэкбон | Задержка CPU/GPU ($T_{inf}$) | Параметры | Ссылка на веса |
 |:---:|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **1** | **PureGaze** | 2026/22 | **$1.85^\circ$** / $3.88^\circ$ | $1\,128\,492$ (ETH-XGaze, MPII) | 1 (инфер.) / 2 (обуч.) | ResNet-50 + ResGazeEs | **$13.63\text{ мс}$** | $25.6\text{M}$ | HF `akgulburak` (`.pt`) |
-| **2** | **GazeTR-Hybrid** | 2026/22 | **$2.26^\circ$** / $3.69^\circ$ | $1\,128\,492$ (ETH-XGaze, MPII) | 1 | ResNet-18 + 6L Transformer | **$15.21\text{ мс}$** | $18.4\text{M}$ | HF `akgulburak` / GDrive |
-| **3** | **EyeTAG** | **2026** | — / **$2.56^\circ$** (EVE) | EVE ($12.3\text{M}$) + Gaze360 | 3 | ResNet-50 + ResNet-18 + CCAF | **$19.97\text{ мс}$** | $37.9\text{M}$ | GH `peter8366/EyeTAG` |
-| **4** | **STAGE** | 2024 | — / **$2.58^\circ$** (EVE) | EVE ($12.3\text{M}$) + Gaze360 | 2 | SAM ViT + Gaussian Processes | **$21.50\text{ мс}$** | $24.8\text{M}$ | GDrive `.pth` чекпоинты |
-| **5** | **FAZE** | 2019 | — / **$3.18^\circ$** (3-shot)| $2\,445\,504$ (GazeCapture) | 3 | DT-ED ResNet + MAML | **$11.50\text{ мс}$** | $12.4\text{M}$ | GitHub `NVlabs/FAZE` |
-| **6** | **MediaPipe Iris** | 2020 | **$3.64^\circ$** / $3.80^\circ$ | $60\,000$ (FaceMesh + Iris) | 3 | BlazeFace + MobileNet + Iris U-Net | **$14.97\text{ мс}$** | **$4.0\text{M}$** | Встроенный TFLite бинарник |
-| **7** | **UniGaze-Base** | 2025 | — / **$3.96^\circ$** | **$1\,650\,000$** (264k персон) | 2 | ViT-Base (12 слоев) | $35-50\text{ мс}$ (GPU: $22\text{ мс}$) | $86.0\text{M}$ | HF `UniGaze` (`safetensors`) |
-| **8** | **YOLO26n (4D Head)** | 2026 | **$4.00^\circ$** / — | $158\,084$ (RT-GENE, MPII, Columbia) | 2 | YOLO26n CSPDarknet + FPN | **$19.55\text{ мс}$** (GPU: $4.2\text{ мс}$) | **$1.8\text{M}$** | Локальный весовой файл `.pt` |
-| **9** | **ptgaze ETH-XGaze** | 2026 | — / **$4.20^\circ$** | $1\,083\,492$ (ETH-XGaze) | 1 | ResNet-18 (`safetensors`) | **$8.50\text{ мс}$** | $11.7\text{M}$ | HF `hysts` (`safetensors`) |
-| **10** | **Qualcomm EyeGaze** | 2025 | — / **$4.35^\circ$** | $45\,000$ (MPII) + GazeCapture | 1 | MobileOne Reparameterized | **$0.59 - 3.50\text{ мс}$** | **$2.58\text{M}$** | HF `qualcomm` (ONNX/QNN) |
-| **11** | **yakhyo (ResNet-50)** | 2024 | — / **$4.38^\circ$** | $45\,000$ (MPII) + Gaze360 | 1 | ResNet-50 | **$13.50\text{ мс}$** | $25.6\text{M}$ | GH Releases `yakhyo` (`.pt`) |
-| **12** | **ptgaze MPIIFaceGaze**| 2026 | — / **$4.80^\circ$** | $45\,000$ (MPIIFaceGaze) | 1 | ResNet-18 (`safetensors`) | **$8.50\text{ мс}$** | $11.7\text{M}$ | HF `hysts` (`safetensors`) |
-| **13** | **Idiap ResNet-18** | 2026 | **$5.75^\circ$** / $9.02^\circ$ | $172\,000$ (Gaze360) | 1 | ResNet-18 + Quantile Head | **$17.60\text{ мс}$** (GPU: $2.0\text{ мс}$) | $11.7\text{M}$ | HF `Idiap` (`.pt`) |
-| **14** | **EMC-Gaze** | 2026 | — / **$5.79^\circ$** | 3D Граф MediaPipe + Калибратор | 3 | EGNN Equivariant Graph | **$14.00\text{ мс}$** | **$1.8\text{M}$** | Открытый код |
-| **15** | **L2CS-Net (LiteRT)** | 2026 | **$6.59^\circ$** / $9.92^\circ$ | $217\,000$ (Gaze360, MPII) | 1 | ResNet-50 (90 бинов) | **$13.89\text{ мс}$** | $25.6\text{M}$ | HF `litert` / `py-feat` / GDrive |
-| **16** | **IVGaze** | 2024 | — / **$7.04^\circ$** | $115\,000$ (IVGaze) + EVE | 1 | CNN-Transformer In-Cabin | **$16.20\text{ мс}$** | $19.2\text{M}$ | GDrive `.pth` |
-| **17** | **Gaze-LLE (DINOv2)** | 2025 | — / $0.11$ AUC PoG | $250\,000$ (EVE, ChildPlay) | 2 | DINOv2 ViT-B / HGNetV2 ONNX | **$6.80 - 42.00\text{ мс}$** | $4.2\text{M} - 86.5\text{M}$ | GH Releases `fkryan`/`PINTO` |
-| **18** | **MCGaze** | 2024 | — / **$9.82^\circ$** (L2CS) | $172\,000$ (Gaze360) | 2 | SCConv ResNet-50 + GRU | **$18.50\text{ мс}$** | $25.6\text{M}$ | GDrive `.pth` |
-| **19** | **CrossGaze** | 2024 | — / **$9.94^\circ$** | $172\,000$ (Gaze360) | 1 | ResNet-18 + Cross-Attention | **$19.00\text{ мс}$** | $22.3\text{M}$ | HF `akgulburak` (`.pth`) |
-| **20** | **GazeShift** | 2026 | — / $11.2^\circ \to 6.4^\circ$ | VRGaze + MPIIGaze | 2 | ResNet-18 + Domain Classifier | **$15.00\text{ мс}$** | $14.2\text{M}$ | GDrive `.pth` + HF Dataset |
-| **21** | **GLC** | 2024 | — / PoG Ego | $195\,000$ (EGTEA, Ego4D) | 2 | SlowFast + Transformer | $38.00\text{ мс}$ | $32.4\text{M}$ | GDrive `.pth` |
-| **22** | **GazeCLR** | 2024 | — / Contrastive | $12.3\text{M}$ (EVE, Gaze360) | 1 | ResNet-18/50 Contrastive | **$12.50\text{ мс}$** | $11.7\text{M}$ | GDrive `.pth` |
-| **23** | **OpenFace 3.0** | 2025 | — / Multitask | $120\,000$ (Multiface) | 2 | ViT-Tiny Multitask Stem | **$22.00\text{ мс}$** | $28.5\text{M}$ | HF / GDrive |
-| **24** | **Ghost-CBAM Mobile**| 2026 | — / Фиксация | $18\,000$ (ASD Eye-Tracking) | 1 | MobileNetV4-Small + CBAM | **$5.00\text{ мс}$** | **$3.8\text{M}$** | HF `Jason-42195` (`.pth`) |
-| **25** | **MAGE** | 2025 | — / 6-DoF | $45\,000$ (MPII) + EYEDIAP | 4 | ResNet-18 Multi-Decoder | **$16.50\text{ мс}$** | $15.2\text{M}$ | Открытый код |
-| **26** | **ViT-Base Mobile** | 2024 | — / $88.4\%$ | $28\,000$ (Mobile Eye v2) | 1 | ViT-Base (12 слоев) | $45.00\text{ мс}$ | $86.0\text{M}$ | HF `wahidww` (`safetensors`)|
-| **27** | **iTracker** | 2016 | — / $1.71\text{ см}$ | $2\,445\,504$ (GazeCapture) | 1 | 4-Stream Custom CNN | **$15.00\text{ мс}$** | $25.0\text{M}$ | GitHub Caffe/PyTorch |
+| **1** | **PureGaze** | 2026/22 | **$1.85^\circ$** / $3.88^\circ$ | $1\,128\,492$ (ETH-XGaze, MPII) | 1 (инфер.) / 2 (обуч.) | ResNet-50 + ResGazeEs | **$13.27\text{ мс}$** | $25.6\text{M}$ | HF `akgulburak` (`.pt`) |
+| **2** | **UniGaze-Base** | 2025 | **$1.97^\circ$** / **$3.96^\circ$** | **$1\,650\,000$** (264k персон) | 2 | ViT-Base (12 слоев) | **$11.75\text{ мс}$** (GPU) | $86.0\text{M}$ | HF `UniGaze` (`safetensors`) |
+| **3** | **ptgaze ETH-XGaze** | 2026 | **$2.21^\circ$** / **$4.20^\circ$** | $1\,083\,492$ (ETH-XGaze) | 1 | ResNet-18 (`safetensors`) | **$6.51\text{ мс}$** (наименьшая) | $11.7\text{M}$ | HF `hysts` (`safetensors`) |
+| **4** | **GazeTR-Hybrid** | 2026/22 | **$2.26^\circ$** / $3.69^\circ$ | $1\,128\,492$ (ETH-XGaze, MPII) | 1 | ResNet-18 + 6L Transformer | **$14.75\text{ мс}$** | $18.4\text{M}$ | HF `akgulburak` / GDrive |
+| **5** | **EyeTAG** | **2026** | — / **$2.56^\circ$** (EVE) | EVE ($12.3\text{M}$) + Gaze360 | 3 | ResNet-50 + ResNet-18 + CCAF | **$19.97\text{ мс}$** | $37.9\text{M}$ | GH `peter8366/EyeTAG` |
+| **6** | **STAGE** | 2024 | — / **$2.58^\circ$** (EVE) | EVE ($12.3\text{M}$) + Gaze360 | 2 | SAM ViT + Gaussian Processes | **$21.50\text{ мс}$** | $24.8\text{M}$ | GDrive `.pth` чекпоинты |
+| **7** | **MediaPipe Iris** | 2020 | **$3.64^\circ$** / $3.80^\circ$ | $60\,000$ (FaceMesh + Iris) | 3 | BlazeFace + MobileNet + Iris U-Net | **$15.30\text{ мс}$** | **$4.0\text{M}$** | Встроенный TFLite бинарник |
+| **8** | **YOLO26n (4D Head)** | 2026 | **$4.00^\circ$** / — | $158\,084$ (RT-GENE, MPII, Columbia) | 2 | YOLO26n CSPDarknet + FPN | **$19.19\text{ мс}$** (GPU: $4.2\text{ мс}$) | **$1.8\text{M}$** | Локальный весовой файл `.pt` |
+| **9** | **ptgaze MPIIFaceGaze**| 2026 | **$5.19^\circ$** / **$4.80^\circ$** | $45\,000$ (MPIIFaceGaze) | 1 | ResNet-18 (`safetensors`) | **$5.58\text{ мс}$** | $11.7\text{M}$ | HF `hysts` (`safetensors`) |
+| **10** | **Idiap ResNet-18** | 2026 | **$5.75^\circ$** / $9.02^\circ$ | $172\,000$ (Gaze360) | 1 | ResNet-18 + Quantile Head | **$17.01\text{ мс}$** (GPU: $2.0\text{ мс}$) | $11.7\text{M}$ | HF `Idiap` (`.pt`) |
+| **11** | **YOLO26n (2D Gaze)**| 2026 | **$5.89^\circ$** / — | $158\,084$ (RT-GENE, MPII, Columbia) | 1 | YOLO26n CSPDarknet | **$19.28\text{ мс}$** | **$1.8\text{M}$** | Локальный весовой файл `.pt` |
+| **12** | **EMC-Gaze** | 2026 | — / **$5.79^\circ$** | 3D Граф MediaPipe + Калибратор | 3 | EGNN Equivariant Graph | **$14.00\text{ мс}$** | **$1.8\text{M}$** | Открытый код |
+| **13** | **L2CS-Net (Diversity)**| 2026 | **$6.59^\circ$** / $9.92^\circ$ | $217\,000$ (Gaze360, ETH-XGaze) | 1 | ResNet-50 (90 бинов) | **$13.74\text{ мс}$** | $25.6\text{M}$ | HF `akgulburak` (`.pkl`) |
+| **14** | **L2CS-Net (PyFeat)** | 2026/24 | **$6.71^\circ$** / $3.92^\circ$ | $217\,000$ (Gaze360, MPII) | 1 | ResNet-50 (90 бинов) | **$13.79\text{ мс}$** | $25.6\text{M}$ | HF `py-feat` / `litert` |
+| **15** | **yakhyo (ResNet-50)** | 2024 | **$7.06^\circ$** / **$4.38^\circ$** | $45\,000$ (MPII) + Gaze360 | 1 | ResNet-50 | **$13.93\text{ мс}$** | $25.6\text{M}$ | GH Releases `yakhyo` (`.pt`) |
+| **16** | **yakhyo (ResNet-18)** | 2024 | **$7.11^\circ$** / **$4.72^\circ$** | $45\,000$ (MPII) + Gaze360 | 1 | ResNet-18 | **$6.85\text{ мс}$** | $11.7\text{M}$ | GH Releases `yakhyo` (`.pt`) |
+| **17** | **Qualcomm EyeGaze** | 2025 | **$7.50^\circ$** / **$4.35^\circ$** | $45\,000$ (MPII) + GazeCapture | 1 | MobileOne Reparameterized | **$14.69\text{ мс}$** (NPU: $0.59\text{ мс}$) | **$2.58\text{M}$** | HF `qualcomm` (ONNX/QNN) |
+| **18** | **IVGaze** | 2024 | — / **$7.04^\circ$** | $115\,000$ (IVGaze) + EVE | 1 | CNN-Transformer In-Cabin | **$16.20\text{ мс}$** | $19.2\text{M}$ | GDrive `.pth` |
+| **19** | **Gaze-LLE (DINOv2)** | 2025 | — / $0.11$ AUC PoG | $250\,000$ (EVE, ChildPlay) | 2 | DINOv2 ViT-B / HGNetV2 ONNX | **$6.80 - 42.00\text{ мс}$** | $4.2\text{M} - 86.5\text{M}$ | GH Releases `fkryan`/`PINTO` |
+| **20** | **Gazelle-DINOv3 (HGNetV2)**| 2025 | — / Эквивалент Gaze-LLE | Дистилляция DINOv2 | 1 | HGNetV2-Nano ONNX | **$6.80\text{ мс}$** | **$4.2\text{M}$** | GH Releases `PINTO0309` |
+| **21** | **MCGaze** | 2024 | — / **$9.82^\circ$** (L2CS) | $172\,000$ (Gaze360) | 2 | SCConv ResNet-50 + GRU | **$18.50\text{ мс}$** | $25.6\text{M}$ | GDrive `.pth` |
+| **22** | **CrossGaze** | 2024 | — / **$9.94^\circ$** | $172\,000$ (Gaze360) | 1 | ResNet-18 + Cross-Attention | **$19.00\text{ мс}$** | $22.3\text{M}$ | HF `akgulburak` (`.pth`) |
+| **23** | **GazeShift** | 2026 | — / $11.2^\circ \to 6.4^\circ$ | VRGaze + MPIIGaze | 2 | ResNet-18 + Domain Classifier | **$15.00\text{ мс}$** | $14.2\text{M}$ | GDrive `.pth` + HF Dataset |
+| **24** | **GLC** | 2024 | — / PoG Ego | $195\,000$ (EGTEA, Ego4D) | 2 | SlowFast + Transformer | $38.00\text{ мс}$ | $32.4\text{M}$ | GDrive `.pth` |
+| **25** | **GazeCLR** | 2024 | — / Contrastive | $12.3\text{M}$ (EVE, Gaze360) | 1 | ResNet-18/50 Contrastive | **$12.50\text{ мс}$** | $11.7\text{M}$ | GDrive `.pth` |
+| **26** | **OpenFace 3.0** | 2025 | — / Multitask | $120\,000$ (Multiface) | 2 | ViT-Tiny Multitask Stem | **$22.00\text{ мс}$** | $28.5\text{M}$ | HF / GDrive |
+| **27** | **Ghost-CBAM Mobile**| 2026 | — / Фиксация | $18\,000$ (ASD Eye-Tracking) | 1 | MobileNetV4-Small + CBAM | **$5.00\text{ мс}$** | **$3.8\text{M}$** | HF `Jason-42195` (`.pth`) |
+| **28** | **MAGE** | 2025 | — / 6-DoF | $45\,000$ (MPII) + EYEDIAP | 4 | ResNet-18 Multi-Decoder | **$16.50\text{ мс}$** | $15.2\text{M}$ | Открытый код |
+| **29** | **ViT-Base Mobile** | 2024 | — / $88.4\%$ | $28\,000$ (Mobile Eye v2) | 1 | ViT-Base (12 слоев) | $45.00\text{ мс}$ | $86.0\text{M}$ | HF `wahidww` (`safetensors`)|
+| **30** | **FAZE** | 2019 | — / **$3.18^\circ$** (3-shot)| $2\,445\,504$ (GazeCapture) | 3 | DT-ED ResNet + MAML | **$11.50\text{ мс}$** | $12.4\text{M}$ | GitHub `NVlabs/FAZE` |
+| **31** | **iTracker** | 2016 | — / $1.71\text{ см}$ | $2\,445\,504$ (GazeCapture) | 1 | 4-Stream Custom CNN | **$15.00\text{ мс}$** | $25.0\text{M}$ | GitHub Caffe/PyTorch |
