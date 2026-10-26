@@ -24,6 +24,8 @@ DATA/
 *.tar.gz
 *.zip
 *.7z
+*.data
+mvp/models/weights/qualcomm_eyegaze/
 *.mp4
 *.avi
 *.mkv

@@ -31,13 +31,19 @@ SESSIONS = [
 ]
 
 MODELS = [
+    "unigaze",
     "puregaze",
     "gazetr",
+    "ptgaze_eth_xgaze",
     "mediapipe",
     "yolo26n",
+    "ptgaze_mpiifacegaze",
+    "qualcomm_eyegaze",
+    "yakhyo_resnet50",
+    "yakhyo_resnet18",
     "idiap_resnet18",
-    "l2cs",
-    "l2cs_diversity"
+    "l2cs_diversity",
+    "l2cs"
 ]
 
 def eval_session(session_id: str, adapter, use_head_pose: bool = False) -> dict:
@@ -234,6 +240,7 @@ for model_name, grp in df_results.groupby("model_name"):
     summary.append({
         "Model": model_name,
         "Sessions Count": len(grp),
+        "_sort_err": float(grp['mean_ang_err_deg'].mean()),
         "Mean AngErr (deg)": f"{grp['mean_ang_err_deg'].mean():.2f} ± {grp['mean_ang_err_deg'].std():.2f}",
         "Median AngErr (deg)": f"{grp['median_ang_err_deg'].median():.2f}",
         "Min AngErr (deg)": f"{grp['mean_ang_err_deg'].min():.2f}",
@@ -246,7 +253,7 @@ for model_name, grp in df_results.groupby("model_name"):
         "Mean Latency (ms)": f"{grp['mean_latency_ms'].mean():.2f}"
     })
 
-df_summary = pd.DataFrame(summary).sort_values("Mean AngErr (deg)")
+df_summary = pd.DataFrame(summary).sort_values("_sort_err").drop(columns=["_sort_err"])
 print("\n" + "=" * 115)
 print("AGGREGATED MULTI-SESSION BENCHMARK SUMMARY (9 User Sessions, 3344 Frames)")
 print("=" * 115)

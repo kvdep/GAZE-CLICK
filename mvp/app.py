@@ -396,8 +396,8 @@ class GazeApplication:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="GAZE-CLICK Real-Time System")
-    parser.add_argument("--model_name", "--model-name", "--model", dest="model_name", type=str, default="l2cs",
-                        help="Gaze model: 'l2cs' (py-feat), 'idiap_resnet18', 'gazetr', 'puregaze', 'l2cs_diversity', 'mediapipe', 'yolo26n', or path to checkpoint")
+    parser.add_argument("--model_name", "--model-name", "--model", dest="model_name", type=str, default="puregaze",
+                        help="Gaze model: 'puregaze', 'unigaze', 'gazetr', 'ptgaze_eth_xgaze', 'mediapipe', 'yolo26n', 'qualcomm_eyegaze', 'yakhyo_resnet50', 'ptgaze_mpiifacegaze', 'idiap_resnet18', 'l2cs', or path to checkpoint")
     parser.add_argument("--checkpoint", type=str, default=None,
                         help="Optional override path to custom checkpoint (.pt/.pth/.safetensors/.pkl)")
     parser.add_argument("--camera-id", type=int, default=0)
