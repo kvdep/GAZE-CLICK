@@ -52,6 +52,11 @@
    - Вычисляет финальные физические и геометрические метрики на тестовой выборке: средняя ошибка в пикселях $\mathcal{E}_{\text{pix}}$, угловая ошибка $\mathcal{E}_{\text{deg}}$, время задержки вывода $T_{\text{inf}}$ (мс), 95-й перцентиль задержки $P_{95}$, пиковое потребление VRAM (МБ).
    - Формирует сводную сравнительную таблицу `pandas.DataFrame` со стилизацией через `background_gradient`.
    - Заносит структурированную запись в файл реестра гипотез.
+   - **Регламент лидерборда решений:** При фиксации любой новой конфигурации, дообученной модели или внешнего адаптера агент обязан обновить официальный онлайн-лидерборд решений в Google Sheets: [Google Sheets Gaze Tracking Leaderboard](https://docs.google.com/spreadsheets/d/1J4LHhZXiZYnBFjymL6ayOt2jAafnt4sISfhsUsNiKLo/edit?usp=sharing), а также локальные реестры [`docs/leaderboard.csv`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/leaderboard.csv) и [`docs/leaderboard.tsv`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/leaderboard.tsv) через [`scripts/export_leaderboard.py`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/scripts/export_leaderboard.py) и [`scripts/sync_google_sheet_leaderboard.py`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/scripts/sync_google_sheet_leaderboard.py).
+   - **Строгий порядок сортировки лидерборда:** Таблица должна оставаться отсортированной по невозрастанию качества:
+     $$\text{Метрика (наименьшая угловая ошибка } \mathcal{E}_{ang}\text{)} \longrightarrow \text{Год создания (2026 } \to 2024\text{)} \longrightarrow \text{Размер обучающего датасета}.$$
+   - **Схема колонок лидерборда:**
+     `Ранг | Название | Ошибка 1 | Ошибка 2 | ... | Ошибка N | Задержка CPU | Задержка GPU | Потребление RAM | Потребление VRAM | Год или время создания | Место, где лежат веса | Источник если есть`
 
 ---
 

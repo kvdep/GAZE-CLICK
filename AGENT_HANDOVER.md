@@ -30,6 +30,8 @@
    Файлы `mvp/benchmarks/benchmark_test_*` являются слепым физическим валидатором. Обучение на них запрещено.
 4. **ТОЧНОСТЬ И ЧИСЛА:**
    Никаких абстрактных оценок. Каждое утверждение сопровождается эпохой, значением функции потерь, угловой ошибкой в градусах и пиксельной дельтой.
+5. **ОБЯЗАТЕЛЬНОЕ ВЕДЕНИЕ И СОРТИРОВКА ОНЛАЙН-ЛИДЕРБОРДА:**
+   При получении любых новых эмпирических метрик моделей или калибровок агент обязан обновить онлайн-лидерборд в Google Sheets: [Google Sheets Leaderboard](https://docs.google.com/spreadsheets/d/1J4LHhZXiZYnBFjymL6ayOt2jAafnt4sISfhsUsNiKLo/edit?usp=sharing), а также локальные реестры [`docs/leaderboard.csv`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/leaderboard.csv) и [`docs/leaderboard.tsv`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/leaderboard.tsv) через [`scripts/export_leaderboard.py`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/scripts/export_leaderboard.py) и [`scripts/sync_google_sheet_leaderboard.py`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/scripts/sync_google_sheet_leaderboard.py). Порядок строк обязан строго соответствовать невозрастанию качества: метрика $\mathcal{E}_{ang}$ (по возрастанию ошибки) $\longrightarrow$ год (2026 к 2024) $\longrightarrow$ размер датасета.
 
 ---
 
@@ -123,3 +125,6 @@ $$\mathcal{L}_{aniso} = 2.0 \cdot \operatorname{SmoothL1}(g_x) + 1.5 \cdot \oper
    ```powershell
    python -c "import os, tokenize; [print(f) for root, _, files in os.walk('mvp') for f in files if f.endswith('.py') and [t for t in tokenize.tokenize(open(os.path.join(root, f), 'rb').readline) if t.type == tokenize.COMMENT]]"
    ```
+5. **Актуализация онлайн-лидерборда решений:**
+   При валидации любых новых контрольных точек или архитектур обновлять записи в [Google Sheets Leaderboard](https://docs.google.com/spreadsheets/d/1J4LHhZXiZYnBFjymL6ayOt2jAafnt4sISfhsUsNiKLo/edit?usp=sharing), поддерживая строгий порядок сортировки по невозрастанию качества: метрика $\mathcal{E}_{ang}$ $\longrightarrow$ год $\longrightarrow$ датасет, и формат 16 стандартизированных колонок. Синхронизировать [`docs/leaderboard.csv`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/leaderboard.csv) и [`docs/leaderboard.tsv`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/leaderboard.tsv).
+

@@ -137,6 +137,10 @@ $$w_y[\text{pitch}] = -121.38 \text{ px/deg}$$
 
 Лицевые детекции и 5 опорных точек извлечены через инвариантный детектор YuNet ONNX со 100% стабильностью детекции лица. Калибровка проводилась по 13 статическим точкам фиксации сетки, валидация — по независимой круговой траектории.
 
+> **Официальный онлайн-лидерборд решений (Google Sheets):** [Google Sheets Gaze Tracking Leaderboard](https://docs.google.com/spreadsheets/d/1J4LHhZXiZYnBFjymL6ayOt2jAafnt4sISfhsUsNiKLo/edit?usp=sharing)  
+> **Локальный CSV/TSV реестр:** [`docs/leaderboard.csv`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/leaderboard.csv), [`docs/leaderboard.tsv`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/leaderboard.tsv)  
+> **Скрипт синхронизации:** [`scripts/sync_google_sheet_leaderboard.py`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/scripts/sync_google_sheet_leaderboard.py)
+
 ### Сводная таблица усредненных метрик (9 сессий, `GazeCalibration`, 3344 кадра)
 
 | Архитектура модели | Сессий | Угловая ошибка Mean ± Std (°) | Median (°) | Min (°) | Max (°) | Ошибка (мм) | Ошибка (px) | Корреляция $R_x$ | Корреляция $R_y$ | $R^2$ Score | Задержка инференса (мс) |

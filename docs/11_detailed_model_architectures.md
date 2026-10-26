@@ -21,6 +21,13 @@ $$\text{Метрика качества (наименьшая угловая о�
 6. Функции потерь с точными математическими формулами.
 7. Вычислительная сложность, число обучаемых параметров, задержка вывода на CPU и GPU ($T_{inf}$), аппаратные ограничения.
 
+> **Официальный онлайн-лидерборд решений (Google Sheets):**  
+> **URL:** [Google Sheets Gaze Tracking Leaderboard](https://docs.google.com/spreadsheets/d/1J4LHhZXiZYnBFjymL6ayOt2jAafnt4sISfhsUsNiKLo/edit?usp=sharing)  
+> **Локальные файлы синхронизации:** [`docs/leaderboard.csv`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/leaderboard.csv) (UTF-8 BOM), [`docs/leaderboard.tsv`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/leaderboard.tsv)  
+> **Скрипт синхронизации и экспорта:** [`scripts/export_leaderboard.py`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/scripts/export_leaderboard.py), [`scripts/sync_google_sheet_leaderboard.py`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/scripts/sync_google_sheet_leaderboard.py)  
+> **Структура колонок лидерборда:**  
+> `Ранг | Название модели / Архитектура | Ошибка 1 (Mean deg) | Ошибка 2 (Median deg) | Ошибка 3 (Screen px) | Ошибка 4 (R2) | Ошибка 5 (ETH-XGaze deg) | Ошибка 6 (MPII deg) | Ошибка 7 (Gaze360/EVE deg) | Задержка CPU (мс) | Задержка GPU (мс) | Потребление RAM (МБ) | Потребление VRAM (МБ) | Год создания | Место, где лежат веса | Источник (HF / GitHub / ArXiv)`
+
 ---
 ## 1. PureGaze (Cheng et al., AAAI 2022 / HF: `akgulburak/gaze-estimation-diversity`, 2026)
 
