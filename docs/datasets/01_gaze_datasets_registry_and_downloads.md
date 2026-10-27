@@ -18,7 +18,7 @@
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | **Gaze360** | Kellnhofer et al., MIT CSAIL / TRI, ICCV 2019 | $238$ | $172\,000$ (размечено)<br>$197\,588$ (всего) | Панорамная камера Ladybug5 ($4096 \times 3382$) | Помещения и открытый воздух, дистанция $1.5 - 3.0\text{ м}$ | Yaw: $\pm 140^\circ$<br>Pitch: $[-50^\circ, +90^\circ]$ | $28.45\text{ ГБ}$ (полный tarball $30\,548\,756\,480$ байт)<br>$1.56\text{ ГБ}$ (Baidu preprocessed)<br>$132.6\text{ МБ}$ (txt annotations) | **Разметка скачана и распакована** (6 718 txt файлов). **Полный датасет 28.45 ГБ скачивается в 6 частях** в `E:\ВКР\Gaze360\splits\` |
 | **Columbia Gaze** | Smith et al., CAVE, UIST 2013 | $56$ (32M, 24F, 21 в очках) | $5\,880$ | Canon Rebel T3i ($5184 \times 3456$) | Студийный бокс, 5 поз головы $\times$ 21 угол взгляда, дистанция $\approx 1.2\text{ м}$ | Дискретно: Yaw $0^\circ, \pm 5^\circ, \pm 10^\circ, \pm 15^\circ$<br>Pitch $0^\circ, \pm 10^\circ$ | $2.22\text{ ГБ}$ ($2\,378\,561\,401$ байт) | **Загружен, проверен (CRC32 OK) и распакован** (`E:\ВКР\ColumbiaGaze\Columbia Gaze Data Set\`, $56$ папок субъектов, $5\,882$ файла) |
-| **MPIIFaceGaze** | Zhang et al., MPII, TPAMI 2017 | $15$ | $45\,000$ ($3\,000$ на субъект) | Веб-камеры ноутбуков ($1280 \times 720$) | Естественная работа за ноутбуком в течение нескольких месяцев, дистанция $40 - 70\text{ см}$ | Yaw: $\pm 40^\circ$<br>Pitch: $[-35^\circ, +25^\circ]$ | $4.61\text{ ГБ}$ ($4\,948\,673\,290$ байт, HDF5 normalized)<br>$898.7\text{ МБ}$ (raw) | **Активная потоковая загрузка** (`E:\ВКР\MPIIFaceGaze\MPIIFaceGaze.h5`) |
+| **MPIIFaceGaze** | Zhang et al., MPII, TPAMI 2017 | $15$ | $45\,000$ ($3\,000$ на субъект) | Веб-камеры ноутбуков ($1280 \times 720$) | Естественная работа за ноутбуком в течение нескольких месяцев, дистанция $40 - 70\text{ см}$ | Yaw: $\pm 40^\circ$<br>Pitch: $[-35^\circ, +25^\circ]$ | $4.61\text{ ГБ}$ ($4\,948\,673\,290$ байт, HDF5 normalized)<br>$898.7\text{ МБ}$ (raw) | **Загружен и проверен (HDF5 OK)** (`E:\ВКР\MPIIFaceGaze\MPIIFaceGaze.h5`, $4\,948\,673\,290$ байт) |
 | **RT-GENE** | Fischer et al., ECCV 2018 | $15$ (17 сессий) | $114\,558$ (glasses)<br>$154\,755$ (noglasses) | Kinect v2 ($1920 \times 1080$) + очки SMI ETG 2W ($60\text{ Гц}$) | Естественные интерьеры и уличные сцены, дистанция $1.0 - 2.5\text{ м}$ | Yaw: $[-50.9^\circ, +66.7^\circ]$<br>Pitch: $[-80.8^\circ, +34.3^\circ]$ | $37.2\text{ ГБ}$ (35 архивов TAR на Zenodo) | **Верифицирован по REST API** (Zenodo Record 2529036) |
 | **ETH-XGaze** | Zhang et al., ETH Zurich, ECCV 2020 | $110$ | $1\,083\,492$ | 18 синхронных камер Canon 250D ($6000 \times 4000$) | Лабораторный калибровочный стенд, дистанция $60 - 80\text{ см}$ | Yaw: $\pm 120^\circ$<br>Pitch: $\pm 70^\circ$ | $14.37\text{ ГБ}$ ($15\,432\,351\,744$ байт в Baidu)<br>$130\text{ ГБ}$ ($224\text{px}$ raw)<br>$497\text{ ГБ}$ ($448\text{px}$ raw) | Обнаружен архив в Baidu Netdisk (`ETH-Xgaze.rar`) |
 | **EYEDIAP** | Funes Mora et al., Idiap, ETRA 2014 | $16$ | $94$ сессии ($426\text{k}$ кадров) | HD RGB ($1920 \times 1080$) + Kinect VGA ($640 \times 480$) | Мониторная калибровка (Screen) и плавающий маркер (3D floating target) | Yaw: $\pm 40^\circ$<br>Pitch: $\pm 30^\circ$ | $208.99\text{ МБ}$ (Baidu preprocessed)<br>$\approx 65\text{ ГБ}$ (full raw) | Обнаружен архив в Baidu Netdisk (`EyeDiap.rar`) |
@@ -74,6 +74,7 @@
 * **Прямой URL:** `https://huggingface.co/datasets/doanhlt/degraded-gaze-mpiifacegaze/resolve/main/MPIIFaceGaze.h5`
 * **Объем:** $4\,948\,673\,290$ байт ($4.61\text{ ГБ}$).
 * **Скрипт загрузки:** [`mvp/experiments/download_mpiifacegaze.py`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/experiments/download_mpiifacegaze.py).
+* **Статус загрузки и верификации:** Загрузка полностью завершена за 4974.0 с. Объем файла на диске: ровно $4\,948\,673\,290\text{ байт}$. Магические байты HDF5 (`b'\x89HDF\r\n\x1a\n'`) подтверждены. Файл доступен для извлечения нормализованных кропов лиц $224 \times 224$ и истинных 3D-векторов.
 * **Ортогональность к Gaze360:**
   1. Доменная специфика: данные собраны в реальных сценариях работы за ноутбуком в течение 12 месяцев (15 участников, 45 000 кадров).
   2. Дистанция до камеры составляет $40-70\text{ см}$ (ближнее поле, рабочее место оператора), в то время как Gaze360 снимался с дистанции $1.5-3.0\text{ м}$ (дальнее поле).
@@ -113,5 +114,5 @@ E:\ВКР\
 │       ├── 0002\ ...
 │       └── 0056\
 └── MPIIFaceGaze\
-    └── MPIIFaceGaze.h5 (4.61 ГБ, активная фоновая загрузка)
+    └── MPIIFaceGaze.h5 (4.61 ГБ, 4 948 673 290 байт, загружен полностью, HDF5 OK)
 ```
