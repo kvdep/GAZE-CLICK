@@ -47,3 +47,6 @@ mvp/experiments/*.png
 .idea/
 .DS_Store
 Thumbs.db
+
+# Temporary pipe artifacts
+-
