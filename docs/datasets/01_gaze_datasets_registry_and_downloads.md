@@ -7,7 +7,7 @@
 Все внешние исследовательские базы данных размещаются на внешнем съемном накопителе microSD **`E:\ВКР\`** для предотвращения исчерпания емкости системного твердотельного накопителя `C:`.
 
 ### Текущее распределение дискового пространства:
-* **Диск `E:\` (microSDXC):** $115.5\text{ ГБ}$ свободно из $116.5\text{ ГБ}$.
+* **Диск `E:\` (microSDXC):** $112.22\text{ ГБ}$ свободно из $116.5\text{ ГБ}$.
 * **Диск `C:\` (System NVMe):** $41.2\text{ ГБ}$ свободно из $926.0\text{ ГБ}$.
 
 ---
@@ -16,28 +16,49 @@
 
 | Датасет | Авторы / Год публикации | Число субъектов | Число кадров | Разрешение и сенсор | Условия съемки и дистанция | Диапазон углов взгляда (Gaze) | Объем архива | Статус локальной загрузки на `E:\ВКР` |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Gaze360** | Kellnhofer et al., ICCV 2019 | $238$ | $172\,000$ (размечено)<br>$197\,588$ (всего) | Панорамная камера Ladybug5 ($4096 \times 3382$) | Помещения и открытый воздух, дистанция $1.5 - 3.0\text{ м}$ | Yaw: $\pm 140^\circ$<br>Pitch: $[-50^\circ, +90^\circ]$ | $28.45\text{ ГБ}$ (raw images)<br>$132.6\text{ МБ}$ (txt annotations) | **Загружен и распакован** (`E:\ВКР\Gaze360\annotations\Gaze_txt_files`, 6 718 файлов разметки) |
-| **Columbia Gaze** | Smith et al., CAVE, UIST 2013 | $56$ (32M, 24F, 21 в очках) | $5\,880$ | Canon Rebel T3i ($5184 \times 3456$) | Студийный бокс, 5 поз головы $\times$ 21 угол взгляда, дистанция $\approx 1.2\text{ м}$ | Дискретно: Yaw $0^\circ, \pm 5^\circ, \pm 10^\circ, \pm 15^\circ$<br>Pitch $0^\circ, \pm 10^\circ$ | $2.22\text{ ГБ}$ ($2\,378\,561\,401$ байт) | **Активная загрузка** (`E:\ВКР\ColumbiaGaze\columbia_gaze_data_set.zip`) |
-| **MPIIFaceGaze** | Zhang et al., MPII, TPAMI 2017 | $15$ | $45\,000$ ($3\,000$ на субъект) | Веб-камеры ноутбуков ($1280 \times 720$) | Естественная работа за ноутбуком в течение нескольких месяцев, дистанция $40 - 70\text{ см}$ | Yaw: $\pm 40^\circ$<br>Pitch: $[-35^\circ, +25^\circ]$ | $4.61\text{ ГБ}$ (HDF5 normalized)<br>$898.7\text{ МБ}$ (raw) | **Активная загрузка** (`E:\ВКР\MPIIFaceGaze\MPIIFaceGaze.h5`) |
-| **RT-GENE** | Fischer et al., ECCV 2018 | $15$ (17 сессий) | $114\,558$ (glasses)<br>$154\,755$ (noglasses) | Kinect v2 ($1920 \times 1080$) + очки SMI ETG 2W ($60\text{ Гц}$) | Естественные интерьеры и уличные сцены, дистанция $1.0 - 2.5\text{ м}$ | Yaw: $[-50.9^\circ, +66.7^\circ]$<br>Pitch: $[-80.8^\circ, +34.3^\circ]$ | $37.2\text{ ГБ}$ (35 архивов TAR на Zenodo) | **Доступен по прямой ссылке** (Zenodo Record 2529036) |
-| **ETH-XGaze** | Zhang et al., ETH Zurich, ECCV 2020 | $110$ | $1\,083\,492$ | 18 синхронных камер Canon 250D ($6000 \times 4000$) | Лабораторный калибровочный стенд, дистанция $60 - 80\text{ см}$ | Yaw: $\pm 120^\circ$<br>Pitch: $\pm 70^\circ$ | $130\text{ ГБ}$ ($224\text{px}$)<br>$497\text{ ГБ}$ ($448\text{px}$) | Закрытый институциональный доступ (`xgaze.ait.ethz.ch`) |
-| **EYEDIAP** | Funes Mora et al., Idiap, ETRA 2014 | $16$ | $94$ сессии ($426\text{k}$ кадров) | HD RGB ($1920 \times 1080$) + Kinect VGA ($640 \times 480$) | Мониторная калибровка (Screen) и плавающий маркер (3D floating target) | Yaw: $\pm 40^\circ$<br>Pitch: $\pm 30^\circ$ | $\approx 65\text{ ГБ}$ | По запросу через Idiap EULA |
+| **Gaze360** | Kellnhofer et al., MIT CSAIL / TRI, ICCV 2019 | $238$ | $172\,000$ (размечено)<br>$197\,588$ (всего) | Панорамная камера Ladybug5 ($4096 \times 3382$) | Помещения и открытый воздух, дистанция $1.5 - 3.0\text{ м}$ | Yaw: $\pm 140^\circ$<br>Pitch: $[-50^\circ, +90^\circ]$ | $28.45\text{ ГБ}$ (полный tarball $30\,548\,756\,480$ байт)<br>$1.56\text{ ГБ}$ (Baidu preprocessed)<br>$132.6\text{ МБ}$ (txt annotations) | **Разметка скачана и распакована** (6 718 txt файлов). **Полный датасет 28.45 ГБ скачивается в 6 частях** в `E:\ВКР\Gaze360\splits\` |
+| **Columbia Gaze** | Smith et al., CAVE, UIST 2013 | $56$ (32M, 24F, 21 в очках) | $5\,880$ | Canon Rebel T3i ($5184 \times 3456$) | Студийный бокс, 5 поз головы $\times$ 21 угол взгляда, дистанция $\approx 1.2\text{ м}$ | Дискретно: Yaw $0^\circ, \pm 5^\circ, \pm 10^\circ, \pm 15^\circ$<br>Pitch $0^\circ, \pm 10^\circ$ | $2.22\text{ ГБ}$ ($2\,378\,561\,401$ байт) | **Активная потоковая загрузка** (`E:\ВКР\ColumbiaGaze\columbia_gaze_data_set.zip`) |
+| **MPIIFaceGaze** | Zhang et al., MPII, TPAMI 2017 | $15$ | $45\,000$ ($3\,000$ на субъект) | Веб-камеры ноутбуков ($1280 \times 720$) | Естественная работа за ноутбуком в течение нескольких месяцев, дистанция $40 - 70\text{ см}$ | Yaw: $\pm 40^\circ$<br>Pitch: $[-35^\circ, +25^\circ]$ | $4.61\text{ ГБ}$ ($4\,948\,673\,290$ байт, HDF5 normalized)<br>$898.7\text{ МБ}$ (raw) | **Активная потоковая загрузка** (`E:\ВКР\MPIIFaceGaze\MPIIFaceGaze.h5`) |
+| **RT-GENE** | Fischer et al., ECCV 2018 | $15$ (17 сессий) | $114\,558$ (glasses)<br>$154\,755$ (noglasses) | Kinect v2 ($1920 \times 1080$) + очки SMI ETG 2W ($60\text{ Гц}$) | Естественные интерьеры и уличные сцены, дистанция $1.0 - 2.5\text{ м}$ | Yaw: $[-50.9^\circ, +66.7^\circ]$<br>Pitch: $[-80.8^\circ, +34.3^\circ]$ | $37.2\text{ ГБ}$ (35 архивов TAR на Zenodo) | **Верифицирован по REST API** (Zenodo Record 2529036) |
+| **ETH-XGaze** | Zhang et al., ETH Zurich, ECCV 2020 | $110$ | $1\,083\,492$ | 18 синхронных камер Canon 250D ($6000 \times 4000$) | Лабораторный калибровочный стенд, дистанция $60 - 80\text{ см}$ | Yaw: $\pm 120^\circ$<br>Pitch: $\pm 70^\circ$ | $14.37\text{ ГБ}$ ($15\,432\,351\,744$ байт в Baidu)<br>$130\text{ ГБ}$ ($224\text{px}$ raw)<br>$497\text{ ГБ}$ ($448\text{px}$ raw) | Обнаружен архив в Baidu Netdisk (`ETH-Xgaze.rar`) |
+| **EYEDIAP** | Funes Mora et al., Idiap, ETRA 2014 | $16$ | $94$ сессии ($426\text{k}$ кадров) | HD RGB ($1920 \times 1080$) + Kinect VGA ($640 \times 480$) | Мониторная калибровка (Screen) и плавающий маркер (3D floating target) | Yaw: $\pm 40^\circ$<br>Pitch: $\pm 30^\circ$ | $208.99\text{ МБ}$ (Baidu preprocessed)<br>$\approx 65\text{ ГБ}$ (full raw) | Обнаружен архив в Baidu Netdisk (`EyeDiap.rar`) |
 
 ---
 
 ## 3. Детальный анализ каждого датасета и взаимная ортогональность
 
-### 3.1. Gaze360 (MIT CSAIL)
-* **Ссылка на источник:** `https://github.com/erkil1452/gaze360`
-* **Особенности разметки:**
-  Каждый кадр аннотирован строгой геометрической структурой:
-  ```csv
-  frame,<id>,forward,<head_x>,<head_y>,eye,<gaze_x>,<gaze_y>
+### 3.1. Gaze360 (MIT CSAIL / Toyota Research Institute)
+* **Официальный репозиторий:** [`https://github.com/erkil1452/gaze360`](https://github.com/erkil1452/gaze360) (переведен автором в статус archived / read-only).
+* **Причина недоступности серверов MIT (`gaze360.csail.mit.edu`):**
+  Сервер возвращает статус `HTTP 403 Forbidden` с телом:
+  ```html
+  <p>You don't have permission to access this resource.Server unable to read htaccess file, denying access to be safe</p>
   ```
-* **Состав скачанного локального пакета:**
+  Это системный сбой прав доступа веб-сервера Apache к файлам конфигурации `.htaccess` на диске CSAIL, заблокировавший весь домен для глобальных пользователей с марта 2026 года (по данным Wayback Machine CDX, последняя успешная фиксация `200 OK` датирована январем 2026 г.).
+* **Китайское зеркало Baidu Netdisk:**
+  - URL раздачи: `https://pan.baidu.com/s/1sP8FaZe4IfA6zb40r8gr0Q` (код извлечения: `4wgk`).
+  - Файл: `/视线估计数据集/Gaze360.rar`.
+  - Метаданные: `fs_id = 192157053644997`, размер $1\,675\,127\,412$ байт ($1.56\text{ ГБ}$), MD5: `89f59c775h2c1fb56a20c070c6101b78`.
+  - Содержит предобработанные нормализованные кропы лиц и глаз для моделей GazeTR и L2CS-Net.
+* **Официальный полный датасет ($28.45\text{ ГБ}$, $30\,548\,756\,480$ байт):**
+  Обнаружено открытое побитовое зеркало оригинального архива MIT CSAIL на Hugging Face:
+  - Репозиторий: `immediately/Gaze360-split`
+  - Структура разделения на 6 частей по 5 ГБ:
+    1. `Gaze360.tar.partaa`: $5\,368\,709\,120$ байт
+    2. `Gaze360.tar.partab`: $5\,368\,709\,120$ байт
+    3. `Gaze360.tar.partac`: $5\,368\,709\,120$ байт
+    4. `Gaze360.tar.partad`: $5\,368\,709\,120$ байт
+    5. `Gaze360.tar.partae`: $5\,368\,709\,120$ байт
+    6. `Gaze360.tar.partaf`: $3\,705\,210\,880$ байт
+    Сумма: $\sum_{i=1}^6 \text{size}_i = 30\,548\,756\,480$ байт (ровно $28.45\text{ ГБ}$, первый заголовок TAR `metadata.mat`).
+  - Скрипт загрузки с поддержкой докачки: [`mvp/experiments/download_gaze360_splits.py`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/experiments/download_gaze360_splits.py).
+  - Сборка итогового архива после загрузки:
+    ```cmd
+    copy /b E:\ВКР\Gaze360\splits\Gaze360.tar.parta* E:\ВКР\Gaze360\Gaze360.tar
+    tar -xf E:\ВКР\Gaze360\Gaze360.tar -C E:\ВКР\Gaze360\
+    ```
+* **Состав скачанной локальной разметки:**
   Архив `Gaze_txt_files.zip` ($132.6\text{ МБ}$) скачан с Hugging Face (`Morning5/Gaze360`) и полностью распакован в директорию `E:\ВКР\Gaze360\annotations\Gaze_txt_files`. Он включает **6 718 файлов разметки** по всем 238 субъектам (`p001` $\dots$ `p238`), содержащих временные метки, позу головы и 3D векторы направления взгляда.
-* **Статус исходного сервера MIT:**
-  Официальный веб-сервер `http://gaze360.csail.mit.edu/download.php` возвращает ошибку `HTTP 403 Forbidden`, а сам репозиторий переведен автором в режим архивации (read-only). Полноразмерный бинарный архив изображений `gaze360_dataset.tar` ($28.45\text{ ГБ}$) распространяется через зеркала OpenDataLab и академические торрент-сети.
 
 ### 3.2. Columbia Gaze Data Set (Columbia CAVE)
 * **Прямой URL:** `https://www.cs.columbia.edu/CAVE/databases/columbia_gaze/columbia_gaze_data_set.zip`
@@ -71,14 +92,21 @@
 ```
 E:\ВКР\
 ├── Gaze360\
-│   ├── Gaze_txt_files.zip (132.6 МБ)
-│   └── annotations\
-│       └── Gaze_txt_files\
-│           ├── p001\ (10 видеозаписей разметки)
-│           ├── p002\ ...
-│           └── p238\ (всего 6 718 txt файлов покадровой 3D-разметки)
+│   ├── Gaze_txt_files.zip (132.6 МБ, скачан)
+│   ├── annotations\
+│   │   └── Gaze_txt_files\
+│   │       ├── p001\ (10 видеозаписей разметки)
+│   │       ├── p002\ ...
+│   │       └── p238\ (всего 6 718 txt файлов покадровой 3D-разметки)
+│   └── splits\ (активная фоновая загрузка 6 частей Gaze360.tar)
+│       ├── Gaze360.tar.partaa (5.00 ГБ, скачивается)
+│       ├── Gaze360.tar.partab (5.00 ГБ)
+│       ├── Gaze360.tar.partac (5.00 ГБ)
+│       ├── Gaze360.tar.partad (5.00 ГБ)
+│       ├── Gaze360.tar.partae (5.00 ГБ)
+│       └── Gaze360.tar.partaf (3.45 ГБ)
 ├── ColumbiaGaze\
-│   └── columbia_gaze_data_set.zip (2.22 ГБ, активная загрузка)
+│   └── columbia_gaze_data_set.zip (2.22 ГБ, активная фоновая загрузка)
 └── MPIIFaceGaze\
-    └── MPIIFaceGaze.h5 (4.61 ГБ, активная загрузка)
+    └── MPIIFaceGaze.h5 (4.61 ГБ, активная фоновая загрузка)
 ```

@@ -32,23 +32,23 @@
 ## 2. Каталог готовых моделей (Ready Pretrained SOTA Models)
 
 > **Связанные документы:**
-> - Систематический анализ 7 архитектурных парадигм: [`docs/10_architectural_approaches_gaze_and_facial_gestures.md`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/10_architectural_approaches_gaze_and_facial_gestures.md).
-> - Детальный разбор структуры каждой модели (стадии, бэкбоны, тензоры, лоссы), ранжированный по метрикам: [`docs/11_detailed_model_architectures.md`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/11_detailed_model_architectures.md).
+> - Систематический анализ 7 архитектурных парадигм: [`docs/10_architectural_approaches_gaze_and_facial_gestures.md`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/10_architectural_approaches_gaze_and_facial_gestures.md).
+> - Детальный разбор структуры каждой модели (стадии, бэкбоны, тензоры, лоссы), ранжированный по метрикам: [`docs/11_detailed_model_architectures.md`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/11_detailed_model_architectures.md).
 
 ### 2.1. Автоматизированные парсеры открытых платформ (Hugging Face, GitHub, ArXiv)
 
 Поиск моделей и архитектур за последние три года (2024–2026 гг.) реализован через связку двух автономных скриптов без использования внутренних устаревших поисковых кэшей:
 
-1. **Парсер Hugging Face Hub ([`scripts/parse_huggingface_gaze.py`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/scripts/parse_huggingface_gaze.py)):**
+1. **Парсер Hugging Face Hub ([`scripts/parse_huggingface_gaze.py`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/scripts/parse_huggingface_gaze.py)):**
    - Выполняет прямые запросы к REST API `https://huggingface.co/api/models` по 25 ключевым запросам (`gaze-estimation`, `gaze360`, `mpiigaze`, `eth-xgaze`, `l2cs`, `gazetr`, `puregaze`, `unigaze`, `omnigaze`, `eyetag`, `ptgaze`, `crossgaze`, `mcgaze` и др.).
    - Отсекает нерелевантные репозитории NLP, ASR и синтеза речи.
-   - Сформированный каталог: [`scripts/huggingface_gaze_models.json`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/scripts/huggingface_gaze_models.json) (26 проверенных репозиториев).
+   - Сформированный каталог: [`scripts/huggingface_gaze_models.json`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/scripts/huggingface_gaze_models.json) (26 проверенных репозиториев).
 
-2. **Парсер GitHub и ArXiv ([`scripts/parse_github_arxiv_gaze.py`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/scripts/parse_github_arxiv_gaze.py)):**
+2. **Парсер GitHub и ArXiv ([`scripts/parse_github_arxiv_gaze.py`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/scripts/parse_github_arxiv_gaze.py)):**
    - Запрашивает arXiv API (`export.arxiv.org/api/query`) по категории `cs.CV` со строгим фильтром по годам 2024–2026 (получено 118 релевантных статей).
    - Выполняет поиск по GitHub API (`api.github.com/search/repositories`) по репозиториям с обновлениями $\ge 2024$ года (87 уникальных репозиториев).
    - Осуществляет инспекцию `README.md` через `raw.githubusercontent.com` без расходования лимитов API. Детектирует прямые ссылки на веса: Google Drive, Baidu Wangpan, Zenodo, Hugging Face, GitHub Releases (`.pt`, `.pth`, `.onnx`, `.tflite`, `.safetensors`, `.pkl`).
-   - Сформированный каталог: [`scripts/github_arxiv_gaze_models.json`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/scripts/github_arxiv_gaze_models.json) (46 верифицированных моделей).
+   - Сформированный каталог: [`scripts/github_arxiv_gaze_models.json`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/scripts/github_arxiv_gaze_models.json) (46 верифицированных моделей).
 
 ---
 
@@ -217,8 +217,8 @@
 
 > **Официальный онлайн-лидерборд решений (Google Sheets):**  
 > **URL:** [Google Sheets Gaze Tracking Leaderboard](https://docs.google.com/spreadsheets/d/1J4LHhZXiZYnBFjymL6ayOt2jAafnt4sISfhsUsNiKLo/edit?usp=sharing)  
-> **Локальные файлы синхронизации:** [`docs/leaderboard.csv`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/leaderboard.csv) (UTF-8 BOM), [`docs/leaderboard.tsv`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/docs/leaderboard.tsv)  
-> **Скрипт синхронизации и экспорта:** [`scripts/export_leaderboard.py`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/scripts/export_leaderboard.py), [`scripts/sync_google_sheet_leaderboard.py`](file:///D:/%D0%9F%D0%A0%D0%9E%D0%A4/%D0%92%D0%A3%D0%97/%D0%92%D0%9A%D0%A0/scripts/sync_google_sheet_leaderboard.py)  
+> **Локальные файлы синхронизации:** [`docs/leaderboard.csv`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/leaderboard.csv) (UTF-8 BOM), [`docs/leaderboard.tsv`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/leaderboard.tsv)  
+> **Скрипт синхронизации и экспорта:** [`scripts/export_leaderboard.py`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/scripts/export_leaderboard.py), [`scripts/sync_google_sheet_leaderboard.py`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/scripts/sync_google_sheet_leaderboard.py)  
 > **Структура колонок лидерборда:**  
 > `Ранг | Название модели / Архитектура | Ошибка 1 (Mean deg) | Ошибка 2 (Median deg) | Ошибка 3 (Screen px) | Ошибка 4 (R2) | Ошибка 5 (ETH-XGaze deg) | Ошибка 6 (MPII deg) | Ошибка 7 (Gaze360/EVE deg) | Задержка CPU (мс) | Задержка GPU (мс) | Потребление RAM (МБ) | Потребление VRAM (МБ) | Год создания | Место, где лежат веса | Источник (HF / GitHub / ArXiv)`
 
