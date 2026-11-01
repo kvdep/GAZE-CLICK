@@ -13,6 +13,8 @@ dist/
 
 # Datasets and large binary files
 DATA/
+*.rar
+mvp/faze/
 *.pt
 *.pth
 *.onnx
