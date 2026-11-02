@@ -497,20 +497,25 @@ MODELS_REGISTRY = [
 ]
 
 # 1. Load multi_session_summary.csv directly produced by code
+def clean_encoding_artifacts(s: str) -> str:
+    if not isinstance(s, str):
+        return s
+    return s.replace("В±", "±").replace("В°", "°")
+
 multi_summary_path = os.path.join("mvp", "experiments", "multi_session_summary.csv")
 multi_data = {}
 if os.path.exists(multi_summary_path):
     try:
-        df_bench = pd.read_csv(multi_summary_path, encoding='cp1251')
+        df_bench = pd.read_csv(multi_summary_path, encoding='utf-8-sig')
     except Exception:
-        df_bench = pd.read_csv(multi_summary_path, encoding='utf-8')
+        df_bench = pd.read_csv(multi_summary_path, encoding='cp1251')
     for _, r in df_bench.iterrows():
         k = str(r['Model']).strip()
         multi_data[k] = {
-            "mean_ang": str(r['Mean AngErr (deg)']).strip(),
-            "med_ang": f"{r['Median AngErr (deg)']}°",
-            "screen_px": str(r['Mean Err (px)']).strip(),
-            "r2": str(r['Mean R2']).strip(),
+            "mean_ang": clean_encoding_artifacts(str(r['Mean AngErr (deg)']).strip()),
+            "med_ang": clean_encoding_artifacts(f"{r['Median AngErr (deg)']}°"),
+            "screen_px": clean_encoding_artifacts(str(r['Mean Err (px)']).strip()),
+            "r2": clean_encoding_artifacts(str(r['Mean R2']).strip()),
             "cpu_lat": str(r.get('Mean Latency (ms)', '')).strip()
         }
     print(f"Loaded {len(multi_data)} benchmarked models from {multi_summary_path}.")
@@ -522,16 +527,16 @@ test_summary_path = os.path.join("mvp", "experiments", "test_dataset_summary.csv
 test_data = {}
 if os.path.exists(test_summary_path):
     try:
-        df_test = pd.read_csv(test_summary_path, encoding='cp1251')
+        df_test = pd.read_csv(test_summary_path, encoding='utf-8-sig')
     except Exception:
-        df_test = pd.read_csv(test_summary_path, encoding='utf-8')
+        df_test = pd.read_csv(test_summary_path, encoding='cp1251')
     for _, r in df_test.iterrows():
         k = str(r['Model']).strip()
         test_data[k] = {
-            "mean_ang": str(r['Mean AngErr (deg)']).strip(),
-            "med_ang": f"{r['Median AngErr (deg)']}°",
-            "screen_px": str(r['Mean Err (px)']).strip(),
-            "r2": str(r['Mean R2']).strip()
+            "mean_ang": clean_encoding_artifacts(str(r['Mean AngErr (deg)']).strip()),
+            "med_ang": clean_encoding_artifacts(f"{r['Median AngErr (deg)']}°"),
+            "screen_px": clean_encoding_artifacts(str(r['Mean Err (px)']).strip()),
+            "r2": clean_encoding_artifacts(str(r['Mean R2']).strip())
         }
     print(f"Loaded {len(test_data)} test dataset evaluations from {test_summary_path}.")
 else:
