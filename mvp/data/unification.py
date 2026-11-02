@@ -1,6 +1,7 @@
 import os, sys, math, torch, numpy as np, pandas as pd
 from typing import Dict, Any, List, Tuple, Optional
-from PIL import Image
+from PIL import Image, ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 import torchvision.transforms as TVT
 
