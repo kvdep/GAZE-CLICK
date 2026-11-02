@@ -174,6 +174,10 @@ class DataUnifier:
         exists_mask = np.array([os.path.exists(p) for p in img_paths], dtype=bool)
         filtered_df = raw_df[exists_mask].copy().reset_index(drop=True)
         valid_paths = [p for p, ex in zip(img_paths, exists_mask) if ex]
+        yaw_limit_rad = 60.0 * (np.pi / 180.0)
+        frontal_mask = np.abs(filtered_df["gaze_yaw_rad"].to_numpy()) <= yaw_limit_rad
+        filtered_df = filtered_df[frontal_mask].copy().reset_index(drop=True)
+        valid_paths = [p for p, f in zip(valid_paths, frontal_mask) if f]
         if cfg.max_samples is not None and cfg.max_samples > 0:
             filtered_df = filtered_df.iloc[:cfg.max_samples].copy().reset_index(drop=True)
             valid_paths = valid_paths[:cfg.max_samples]

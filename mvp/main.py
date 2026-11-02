@@ -343,7 +343,8 @@ def execute_train_experiment(args: argparse.Namespace, device: torch.device) -> 
     else:
         param_groups = [{"params": trainable_params, "lr": args.lr, "name": "head"}]
         metric_log(f"Backbone 100% FROZEN (0 trainable params). Head/Adapters trainable tensors: {len(trainable_params)} (LR={args.lr:.6f})")
-    optimizer = torch.optim.AdamW(param_groups, weight_decay=1e-2)
+    fused_opt = (device.type == "cuda")
+    optimizer = torch.optim.AdamW(param_groups, weight_decay=1e-2, fused=fused_opt)
     warmup_epochs = max(0, args.warmup_epochs)
     total_requested_epochs = max(150, args.epochs)
     if warmup_epochs > 0:
@@ -513,6 +514,8 @@ def execute_inference(checkpoint_path: str, device: torch.device) -> None:
 def main() -> None:
     args = parse_arguments()
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    if device.type == "cuda":
+        torch.backends.cudnn.benchmark = True
     MemoryManager.verify_runtime_environment(device)
     if args.mode == "sanity_check":
         execute_sanity_check(device)

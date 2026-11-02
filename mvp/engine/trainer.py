@@ -58,6 +58,8 @@ class GazeTrainer:
         self.checkpoint_dir = checkpoint_dir or "mvp/checkpoints"
         self.save_interval_minutes = save_interval_minutes
         self.save_every_epoch = save_every_epoch
+        self.use_amp = (target_device.type == "cuda")
+        self.scaler = torch.amp.GradScaler("cuda", enabled=self.use_amp) if self.use_amp else None
         self.last_periodic_save_mono = time.monotonic()
         self.model.to("cpu")
         MemoryManager.aggressive_cleanup()
@@ -72,19 +74,27 @@ class GazeTrainer:
                         state[k] = v.to(self.target_device)
             total_steps = len(train_loader)
             for batch_idx, batch_data in enumerate(train_loader, 1):
-                self.optimizer.zero_grad()
+                self.optimizer.zero_grad(set_to_none=True)
                 batch_on_device = {
-                    key: value.to(self.target_device) if isinstance(value, torch.Tensor) else value
+                    key: value.to(self.target_device, non_blocking=True) if isinstance(value, torch.Tensor) else value
                     for key, value in batch_data.items()
                 }
-                predictions = active_model(batch_on_device["image"])
-                loss_breakdown = self.criterion(predictions, batch_on_device)
-                total_loss = loss_breakdown["total_loss"]
+                with torch.amp.autocast("cuda", dtype=torch.float16, enabled=self.use_amp):
+                    predictions = active_model(batch_on_device["image"])
+                    loss_breakdown = self.criterion(predictions, batch_on_device)
+                    total_loss = loss_breakdown["total_loss"]
                 if torch.isnan(total_loss) or torch.isinf(total_loss):
                     raise RuntimeError(f"Numerical instability: loss is NaN or Inf at step {batch_idx}/{total_steps}")
-                total_loss.backward()
-                torch.nn.utils.clip_grad_norm_(active_model.parameters(), max_norm=1.0)
-                self.optimizer.step()
+                if self.scaler is not None and self.use_amp:
+                    self.scaler.scale(total_loss).backward()
+                    self.scaler.unscale_(self.optimizer)
+                    torch.nn.utils.clip_grad_norm_(active_model.parameters(), max_norm=1.0)
+                    self.scaler.step(self.optimizer)
+                    self.scaler.update()
+                else:
+                    total_loss.backward()
+                    torch.nn.utils.clip_grad_norm_(active_model.parameters(), max_norm=1.0)
+                    self.optimizer.step()
                 total_epoch_loss += total_loss.item()
                 batch_count += 1
                 if batch_idx % 25 == 0 or batch_idx == total_steps:
@@ -103,12 +113,13 @@ class GazeTrainer:
             with torch.no_grad():
                 for batch_data in eval_loader:
                     batch_on_device = {
-                        key: value.to(self.target_device) if isinstance(value, torch.Tensor) else value
+                        key: value.to(self.target_device, non_blocking=True) if isinstance(value, torch.Tensor) else value
                         for key, value in batch_data.items()
                     }
-                    predictions = active_model(batch_on_device["image"])
-                    loss_breakdown = self.criterion(predictions, batch_on_device)
-                    total_eval_loss += loss_breakdown["total_loss"].item()
+                    with torch.amp.autocast("cuda", dtype=torch.float16, enabled=self.use_amp):
+                        predictions = active_model(batch_on_device["image"])
+                        loss_breakdown = self.criterion(predictions, batch_on_device)
+                        total_eval_loss += loss_breakdown["total_loss"].item()
                     batch_size = len(batch_data["gaze_angles"])
                     pred_vector = predictions["gaze_vector"]
                     target_vector = batch_on_device["gaze_vector"]
