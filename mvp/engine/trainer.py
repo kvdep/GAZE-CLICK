@@ -70,7 +70,8 @@ class GazeTrainer:
                 for k, v in state.items():
                     if isinstance(v, torch.Tensor):
                         state[k] = v.to(self.target_device)
-            for batch_data in train_loader:
+            total_steps = len(train_loader)
+            for batch_idx, batch_data in enumerate(train_loader, 1):
                 self.optimizer.zero_grad()
                 batch_on_device = {
                     key: value.to(self.target_device) if isinstance(value, torch.Tensor) else value
@@ -79,11 +80,15 @@ class GazeTrainer:
                 predictions = active_model(batch_on_device["image"])
                 loss_breakdown = self.criterion(predictions, batch_on_device)
                 total_loss = loss_breakdown["total_loss"]
+                if torch.isnan(total_loss) or torch.isinf(total_loss):
+                    raise RuntimeError(f"Numerical instability: loss is NaN or Inf at step {batch_idx}/{total_steps}")
                 total_loss.backward()
                 torch.nn.utils.clip_grad_norm_(active_model.parameters(), max_norm=1.0)
                 self.optimizer.step()
                 total_epoch_loss += total_loss.item()
                 batch_count += 1
+                if batch_idx % 25 == 0 or batch_idx == total_steps:
+                    metric_log(f"  Step {batch_idx}/{total_steps} | L Batch: {total_loss.item():.4f}", device_context="GPU" if self.target_device.type == "cuda" else "CPU")
             for state in self.optimizer.state.values():
                 for k, v in state.items():
                     if isinstance(v, torch.Tensor):

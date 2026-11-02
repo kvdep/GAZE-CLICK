@@ -38,8 +38,19 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("--use-mlflow", action="store_true", default=True)
     parser.add_argument("--no-mlflow", dest="use_mlflow", action="store_false")
     parser.add_argument("--mlflow-uri", type=str, default="file:./mvp/mlruns")
-    parser.add_argument("--datasets", nargs="+", default=["columbia_gaze", "mpiifacegaze", "rtgene"])
-    return parser.parse_args()
+    parser.add_argument("--datasets", nargs="+", default=["columbia_gaze", "mpiifacegaze", "rtgene", "gaze360"])
+    args = parser.parse_args()
+    if not os.path.exists("mvp") and os.path.exists("experiments"):
+        if args.experiments_dir == "mvp/experiments":
+            args.experiments_dir = "experiments"
+        if args.mlflow_uri == "file:./mvp/mlruns":
+            args.mlflow_uri = "file:./mlruns"
+    if args.checkpoint_path and not os.path.exists(args.checkpoint_path):
+        if args.checkpoint_path.startswith("mvp/") and os.path.exists(args.checkpoint_path[4:]):
+            args.checkpoint_path = args.checkpoint_path[4:]
+        elif os.path.exists(os.path.join("..", args.checkpoint_path)):
+            args.checkpoint_path = os.path.join("..", args.checkpoint_path)
+    return args
 
 
 def measure_forward_latency(model: torch.nn.Module, target_device: torch.device, num_iterations: int = 100, warmup_iterations: int = 20) -> Tuple[float, float, float]:
@@ -116,9 +127,9 @@ def execute_sanity_check(device: torch.device) -> None:
     t_start = time.monotonic()
     MemoryManager.aggressive_cleanup()
     metric_log("Starting Sanity Check: 4-sample real-image overfitting verification", device_context="GPU" if device.type == "cuda" else "CPU")
-    real_sample_paths = sorted(glob.glob("DATA/mpiifacegaze/samples/*.jpg"))[:4]
+    real_sample_paths = sorted(glob.glob("DATA/mpiifacegaze/samples/*.jpg") + glob.glob("../DATA/mpiifacegaze/samples/*.jpg"))[:4]
     if len(real_sample_paths) < 4:
-        real_sample_paths = sorted(glob.glob("DATA/mpiifacegaze/**/*.jpg", recursive=True))[:4]
+        real_sample_paths = sorted(glob.glob("DATA/mpiifacegaze/**/*.jpg", recursive=True) + glob.glob("../DATA/mpiifacegaze/**/*.jpg", recursive=True))[:4]
     if len(real_sample_paths) < 4:
         raise FileNotFoundError(f"Insufficient real sample images found for sanity check. Found: {len(real_sample_paths)}")
     metric_log(f"Loading 4 real sample images from disk: {[os.path.basename(p) for p in real_sample_paths]}")
@@ -181,6 +192,11 @@ def execute_unify_data(experiments_dir: str) -> None:
             dataset_name="rtgene",
             data_file_path="DATA/rtgene/rtgene_dataset/processed/rtgene_full_labels.parquet",
             images_base_path="DATA/rtgene/rtgene_dataset"
+        ),
+        DatasetSelectionConfig(
+            dataset_name="gaze360",
+            data_file_path="DATA/Gaze360/processed/gaze360_full.parquet",
+            images_base_path="DATA/Gaze360"
         )
     ]
     output_path = os.path.join(experiments_dir, "unified_gaze_dataset.parquet")
@@ -230,6 +246,12 @@ def execute_train_experiment(args: argparse.Namespace, device: torch.device) -> 
             dataset_name="rtgene",
             data_file_path="DATA/rtgene/rtgene_dataset/processed/rtgene_full_labels.parquet",
             images_base_path="DATA/rtgene/rtgene_dataset",
+            max_samples=max_samples_val
+        ),
+        "gaze360": DatasetSelectionConfig(
+            dataset_name="gaze360",
+            data_file_path="DATA/Gaze360/processed/gaze360_full.parquet",
+            images_base_path="DATA/Gaze360",
             max_samples=max_samples_val
         )
     }
@@ -336,15 +358,20 @@ def execute_train_experiment(args: argparse.Namespace, device: torch.device) -> 
         if loaded_payload.get("optimizer_state_dict") is not None:
             try:
                 optimizer.load_state_dict(loaded_payload["optimizer_state_dict"])
-                metric_log(f"Restored optimizer state from checkpoint (lr={optimizer.param_groups[0]['lr']:.8f})")
+                for pg in optimizer.param_groups:
+                    if pg.get("name") == "backbone":
+                        pg["lr"] = args.lr * 0.25
+                    else:
+                        pg["lr"] = args.lr
+                metric_log(f"Restored optimizer state and applied updated learning rate (lr={optimizer.param_groups[-1]['lr']:.8f})")
             except Exception as opt_err:
                 metric_log(f"Warning: could not restore optimizer state ({opt_err}), using fresh optimizer configuration")
         if loaded_payload.get("scheduler_state_dict") is not None:
             try:
-                scheduler.load_state_dict(loaded_payload["scheduler_state_dict"])
-                metric_log(f"Restored scheduler state from checkpoint (last_epoch={scheduler.last_epoch})")
+                scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=max(1, total_requested_epochs - start_epoch + 1), eta_min=1e-6)
+                metric_log(f"Configured fresh CosineAnnealing scheduler for remaining {total_requested_epochs - start_epoch + 1} epochs (initial lr={optimizer.param_groups[-1]['lr']:.8f})")
             except Exception as sch_err:
-                metric_log(f"Warning: could not restore scheduler state ({sch_err}), using fresh scheduler configuration")
+                metric_log(f"Warning: could not configure scheduler ({sch_err}), using existing scheduler")
         best_ckpt_candidate = os.path.join(exp_ctx["checkpoints_dir"], "best_model.pt")
         if os.path.exists(best_ckpt_candidate):
             best_payload = torch.load(best_ckpt_candidate, map_location="cpu")
@@ -461,7 +488,7 @@ def execute_inference(checkpoint_path: str, device: torch.device) -> None:
     metric_log(f"Executing inference on checkpoint: {checkpoint_path}")
     model, payload = ModelRegistry.load_checkpoint(checkpoint_path, target_device=str(device))
     metric_log(f"Reconstructed architecture: {payload['architecture_config']}")
-    real_sample_paths = glob.glob("DATA/mpiifacegaze/samples/*.jpg") + glob.glob("DATA/columbia_gaze/samples/*.jpg") + glob.glob("DATA/rtgene/rtgene_dataset/extracted_images/**/*.png", recursive=True)
+    real_sample_paths = glob.glob("DATA/mpiifacegaze/samples/*.jpg") + glob.glob("DATA/columbia_gaze/samples/*.jpg") + glob.glob("DATA/rtgene/rtgene_dataset/extracted_images/**/*.png", recursive=True) + glob.glob("../DATA/mpiifacegaze/samples/*.jpg") + glob.glob("../DATA/columbia_gaze/samples/*.jpg") + glob.glob("../DATA/rtgene/rtgene_dataset/extracted_images/**/*.png", recursive=True)
     if not real_sample_paths:
         raise FileNotFoundError("No real sample images found for inference")
     sample_image_path = real_sample_paths[0]

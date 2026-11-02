@@ -5,22 +5,23 @@
     "weights_path": "mvp/models/weights/yolo26n.pt",
     "pretrained": true,
     "feature_dim": 256,
-    "dropout": 0.2
+    "dropout": 0.2,
+    "freeze_backbone": true
   },
-  "total_parameters": 1487464,
-  "trainable_parameters": 1487464,
-  "non_trainable_parameters": 0,
-  "buffer_elements": 11544,
-  "model_memory_mb": 5.718,
-  "total_flops": 2122515200,
-  "total_gflops": 2.1225,
+  "total_parameters": 1832812,
+  "trainable_parameters": 467340,
+  "non_trainable_parameters": 1365472,
+  "buffer_elements": 11642,
+  "model_memory_mb": 7.036,
+  "total_flops": 2366464640,
+  "total_gflops": 2.3665,
   "benchmark_device": "cuda:0",
-  "latency_mean_ms": 19.404,
-  "latency_std_ms": 1.24,
-  "latency_p95_ms": 20.681,
-  "latency_min_ms": 15.446,
-  "latency_max_ms": 21.29,
-  "throughput_fps": 51.5,
+  "latency_mean_ms": 2.706,
+  "latency_std_ms": 0.512,
+  "latency_p95_ms": 3.874,
+  "latency_min_ms": 2.386,
+  "latency_max_ms": 4.167,
+  "throughput_fps": 369.6,
   "layers": [
     {
       "name": "backbone_layers.0.conv",
@@ -617,6 +618,78 @@
       "flops": 0
     },
     {
+      "name": "adapter_p3.down_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        128,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "parameters": 4096,
+      "flops": 6422528
+    },
+    {
+      "name": "adapter_p3.dw_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "parameters": 288,
+      "flops": 451584
+    },
+    {
+      "name": "adapter_p3.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "adapter_p3.up_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        128,
+        28,
+        28
+      ],
+      "parameters": 4096,
+      "flops": 6422528
+    },
+    {
       "name": "backbone_layers.5.conv",
       "type": "Conv2d",
       "input_shape": [
@@ -1155,6 +1228,78 @@
       ],
       "parameters": 0,
       "flops": 0
+    },
+    {
+      "name": "adapter_p4.down_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        128,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "parameters": 4096,
+      "flops": 1605632
+    },
+    {
+      "name": "adapter_p4.dw_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "parameters": 288,
+      "flops": 112896
+    },
+    {
+      "name": "adapter_p4.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "adapter_p4.up_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        128,
+        14,
+        14
+      ],
+      "parameters": 4096,
+      "flops": 1605632
     },
     {
       "name": "backbone_layers.7.conv",
@@ -1733,6 +1878,24 @@
       "flops": 0
     },
     {
+      "name": "backbone_layers.0.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
       "name": "backbone_layers.9.m",
       "type": "MaxPool2d",
       "input_shape": [
@@ -2147,6 +2310,78 @@
       "flops": 0
     },
     {
+      "name": "adapter_p5.down_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        256,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "parameters": 16384,
+      "flops": 1605632
+    },
+    {
+      "name": "adapter_p5.dw_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "parameters": 576,
+      "flops": 56448
+    },
+    {
+      "name": "adapter_p5.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "adapter_p5.up_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        256,
+        7,
+        7
+      ],
+      "parameters": 16384,
+      "flops": 1605632
+    },
+    {
       "name": "head_pool",
       "type": "AdaptiveAvgPool2d",
       "input_shape": [
@@ -2366,6 +2601,60 @@
         128,
         28,
         28
+      ],
+      "output_shape": [
+        1,
+        128,
+        1,
+        1
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "binoc_conv.0",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        256,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "parameters": 295040,
+      "flops": 28901376
+    },
+    {
+      "name": "binoc_conv.1",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "binoc_conv.2",
+      "type": "AdaptiveAvgPool2d",
+      "input_shape": [
+        1,
+        128,
+        7,
+        7
       ],
       "output_shape": [
         1,
@@ -3041,6 +3330,78 @@
       "flops": 0
     },
     {
+      "name": "adapter_p3.down_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        128,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "parameters": 4096,
+      "flops": 6422528
+    },
+    {
+      "name": "adapter_p3.dw_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "parameters": 288,
+      "flops": 451584
+    },
+    {
+      "name": "adapter_p3.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "adapter_p3.up_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        128,
+        28,
+        28
+      ],
+      "parameters": 4096,
+      "flops": 6422528
+    },
+    {
       "name": "backbone_layers.5.conv",
       "type": "Conv2d",
       "input_shape": [
@@ -3579,6 +3940,78 @@
       ],
       "parameters": 0,
       "flops": 0
+    },
+    {
+      "name": "adapter_p4.down_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        128,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "parameters": 4096,
+      "flops": 1605632
+    },
+    {
+      "name": "adapter_p4.dw_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "parameters": 288,
+      "flops": 112896
+    },
+    {
+      "name": "adapter_p4.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "adapter_p4.up_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        128,
+        14,
+        14
+      ],
+      "parameters": 4096,
+      "flops": 1605632
     },
     {
       "name": "backbone_layers.7.conv",
@@ -4157,6 +4590,24 @@
       "flops": 0
     },
     {
+      "name": "backbone_layers.0.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
       "name": "backbone_layers.9.m",
       "type": "MaxPool2d",
       "input_shape": [
@@ -4571,6 +5022,78 @@
       "flops": 0
     },
     {
+      "name": "adapter_p5.down_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        256,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "parameters": 16384,
+      "flops": 1605632
+    },
+    {
+      "name": "adapter_p5.dw_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "parameters": 576,
+      "flops": 56448
+    },
+    {
+      "name": "adapter_p5.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "adapter_p5.up_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        256,
+        7,
+        7
+      ],
+      "parameters": 16384,
+      "flops": 1605632
+    },
+    {
       "name": "head_pool",
       "type": "AdaptiveAvgPool2d",
       "input_shape": [
@@ -4790,6 +5313,60 @@
         128,
         28,
         28
+      ],
+      "output_shape": [
+        1,
+        128,
+        1,
+        1
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "binoc_conv.0",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        256,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "parameters": 295040,
+      "flops": 28901376
+    },
+    {
+      "name": "binoc_conv.1",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "binoc_conv.2",
+      "type": "AdaptiveAvgPool2d",
+      "input_shape": [
+        1,
+        128,
+        7,
+        7
       ],
       "output_shape": [
         1,
@@ -5465,6 +6042,78 @@
       "flops": 0
     },
     {
+      "name": "adapter_p3.down_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        128,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "parameters": 4096,
+      "flops": 6422528
+    },
+    {
+      "name": "adapter_p3.dw_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "parameters": 288,
+      "flops": 451584
+    },
+    {
+      "name": "adapter_p3.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "adapter_p3.up_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        128,
+        28,
+        28
+      ],
+      "parameters": 4096,
+      "flops": 6422528
+    },
+    {
       "name": "backbone_layers.5.conv",
       "type": "Conv2d",
       "input_shape": [
@@ -6003,6 +6652,78 @@
       ],
       "parameters": 0,
       "flops": 0
+    },
+    {
+      "name": "adapter_p4.down_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        128,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "parameters": 4096,
+      "flops": 1605632
+    },
+    {
+      "name": "adapter_p4.dw_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "parameters": 288,
+      "flops": 112896
+    },
+    {
+      "name": "adapter_p4.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "adapter_p4.up_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        128,
+        14,
+        14
+      ],
+      "parameters": 4096,
+      "flops": 1605632
     },
     {
       "name": "backbone_layers.7.conv",
@@ -6581,6 +7302,24 @@
       "flops": 0
     },
     {
+      "name": "backbone_layers.0.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
       "name": "backbone_layers.9.m",
       "type": "MaxPool2d",
       "input_shape": [
@@ -6995,6 +7734,78 @@
       "flops": 0
     },
     {
+      "name": "adapter_p5.down_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        256,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "parameters": 16384,
+      "flops": 1605632
+    },
+    {
+      "name": "adapter_p5.dw_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "parameters": 576,
+      "flops": 56448
+    },
+    {
+      "name": "adapter_p5.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "adapter_p5.up_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        256,
+        7,
+        7
+      ],
+      "parameters": 16384,
+      "flops": 1605632
+    },
+    {
       "name": "head_pool",
       "type": "AdaptiveAvgPool2d",
       "input_shape": [
@@ -7214,6 +8025,60 @@
         128,
         28,
         28
+      ],
+      "output_shape": [
+        1,
+        128,
+        1,
+        1
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "binoc_conv.0",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        256,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "parameters": 295040,
+      "flops": 28901376
+    },
+    {
+      "name": "binoc_conv.1",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "binoc_conv.2",
+      "type": "AdaptiveAvgPool2d",
+      "input_shape": [
+        1,
+        128,
+        7,
+        7
       ],
       "output_shape": [
         1,
@@ -7889,6 +8754,78 @@
       "flops": 0
     },
     {
+      "name": "adapter_p3.down_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        128,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "parameters": 4096,
+      "flops": 6422528
+    },
+    {
+      "name": "adapter_p3.dw_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "parameters": 288,
+      "flops": 451584
+    },
+    {
+      "name": "adapter_p3.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "adapter_p3.up_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        128,
+        28,
+        28
+      ],
+      "parameters": 4096,
+      "flops": 6422528
+    },
+    {
       "name": "backbone_layers.5.conv",
       "type": "Conv2d",
       "input_shape": [
@@ -8427,6 +9364,78 @@
       ],
       "parameters": 0,
       "flops": 0
+    },
+    {
+      "name": "adapter_p4.down_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        128,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "parameters": 4096,
+      "flops": 1605632
+    },
+    {
+      "name": "adapter_p4.dw_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "parameters": 288,
+      "flops": 112896
+    },
+    {
+      "name": "adapter_p4.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "adapter_p4.up_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        128,
+        14,
+        14
+      ],
+      "parameters": 4096,
+      "flops": 1605632
     },
     {
       "name": "backbone_layers.7.conv",
@@ -9005,6 +10014,24 @@
       "flops": 0
     },
     {
+      "name": "backbone_layers.0.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
       "name": "backbone_layers.9.m",
       "type": "MaxPool2d",
       "input_shape": [
@@ -9419,6 +10446,78 @@
       "flops": 0
     },
     {
+      "name": "adapter_p5.down_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        256,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "parameters": 16384,
+      "flops": 1605632
+    },
+    {
+      "name": "adapter_p5.dw_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "parameters": 576,
+      "flops": 56448
+    },
+    {
+      "name": "adapter_p5.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "adapter_p5.up_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        256,
+        7,
+        7
+      ],
+      "parameters": 16384,
+      "flops": 1605632
+    },
+    {
       "name": "head_pool",
       "type": "AdaptiveAvgPool2d",
       "input_shape": [
@@ -9638,6 +10737,60 @@
         128,
         28,
         28
+      ],
+      "output_shape": [
+        1,
+        128,
+        1,
+        1
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "binoc_conv.0",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        256,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "parameters": 295040,
+      "flops": 28901376
+    },
+    {
+      "name": "binoc_conv.1",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "binoc_conv.2",
+      "type": "AdaptiveAvgPool2d",
+      "input_shape": [
+        1,
+        128,
+        7,
+        7
       ],
       "output_shape": [
         1,
@@ -10313,6 +11466,78 @@
       "flops": 0
     },
     {
+      "name": "adapter_p3.down_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        128,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "parameters": 4096,
+      "flops": 6422528
+    },
+    {
+      "name": "adapter_p3.dw_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "parameters": 288,
+      "flops": 451584
+    },
+    {
+      "name": "adapter_p3.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "adapter_p3.up_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "output_shape": [
+        1,
+        128,
+        28,
+        28
+      ],
+      "parameters": 4096,
+      "flops": 6422528
+    },
+    {
       "name": "backbone_layers.5.conv",
       "type": "Conv2d",
       "input_shape": [
@@ -10851,6 +12076,78 @@
       ],
       "parameters": 0,
       "flops": 0
+    },
+    {
+      "name": "adapter_p4.down_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        128,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "parameters": 4096,
+      "flops": 1605632
+    },
+    {
+      "name": "adapter_p4.dw_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "parameters": 288,
+      "flops": 112896
+    },
+    {
+      "name": "adapter_p4.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "adapter_p4.up_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        32,
+        14,
+        14
+      ],
+      "output_shape": [
+        1,
+        128,
+        14,
+        14
+      ],
+      "parameters": 4096,
+      "flops": 1605632
     },
     {
       "name": "backbone_layers.7.conv",
@@ -11429,6 +12726,24 @@
       "flops": 0
     },
     {
+      "name": "backbone_layers.0.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
       "name": "backbone_layers.9.m",
       "type": "MaxPool2d",
       "input_shape": [
@@ -11843,6 +13158,78 @@
       "flops": 0
     },
     {
+      "name": "adapter_p5.down_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        256,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "parameters": 16384,
+      "flops": 1605632
+    },
+    {
+      "name": "adapter_p5.dw_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "parameters": 576,
+      "flops": 56448
+    },
+    {
+      "name": "adapter_p5.act",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "adapter_p5.up_conv",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        64,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        256,
+        7,
+        7
+      ],
+      "parameters": 16384,
+      "flops": 1605632
+    },
+    {
       "name": "head_pool",
       "type": "AdaptiveAvgPool2d",
       "input_shape": [
@@ -12062,6 +13449,60 @@
         128,
         28,
         28
+      ],
+      "output_shape": [
+        1,
+        128,
+        1,
+        1
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "binoc_conv.0",
+      "type": "Conv2d",
+      "input_shape": [
+        1,
+        256,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "parameters": 295040,
+      "flops": 28901376
+    },
+    {
+      "name": "binoc_conv.1",
+      "type": "SiLU",
+      "input_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "output_shape": [
+        1,
+        128,
+        7,
+        7
+      ],
+      "parameters": 0,
+      "flops": 0
+    },
+    {
+      "name": "binoc_conv.2",
+      "type": "AdaptiveAvgPool2d",
+      "input_shape": [
+        1,
+        128,
+        7,
+        7
       ],
       "output_shape": [
         1,

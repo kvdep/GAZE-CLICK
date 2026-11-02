@@ -73,12 +73,19 @@ class YOLO26nGazeNet(BaseGazeModel):
         self.feature_dim = feature_dim
         self.dropout = dropout
         self.freeze_backbone = freeze_backbone
+        candidate_paths = [
+            weights_path,
+            os.path.join("models", "weights", "yolo26n.pt"),
+            os.path.join("mvp", "models", "weights", "yolo26n.pt"),
+            os.path.join("..", "mvp", "models", "weights", "yolo26n.pt"),
+            "yolo26n.pt",
+            os.path.join(os.path.dirname(__file__), "weights", "yolo26n.pt")
+        ]
         resolved_weights = weights_path
-        if not os.path.exists(resolved_weights):
-            if os.path.exists("yolo26n.pt"):
-                resolved_weights = "yolo26n.pt"
-            elif os.path.exists(os.path.join("mvp", "models", "weights", "yolo26n.pt")):
-                resolved_weights = os.path.join("mvp", "models", "weights", "yolo26n.pt")
+        for cp in candidate_paths:
+            if os.path.exists(cp):
+                resolved_weights = cp
+                break
         yolo_wrapper = YOLO(resolved_weights)
         self.backbone_layers = nn.ModuleList(list(yolo_wrapper.model.model[:11]))
         if freeze_backbone:

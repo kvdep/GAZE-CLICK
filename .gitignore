@@ -11,8 +11,8 @@ build/
 dist/
 *.egg-info/
 
-# Datasets and large binary files
-DATA/
+/DATA/
+/SD_DATA/
 *.rar
 mvp/faze/
 *.pt
