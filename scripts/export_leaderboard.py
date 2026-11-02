@@ -1,5 +1,7 @@
-import csv
+import os
 import sys
+import csv
+import pandas as pd
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -26,699 +28,635 @@ headers = [
     "Источник (HF / GitHub / ArXiv)"
 ]
 
-rows = [
-    [
-        "1",
-        "PureGaze (ResNet-50 + ResGazeEs)",
-        "1.85 ± 0.44",
-        "1.70°",
-        "185.6 ± 44.4",
-        "0.821",
-        "3.88°",
-        "3.42°",
-        "395.2",
-        "0.694",
-        "3.88°",
-        "—",
-        "—",
-        "13.27",
-        "3.20",
-        "420",
-        "250",
-        "2026/2022",
-        "https://huggingface.co/akgulburak/gaze-estimation-diversity/resolve/main/PureGaze/PureGaze_baseline_1.pt",
-        "https://huggingface.co/akgulburak/gaze-estimation-diversity (AAAI 2022)"
-    ],
-    [
-        "2",
-        "UniGaze-Base (ViT-Base 12L)",
-        "1.97 ± 0.60",
-        "1.64°",
-        "198.5 ± 60.4",
-        "0.792",
-        "3.96°",
-        "3.58°",
-        "402.8",
-        "0.681",
-        "3.96°",
-        "4.07°",
-        "3.01 (GazeCapture)",
-        "35.00",
-        "11.75",
-        "850",
-        "680",
-        "2025",
-        "https://huggingface.co/UniGaze/UniGaze-models/resolve/main/unigaze_b16_joint.safetensors",
-        "https://huggingface.co/UniGaze/UniGaze-models (WACV 2025)"
-    ],
-    [
-        "3",
-        "ptgaze ETH-XGaze (ResNet-18)",
-        "2.21 ± 0.34",
-        "1.92°",
-        "222.7 ± 34.2",
-        "0.769",
-        "4.20°",
-        "3.85°",
-        "428.1",
-        "0.655",
-        "4.20°",
-        "—",
-        "—",
-        "8.50",
-        "6.51",
-        "310",
-        "180",
-        "2026",
-        "https://huggingface.co/hysts/ptgaze-eth-xgaze-resnet18/resolve/main/model.safetensors",
-        "https://huggingface.co/hysts/ptgaze-eth-xgaze-resnet18 (GitHub: hysts/pytorch_mpiigaze_demo)"
-    ],
-    [
-        "4",
-        "GazeTR-Hybrid (ResNet-18 + ViT-6L)",
-        "2.26 ± 0.47",
-        "2.03°",
-        "227.4 ± 47.0",
-        "0.764",
-        "3.69°",
-        "3.25°",
-        "375.4",
-        "0.712",
-        "3.88°",
-        "3.69°",
-        "—",
-        "14.75",
-        "11.40",
-        "390",
-        "280",
-        "2026/2022",
-        "https://huggingface.co/akgulburak/gaze-estimation-diversity/resolve/main/GazeTR/GazeTR-baseline-1.pt",
-        "https://github.com/yihuacheng/GazeTR (ICPR 2022)"
-    ],
-    [
-        "5",
-        "EyeTAG (Kinematic Prior + CCAF)",
-        "—",
-        "—",
-        "—",
-        "—",
-        "2.56°",
-        "2.18°",
-        "261.2",
-        "0.810",
-        "—",
-        "—",
-        "2.56 (EVE) / 8.08 (Gaze360 Front)",
-        "19.97",
-        "4.80°",
-        "550",
-        "420",
-        "2026",
-        "https://github.com/cydonia999/VGGFace2-pytorch (resnet50_ft_weight.pkl)",
-        "https://github.com/peter8366/EyeTAG (BMVC 2026, arXiv:2610.00922)"
-    ],
-    [
-        "6",
-        "STAGE (SAM Attention + Gaussian Proc)",
-        "—",
-        "—",
-        "—",
-        "—",
-        "2.58°",
-        "2.24°",
-        "263.0",
-        "0.805",
-        "—",
-        "—",
-        "2.58 (EVE) / 4.12 (EYEDIAP)",
-        "21.50",
-        "5.20",
-        "480",
-        "350",
-        "2024",
-        "https://drive.google.com/drive/folders/16re0UoAnmaqQcqjXSkQ8u63iz_Tm9fwd",
-        "https://github.com/jswati31/stage (arXiv:2404.05215)"
-    ],
-    [
-        "7",
-        "MediaPipe Iris + FaceMesh",
-        "3.64 ± 0.75",
-        "3.51°",
-        "365.4 ± 74.8",
-        "0.498",
-        "3.80°",
-        "3.40°",
-        "386.5",
-        "0.678",
-        "—",
-        "—",
-        "3.80 (Geometry)",
-        "15.30",
-        "N/A",
-        "180",
-        "0",
-        "2020",
-        "Встроен в Google MediaPipe бинарник",
-        "https://github.com/google-ai-edge/mediapipe"
-    ],
-    [
-        "8",
-        "YOLO26n (4D Head Comp)",
-        "4.00 ± 1.33",
-        "3.44°",
-        "402.4 ± 133.8",
-        "0.333",
-        "6.95°",
-        "6.20°",
-        "278.4",
-        "0.452",
-        "—",
-        "—",
-        "—",
-        "19.19",
-        "4.20°",
-        "140",
-        "90",
-        "2026",
-        "weights/yolo26n_gaze.pt (локальный)",
-        "Локальный эксперимент Run 014 (CSPDarknet + 4D Polynomial Gain)"
-    ],
-    [
-        "9",
-        "ptgaze MPIIFaceGaze (ResNet-18)",
-        "5.19 ± 1.43",
-        "4.38°",
-        "524.3 ± 145.4",
-        "-0.093",
-        "4.80°",
-        "4.20°",
-        "489.2",
-        "0.551",
-        "—",
-        "4.80°",
-        "—",
-        "5.58",
-        "3.10",
-        "310",
-        "180",
-        "2026",
-        "https://huggingface.co/hysts/ptgaze-mpiifacegaze-resnet-simple/resolve/main/model.safetensors",
-        "https://huggingface.co/hysts/ptgaze-mpiifacegaze-resnet-simple"
-    ],
-    [
-        "10",
-        "Idiap ResNet-18 Gaze360",
-        "5.75 ± 0.03",
-        "5.75°",
-        "575.8 ± 2.9",
-        "-0.001",
-        "9.02°",
-        "8.60°",
-        "865.0",
-        "0.220",
-        "—",
-        "—",
-        "9.02 (Gaze360 Front)",
-        "17.01",
-        "2.00",
-        "320",
-        "190",
-        "2026",
-        "https://huggingface.co/Idiap/resnet18-gaze360/resolve/main/gaze360_resnet18.pt",
-        "https://huggingface.co/Idiap/resnet18-gaze360"
-    ],
-    [
-        "11",
-        "YOLO26n (2D Gaze Only)",
-        "5.89 ± 2.60",
-        "4.90°",
-        "593.9 ± 264.8",
-        "-0.487",
-        "7.84°",
-        "7.15°",
-        "315.6",
-        "0.380",
-        "—",
-        "—",
-        "—",
-        "19.28",
-        "4.20°",
-        "140",
-        "90",
-        "2026",
-        "weights/yolo26n_gaze.pt (локальный)",
-        "Локальный эксперимент Run 014 (без 4D компенсации)"
-    ],
-    [
-        "12",
-        "EMC-Gaze (EGNN Landmark Graph)",
-        "—",
-        "—",
-        "—",
-        "—",
-        "5.79°",
-        "5.30°",
-        "589.5",
-        "0.485",
-        "—",
-        "—",
-        "5.79 (Dynamic Head)",
-        "14.00",
-        "3.50",
-        "210",
-        "110",
-        "2026",
-        "Открытый код (GitHub repo)",
-        "arXiv:2603.12388"
-    ],
-    [
-        "13",
-        "L2CS-Net (Diversity)",
-        "6.59 ± 0.95",
-        "6.25°",
-        "662.7 ± 97.1",
-        "-0.696",
-        "3.92°",
-        "3.50°",
-        "398.8",
-        "0.672",
-        "—",
-        "3.92°",
-        "9.92 (Gaze360 Front)",
-        "13.74",
-        "4.10",
-        "380",
-        "260",
-        "2026",
-        "https://huggingface.co/akgulburak/gaze-estimation-diversity/resolve/main/L2CSNet/L2CSNet_baseline_1.pkl",
-        "https://huggingface.co/akgulburak/gaze-estimation-diversity"
-    ],
-    [
-        "14",
-        "L2CS-Net (PyFeat / LiteRT)",
-        "6.71 ± 1.35",
-        "5.96°",
-        "674.2 ± 137.2",
-        "-0.717",
-        "3.92°",
-        "3.55°",
-        "401.2",
-        "0.668",
-        "—",
-        "3.92°",
-        "10.41 (Gaze360 Full)",
-        "13.79",
-        "4.10",
-        "380",
-        "260",
-        "2026/2024",
-        "https://huggingface.co/litert-community/L2CS-Gaze360-LiteRT/resolve/main/gaze_fp16.tflite",
-        "https://huggingface.co/py-feat/l2cs / https://github.com/Ahmednull/L2CS-Net"
-    ],
-    [
-        "15",
-        "yakhyo/gaze-estimation (ResNet-50)",
-        "7.06 ± 1.21",
-        "6.95°",
-        "709.4 ± 123.7",
-        "-0.883",
-        "4.38°",
-        "3.90°",
-        "446.2",
-        "0.615",
-        "—",
-        "4.38°",
-        "—",
-        "13.93",
-        "3.80",
-        "370",
-        "250",
-        "2024",
-        "https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet50.pt",
-        "https://github.com/yakhyo/gaze-estimation"
-    ],
-    [
-        "16",
-        "yakhyo/gaze-estimation (ResNet-18)",
-        "7.11 ± 1.75",
-        "5.97°",
-        "715.4 ± 179.2",
-        "-0.924",
-        "4.72°",
-        "4.15°",
-        "481.0",
-        "0.568",
-        "—",
-        "4.72°",
-        "—",
-        "6.85",
-        "2.20",
-        "290",
-        "170",
-        "2024",
-        "https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet18.pt",
-        "https://github.com/yakhyo/gaze-estimation"
-    ],
-    [
-        "17",
-        "Qualcomm EyeGaze (MobileOne)",
-        "7.50 ± 2.03",
-        "6.64°",
-        "754.7 ± 204.4",
-        "-1.219",
-        "4.35°",
-        "3.92°",
-        "443.1",
-        "0.620",
-        "—",
-        "4.35°",
-        "—",
-        "14.69",
-        "0.59 (NPU)",
-        "110",
-        "60",
-        "2025",
-        "https://huggingface.co/qualcomm/EyeGaze (ONNX/TFLite/QNN DLC)",
-        "https://huggingface.co/qualcomm/EyeGaze"
-    ],
-    [
-        "18",
-        "IVGaze (In-Vehicle Transformer)",
-        "—",
-        "—",
-        "—",
-        "—",
-        "7.04°",
-        "6.45°",
-        "718.0",
-        "0.350",
-        "—",
-        "—",
-        "7.04 (In-Cabin Wide Yaw)",
-        "16.20",
-        "4.50",
-        "410",
-        "300",
-        "2024",
-        "https://drive.google.com/file/d/1uc5OkwZJO-KfMSuFAW0Hl-JSwTrfPURq",
-        "https://github.com/yihuacheng/IVGaze (CVPR 2024)"
-    ],
-    [
-        "19",
-        "Gaze-LLE / Gazelle (DINOv2 ViT-B)",
-        "—",
-        "—",
-        "—",
-        "—",
-        "4.85°",
-        "4.20°",
-        "494.0",
-        "0.540",
-        "—",
-        "—",
-        "0.11 AUC (ChildPlay / EVE)",
-        "42.00",
-        "18.00",
-        "900",
-        "720",
-        "2025",
-        "https://github.com/fkryan/gazelle/releases/download/v1.0.0/gazelle_dinov2_vitb14.pt",
-        "https://github.com/fkryan/gazelle (CVPR 2025 Highlight)"
-    ],
-    [
-        "20",
-        "Gazelle-DINOv3 (HGNetV2 ONNX)",
-        "—",
-        "—",
-        "—",
-        "—",
-        "5.10°",
-        "4.50°",
-        "519.0",
-        "0.510",
-        "—",
-        "—",
-        "Эквивалент Gaze-LLE",
-        "6.80",
-        "2.10",
-        "160",
-        "120",
-        "2025",
-        "https://github.com/PINTO0309/gazelle-dinov3/releases/download/weights/gazelle_hgnetv2_n_distill_1x3x640x640_1xNx4.onnx",
-        "https://github.com/PINTO0309/gazelle-dinov3"
-    ],
-    [
-        "21",
-        "MCGaze (Spatial-Temporal R-50)",
-        "—",
-        "—",
-        "—",
-        "—",
-        "9.82°",
-        "9.20°",
-        "940.0",
-        "0.180",
-        "—",
-        "—",
-        "9.82 (L2CS) / 10.74 (Gaze360)",
-        "18.50",
-        "4.80°",
-        "450",
-        "320",
-        "2024",
-        "https://drive.google.com/file/d/1ru0xhuB5N9kwvN9XLvZMQvVSfOgtbxmq",
-        "https://github.com/zgchen33/MCGaze (IEEE SPL 2024)"
-    ],
-    [
-        "22",
-        "CrossGaze (Multimodal Attention)",
-        "—",
-        "—",
-        "—",
-        "—",
-        "9.94°",
-        "9.35°",
-        "952.0",
-        "0.170",
-        "—",
-        "—",
-        "9.94 (Gaze360)",
-        "19.00",
-        "4.90°",
-        "410",
-        "290",
-        "2024",
-        "https://huggingface.co/akgulburak/gaze-estimation-diversity/resolve/main/CrossGaze/pretrained-multimodal-crossatention_baseline_1.pth",
-        "https://huggingface.co/akgulburak/gaze-estimation-diversity"
-    ],
-    [
-        "23",
-        "GazeShift (VR Domain Adaptation)",
-        "—",
-        "—",
-        "—",
-        "—",
-        "6.40°",
-        "5.80°",
-        "651.0",
-        "0.410",
-        "—",
-        "—",
-        "11.2 -> 6.4 (Unsupervised)",
-        "15.00",
-        "3.80",
-        "330",
-        "210",
-        "2026",
-        "https://drive.google.com/file/d/1U-txJpQUm7YTXd13n2lYXAQ8zkz3iieC",
-        "https://github.com/gazeshift3/gazeshift (arXiv:2603.07832)"
-    ],
-    [
-        "24",
-        "GLC (SlowFast + Transformer)",
-        "—",
-        "—",
-        "—",
-        "—",
-        "6.90°",
-        "6.20°",
-        "703.0",
-        "0.360",
-        "—",
-        "—",
-        "Egocentric PoG (EGTEA)",
-        "38.00",
-        "12.00",
-        "620",
-        "480",
-        "2024",
-        "https://drive.google.com/file/d/15XVipU1CqoosyvPU1vfcG0w2LuLQecF1",
-        "https://github.com/BolinLai/GLC (IJCV 2023 / GitHub 2024)"
-    ],
-    [
-        "25",
-        "GazeCLR (Self-Supervised Contrastive)",
-        "—",
-        "—",
-        "—",
-        "—",
-        "4.65°",
-        "4.10°",
-        "473.0",
-        "0.580",
-        "—",
-        "—",
-        "Contrastive Pretraining",
-        "12.50",
-        "3.20",
-        "300",
-        "180",
-        "2024",
-        "https://drive.google.com/file/d/1qGwQnCLkxHitrj1QLhBGDVLfmvEYU0r1",
-        "https://github.com/jswati31/gazeclr (2024)"
-    ],
-    [
-        "26",
-        "OpenFace 3.0 (Multitask ViT)",
-        "—",
-        "—",
-        "—",
-        "—",
-        "5.20°",
-        "4.60°",
-        "529.0",
-        "0.500",
-        "—",
-        "—",
-        "Multitask Facial Behavior",
-        "22.00",
-        "6.50",
-        "510",
-        "380",
-        "2025",
-        "https://huggingface.co/nutPace/openface_weights",
-        "https://github.com/CMU-MultiComp-Lab/OpenFace-3.0 (arXiv:2506.02891)"
-    ],
-    [
-        "27",
-        "Ghost-CBAM MobileNetV4",
-        "—",
-        "—",
-        "—",
-        "—",
-        "6.80°",
-        "6.10°",
-        "692.0",
-        "0.370",
-        "—",
-        "—",
-        "Screen Fixation Zones",
-        "5.00",
-        "1.50",
-        "130",
-        "80",
-        "2026",
-        "https://huggingface.co/Jason-42195/asd-eye-tracking-models/resolve/main/mobilenetv4_small/best.pth",
-        "https://huggingface.co/Jason-42195/asd-eye-tracking-models"
-    ],
-    [
-        "28",
-        "MAGE (6-DoF Multi-Decoder)",
-        "—",
-        "—",
-        "—",
-        "—",
-        "4.20°",
-        "3.75°",
-        "428.0",
-        "0.650",
-        "—",
-        "—",
-        "6-DoF Gaze Vector & Origin",
-        "16.50",
-        "4.20°",
-        "340",
-        "220",
-        "2025",
-        "Открытый код (GitHub repo)",
-        "IEEE Transactions 2025"
-    ],
-    [
-        "29",
-        "ViT-Base Mobile Gaze",
-        "—",
-        "—",
-        "—",
-        "—",
-        "4.95°",
-        "4.40°",
-        "504.0",
-        "0.530",
-        "—",
-        "—",
-        "88.4% Screen Area Acc",
-        "45.00",
-        "14.00",
-        "850",
-        "680",
-        "2024",
-        "https://huggingface.co/wahidww/vit-base-patch16-224-finetuned-mobile-eye-tracking-dataset-v2/resolve/main/model.safetensors",
-        "https://huggingface.co/wahidww/vit-base-patch16-224-finetuned-mobile-eye-tracking-dataset-v2"
-    ],
-    [
-        "30",
-        "FAZE (Few-Shot Meta MAML)",
-        "—",
-        "—",
-        "—",
-        "—",
-        "3.18°",
-        "2.85°",
-        "324.0",
-        "0.760",
-        "—",
-        "—",
-        "3.18 (3-shot adaptation)",
-        "11.50",
-        "3.20",
-        "310",
-        "190",
-        "2019",
-        "Открытые чекпоинты (GitHub repo)",
-        "https://github.com/NVlabs/FAZE (ICCV 2019)"
-    ],
-    [
-        "31",
-        "iTracker (4-Stream CNN)",
-        "—",
-        "—",
-        "—",
-        "—",
-        "4.50°",
-        "3.95°",
-        "163.0",
-        "0.620",
-        "—",
-        "—",
-        "1.71 cm screen error",
-        "15.00",
-        "4.10",
-        "390",
-        "270",
-        "2016",
-        "Открытые веса Caffe / PyTorch",
-        "https://github.com/CSAILVision/GazeCapture (CVPR 2016)"
-    ]
+MODELS_REGISTRY = [
+    {
+        "name": "PureGaze (ResNet-50 + ResGazeEs)",
+        "benchmark_key": "puregaze",
+        "test_dataset_key": "puregaze",
+        "lit_eth": "3.88°",
+        "lit_mpii": "—",
+        "lit_gaze360": "—",
+        "cpu": "13.27",
+        "gpu": "3.20",
+        "ram": "420",
+        "vram": "250",
+        "year": "2026/2022",
+        "weights": "https://huggingface.co/akgulburak/gaze-estimation-diversity/resolve/main/PureGaze/PureGaze_baseline_1.pt",
+        "source": "https://huggingface.co/akgulburak/gaze-estimation-diversity (AAAI 2022)"
+    },
+    {
+        "name": "UniGaze-Base (ViT-Base 12L)",
+        "benchmark_key": "unigaze",
+        "test_dataset_key": "unigaze",
+        "lit_eth": "3.96°",
+        "lit_mpii": "4.07°",
+        "lit_gaze360": "3.01 (GazeCapture)",
+        "cpu": "35.00",
+        "gpu": "11.75",
+        "ram": "850",
+        "vram": "680",
+        "year": "2025",
+        "weights": "https://huggingface.co/UniGaze/UniGaze-models/resolve/main/unigaze_b16_joint.safetensors",
+        "source": "https://huggingface.co/UniGaze/UniGaze-models (WACV 2025)"
+    },
+    {
+        "name": "ptgaze ETH-XGaze (ResNet-18)",
+        "benchmark_key": "ptgaze_eth_xgaze",
+        "test_dataset_key": "ptgaze_eth_xgaze",
+        "lit_eth": "4.20°",
+        "lit_mpii": "—",
+        "lit_gaze360": "—",
+        "cpu": "8.50",
+        "gpu": "6.51",
+        "ram": "310",
+        "vram": "180",
+        "year": "2026",
+        "weights": "https://huggingface.co/hysts/ptgaze-eth-xgaze-resnet18/resolve/main/model.safetensors",
+        "source": "https://huggingface.co/hysts/ptgaze-eth-xgaze-resnet18 (GitHub: hysts/pytorch_mpiigaze_demo)"
+    },
+    {
+        "name": "GazeTR-Hybrid (ResNet-18 + ViT-6L)",
+        "benchmark_key": "gazetr",
+        "test_dataset_key": "gazetr",
+        "lit_eth": "3.88°",
+        "lit_mpii": "3.69°",
+        "lit_gaze360": "—",
+        "cpu": "14.75",
+        "gpu": "11.40",
+        "ram": "390",
+        "vram": "280",
+        "year": "2026/2022",
+        "weights": "https://huggingface.co/akgulburak/gaze-estimation-diversity/resolve/main/GazeTR/GazeTR-baseline-1.pt",
+        "source": "https://github.com/yihuacheng/GazeTR (ICPR 2022)"
+    },
+    {
+        "name": "MediaPipe Iris + FaceMesh",
+        "benchmark_key": "mediapipe",
+        "test_dataset_key": "mediapipe",
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "3.80 (Geometry)",
+        "cpu": "15.30",
+        "gpu": "N/A",
+        "ram": "180",
+        "vram": "0",
+        "year": "2020",
+        "weights": "Встроен в Google MediaPipe бинарник",
+        "source": "https://github.com/google-ai-edge/mediapipe"
+    },
+    {
+        "name": "YOLO26n (4D Head Comp)",
+        "benchmark_key": "yolo26n_head_comp",
+        "test_dataset_key": "yolo26n_head_comp",
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "—",
+        "cpu": "19.19",
+        "gpu": "4.20",
+        "ram": "140",
+        "vram": "90",
+        "year": "2026",
+        "weights": "weights/yolo26n_gaze.pt (локальный)",
+        "source": "Локальный эксперимент Run 014 (CSPDarknet + 4D Polynomial Gain)"
+    },
+    {
+        "name": "ptgaze MPIIFaceGaze (ResNet-18)",
+        "benchmark_key": "ptgaze_mpiifacegaze",
+        "test_dataset_key": "ptgaze_mpiifacegaze",
+        "lit_eth": "—",
+        "lit_mpii": "4.80°",
+        "lit_gaze360": "—",
+        "cpu": "5.58",
+        "gpu": "3.10",
+        "ram": "310",
+        "vram": "180",
+        "year": "2026",
+        "weights": "https://huggingface.co/hysts/ptgaze-mpiifacegaze-resnet-simple/resolve/main/model.safetensors",
+        "source": "https://huggingface.co/hysts/ptgaze-mpiifacegaze-resnet-simple"
+    },
+    {
+        "name": "Idiap ResNet-18 Gaze360",
+        "benchmark_key": "idiap_resnet18",
+        "test_dataset_key": "idiap_resnet18",
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "9.02 (Gaze360 Front)",
+        "cpu": "17.01",
+        "gpu": "2.00",
+        "ram": "320",
+        "vram": "190",
+        "year": "2026",
+        "weights": "https://huggingface.co/Idiap/resnet18-gaze360/resolve/main/gaze360_resnet18.pt",
+        "source": "https://huggingface.co/Idiap/resnet18-gaze360"
+    },
+    {
+        "name": "YOLO26n (2D Gaze Only)",
+        "benchmark_key": "yolo26n",
+        "test_dataset_key": "yolo26n",
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "—",
+        "cpu": "19.28",
+        "gpu": "4.20",
+        "ram": "140",
+        "vram": "90",
+        "year": "2026",
+        "weights": "weights/yolo26n_gaze.pt (локальный)",
+        "source": "Локальный эксперимент Run 014 (без 4D компенсации)"
+    },
+    {
+        "name": "L2CS-Net (Diversity)",
+        "benchmark_key": "l2cs_diversity",
+        "test_dataset_key": "l2cs_diversity",
+        "lit_eth": "—",
+        "lit_mpii": "3.92°",
+        "lit_gaze360": "9.92 (Gaze360 Front)",
+        "cpu": "13.74",
+        "gpu": "3.80",
+        "ram": "380",
+        "vram": "260",
+        "year": "2026",
+        "weights": "https://huggingface.co/akgulburak/gaze-estimation-diversity/resolve/main/L2CS/L2CS-baseline-1.pt",
+        "source": "https://huggingface.co/akgulburak/gaze-estimation-diversity"
+    },
+    {
+        "name": "L2CS-Net (PyFeat / LiteRT)",
+        "benchmark_key": "l2cs",
+        "test_dataset_key": "l2cs",
+        "lit_eth": "—",
+        "lit_mpii": "3.92°",
+        "lit_gaze360": "10.41 (Gaze360 Full)",
+        "cpu": "13.79",
+        "gpu": "3.80",
+        "ram": "380",
+        "vram": "260",
+        "year": "2026/2024",
+        "weights": "https://github.com/cosmicad/L2CS-Net/releases/download/v1.0/L2CSNet_gaze360.pkl",
+        "source": "https://github.com/cosmicad/L2CS-Net"
+    },
+    {
+        "name": "yakhyo/gaze-estimation (ResNet-50)",
+        "benchmark_key": "yakhyo_resnet50",
+        "test_dataset_key": "yakhyo_resnet50",
+        "lit_eth": "—",
+        "lit_mpii": "4.38°",
+        "lit_gaze360": "—",
+        "cpu": "13.93",
+        "gpu": "3.80",
+        "ram": "370",
+        "vram": "250",
+        "year": "2024",
+        "weights": "https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet50.pt",
+        "source": "https://github.com/yakhyo/gaze-estimation"
+    },
+    {
+        "name": "yakhyo/gaze-estimation (ResNet-18)",
+        "benchmark_key": "yakhyo_resnet18",
+        "test_dataset_key": "yakhyo_resnet18",
+        "lit_eth": "—",
+        "lit_mpii": "4.72°",
+        "lit_gaze360": "—",
+        "cpu": "6.85",
+        "gpu": "2.20",
+        "ram": "290",
+        "vram": "170",
+        "year": "2024",
+        "weights": "https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet18.pt",
+        "source": "https://github.com/yakhyo/gaze-estimation"
+    },
+    {
+        "name": "Qualcomm EyeGaze (MobileOne)",
+        "benchmark_key": "qualcomm_eyegaze",
+        "test_dataset_key": "qualcomm_eyegaze",
+        "lit_eth": "—",
+        "lit_mpii": "4.35°",
+        "lit_gaze360": "—",
+        "cpu": "14.69",
+        "gpu": "0.59 (NPU)",
+        "ram": "110",
+        "vram": "60",
+        "year": "2025",
+        "weights": "https://huggingface.co/qualcomm/EyeGaze (ONNX/TFLite/QNN DLC)",
+        "source": "https://huggingface.co/qualcomm/EyeGaze"
+    },
+    {
+        "name": "EyeTAG (Kinematic Prior + CCAF)",
+        "benchmark_key": None,
+        "test_dataset_key": None,
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "2.56 (EVE) / 8.08 (Gaze360 Front)",
+        "cpu": "19.97",
+        "gpu": "4.80",
+        "ram": "550",
+        "vram": "420",
+        "year": "2026",
+        "weights": "https://github.com/cydonia999/VGGFace2-pytorch (resnet50_ft_weight.pkl)",
+        "source": "https://github.com/peter8366/EyeTAG (BMVC 2026, arXiv:2610.00922)"
+    },
+    {
+        "name": "STAGE (SAM Attention + Gaussian Proc)",
+        "benchmark_key": None,
+        "test_dataset_key": None,
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "2.58 (EVE) / 4.12 (EYEDIAP)",
+        "cpu": "21.50",
+        "gpu": "5.20",
+        "ram": "480",
+        "vram": "350",
+        "year": "2024",
+        "weights": "https://drive.google.com/drive/folders/16re0UoAnmaqQcqjXSkQ8u63iz_Tm9fwd",
+        "source": "https://github.com/jswati31/stage (arXiv:2404.05215)"
+    },
+    {
+        "name": "EMC-Gaze (EGNN Landmark Graph)",
+        "benchmark_key": None,
+        "test_dataset_key": None,
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "5.79 (Dynamic Head)",
+        "cpu": "18.40",
+        "gpu": "4.50",
+        "ram": "360",
+        "vram": "240",
+        "year": "2026",
+        "weights": "Открытые веса в репозитории проекта",
+        "source": "https://github.com/beeyuun/EMC-Gaze (arXiv:2603.11894)"
+    },
+    {
+        "name": "IVGaze (In-Vehicle Transformer)",
+        "benchmark_key": None,
+        "test_dataset_key": None,
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "7.04 (In-Cabin Wide Yaw)",
+        "cpu": "16.20",
+        "gpu": "4.50",
+        "ram": "410",
+        "vram": "300",
+        "year": "2024",
+        "weights": "https://drive.google.com/file/d/1uc5OkwZJO-KfMSuFAW0Hl-JSwTrfPURq",
+        "source": "https://github.com/yihuacheng/IVGaze (CVPR 2024)"
+    },
+    {
+        "name": "Gaze-LLE / Gazelle (DINOv2 ViT-B)",
+        "benchmark_key": None,
+        "test_dataset_key": None,
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "0.11 AUC (ChildPlay / EVE)",
+        "cpu": "42.00",
+        "gpu": "18.00",
+        "ram": "900",
+        "vram": "720",
+        "year": "2025",
+        "weights": "https://github.com/fkryan/gazelle/releases/download/v1.0.0/gazelle_dinov2_vitb14.pt",
+        "source": "https://github.com/fkryan/gazelle (CVPR 2025 Highlight)"
+    },
+    {
+        "name": "Gazelle-DINOv3 (HGNetV2 ONNX)",
+        "benchmark_key": None,
+        "test_dataset_key": None,
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "Эквивалент Gaze-LLE",
+        "cpu": "6.80",
+        "gpu": "2.10",
+        "ram": "160",
+        "vram": "120",
+        "year": "2025",
+        "weights": "https://github.com/PINTO0309/gazelle-dinov3/releases/download/weights/gazelle_hgnetv2_n_distill_1x3x640x640_1xNx4.onnx",
+        "source": "https://github.com/PINTO0309/gazelle-dinov3"
+    },
+    {
+        "name": "MCGaze (Spatial-Temporal R-50)",
+        "benchmark_key": None,
+        "test_dataset_key": None,
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "9.82 (L2CS) / 10.74 (Gaze360)",
+        "cpu": "18.50",
+        "gpu": "4.80",
+        "ram": "450",
+        "vram": "320",
+        "year": "2024",
+        "weights": "https://drive.google.com/file/d/1ru0xhuB5N9kwvN9XLvZMQvVSfOgtbxmq",
+        "source": "https://github.com/zgchen33/MCGaze (IEEE SPL 2024)"
+    },
+    {
+        "name": "CrossGaze (Multimodal Attention)",
+        "benchmark_key": None,
+        "test_dataset_key": None,
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "9.94 (Gaze360)",
+        "cpu": "19.00",
+        "gpu": "4.90",
+        "ram": "410",
+        "vram": "290",
+        "year": "2024",
+        "weights": "https://huggingface.co/akgulburak/gaze-estimation-diversity/resolve/main/CrossGaze/pretrained-multimodal-crossatention_baseline_1.pth",
+        "source": "https://huggingface.co/akgulburak/gaze-estimation-diversity"
+    },
+    {
+        "name": "GazeShift (VR Domain Adaptation)",
+        "benchmark_key": None,
+        "test_dataset_key": None,
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "11.2 -> 6.4 (Unsupervised)",
+        "cpu": "15.00",
+        "gpu": "3.80",
+        "ram": "330",
+        "vram": "210",
+        "year": "2026",
+        "weights": "https://drive.google.com/file/d/1U-txJpQUm7YTXd13n2lYXAQ8zkz3iieC",
+        "source": "https://github.com/gazeshift3/gazeshift (arXiv:2603.07832)"
+    },
+    {
+        "name": "GLC (SlowFast + Transformer)",
+        "benchmark_key": None,
+        "test_dataset_key": None,
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "Egocentric PoG (EGTEA)",
+        "cpu": "38.00",
+        "gpu": "12.00",
+        "ram": "620",
+        "vram": "480",
+        "year": "2024",
+        "weights": "https://drive.google.com/file/d/15XVipU1CqoosyvPU1vfcG0w2LuLQecF1",
+        "source": "https://github.com/BolinLai/GLC (IJCV 2023 / GitHub 2024)"
+    },
+    {
+        "name": "GazeCLR (Self-Supervised Contrastive)",
+        "benchmark_key": None,
+        "test_dataset_key": None,
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "Contrastive Pretraining",
+        "cpu": "12.50",
+        "gpu": "3.20",
+        "ram": "300",
+        "vram": "180",
+        "year": "2024",
+        "weights": "https://drive.google.com/file/d/1qGwQnCLkxHitrj1QLhBGDVLfmvEYU0r1",
+        "source": "https://github.com/jswati31/gazeclr (2024)"
+    },
+    {
+        "name": "OpenFace 3.0 (Multitask ViT)",
+        "benchmark_key": None,
+        "test_dataset_key": None,
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "Multitask Facial Behavior",
+        "cpu": "22.00",
+        "gpu": "6.50",
+        "ram": "510",
+        "vram": "380",
+        "year": "2025",
+        "weights": "https://huggingface.co/nutPace/openface_weights",
+        "source": "https://github.com/CMU-MultiComp-Lab/OpenFace-3.0 (arXiv:2506.02891)"
+    },
+    {
+        "name": "Ghost-CBAM MobileNetV4",
+        "benchmark_key": None,
+        "test_dataset_key": None,
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "Screen Fixation Zones",
+        "cpu": "5.00",
+        "gpu": "1.50",
+        "ram": "130",
+        "vram": "80",
+        "year": "2026",
+        "weights": "https://huggingface.co/Jason-42195/asd-eye-tracking-models/resolve/main/mobilenetv4_small/best.pth",
+        "source": "https://huggingface.co/Jason-42195/asd-eye-tracking-models"
+    },
+    {
+        "name": "MAGE (6-DoF Multi-Decoder)",
+        "benchmark_key": None,
+        "test_dataset_key": None,
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "6-DoF Gaze Vector & Origin",
+        "cpu": "16.50",
+        "gpu": "4.20",
+        "ram": "340",
+        "vram": "220",
+        "year": "2025",
+        "weights": "Открытый код (GitHub repo)",
+        "source": "IEEE Transactions 2025"
+    },
+    {
+        "name": "ViT-Base Mobile Gaze",
+        "benchmark_key": None,
+        "test_dataset_key": None,
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "88.4% Screen Area Acc",
+        "cpu": "45.00",
+        "gpu": "14.00",
+        "ram": "850",
+        "vram": "680",
+        "year": "2024",
+        "weights": "https://huggingface.co/wahidww/vit-base-patch16-224-finetuned-mobile-eye-tracking-dataset-v2/resolve/main/model.safetensors",
+        "source": "https://huggingface.co/wahidww/vit-base-patch16-224-finetuned-mobile-eye-tracking-dataset-v2"
+    },
+    {
+        "name": "FAZE (Few-Shot Meta MAML)",
+        "benchmark_key": None,
+        "test_dataset_key": None,
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "3.18 (3-shot adaptation)",
+        "cpu": "11.50",
+        "gpu": "3.20",
+        "ram": "310",
+        "vram": "190",
+        "year": "2019",
+        "weights": "Открытые чекпоинты (GitHub repo)",
+        "source": "https://github.com/NVlabs/FAZE (ICCV 2019)"
+    },
+    {
+        "name": "iTracker (4-Stream CNN)",
+        "benchmark_key": None,
+        "test_dataset_key": None,
+        "lit_eth": "—",
+        "lit_mpii": "—",
+        "lit_gaze360": "1.71 cm screen error",
+        "cpu": "15.00",
+        "gpu": "4.10",
+        "ram": "390",
+        "vram": "270",
+        "year": "2016",
+        "weights": "Открытые весы Caffe / PyTorch",
+        "source": "https://github.com/CSAILVision/GazeCapture (CVPR 2016)"
+    }
 ]
 
-with open('docs/leaderboard.csv', 'w', encoding='utf-8-sig', newline='') as f:
+# 1. Load multi_session_summary.csv directly produced by code
+multi_summary_path = os.path.join("mvp", "experiments", "multi_session_summary.csv")
+multi_data = {}
+if os.path.exists(multi_summary_path):
+    try:
+        df_bench = pd.read_csv(multi_summary_path, encoding='cp1251')
+    except Exception:
+        df_bench = pd.read_csv(multi_summary_path, encoding='utf-8')
+    for _, r in df_bench.iterrows():
+        k = str(r['Model']).strip()
+        multi_data[k] = {
+            "mean_ang": str(r['Mean AngErr (deg)']).strip(),
+            "med_ang": f"{r['Median AngErr (deg)']}°",
+            "screen_px": str(r['Mean Err (px)']).strip(),
+            "r2": str(r['Mean R2']).strip(),
+            "cpu_lat": str(r.get('Mean Latency (ms)', '')).strip()
+        }
+    print(f"Loaded {len(multi_data)} benchmarked models from {multi_summary_path}.")
+else:
+    print(f"Warning: {multi_summary_path} not found.")
+
+# 2. Load test_dataset_summary.csv if produced by automated test code
+test_summary_path = os.path.join("mvp", "experiments", "test_dataset_summary.csv")
+test_data = {}
+if os.path.exists(test_summary_path):
+    try:
+        df_test = pd.read_csv(test_summary_path, encoding='cp1251')
+    except Exception:
+        df_test = pd.read_csv(test_summary_path, encoding='utf-8')
+    for _, r in df_test.iterrows():
+        k = str(r['Model']).strip()
+        test_data[k] = {
+            "mean_ang": str(r['Mean AngErr (deg)']).strip(),
+            "med_ang": f"{r['Median AngErr (deg)']}°",
+            "screen_px": str(r['Mean Err (px)']).strip(),
+            "r2": str(r['Mean R2']).strip()
+        }
+    print(f"Loaded {len(test_data)} test dataset evaluations from {test_summary_path}.")
+else:
+    print(f"Notice: {test_summary_path} not present. Columns 5-8 will strictly be '—' for all models (Rule: Code to Code).")
+
+# 3. Assemble rows strictly from code data
+evaluated_rows = []
+unevaluated_rows = []
+
+for m in MODELS_REGISTRY:
+    bkey = m["benchmark_key"]
+    tkey = m["test_dataset_key"]
+    
+    # Primary benchmark metrics (9 webcam sessions)
+    if bkey and bkey in multi_data:
+        m_bench = multi_data[bkey]
+        err1 = m_bench["mean_ang"]
+        err2 = m_bench["med_ang"]
+        err3 = m_bench["screen_px"]
+        err4 = m_bench["r2"]
+        # Parse numeric mean angle for sorting
+        try:
+            num_ang = float(err1.split('±')[0].strip())
+        except Exception:
+            num_ang = 999.0
+    else:
+        err1 = "—"
+        err2 = "—"
+        err3 = "—"
+        err4 = "—"
+        num_ang = 999.0
+
+    # Test dataset metrics
+    if tkey and tkey in test_data:
+        m_test = test_data[tkey]
+        err5 = m_test["mean_ang"]
+        err6 = m_test["med_ang"]
+        err7 = m_test["screen_px"]
+        err8 = m_test["r2"]
+    else:
+        err5 = "—"
+        err6 = "—"
+        err7 = "—"
+        err8 = "—"
+
+    row_dict = {
+        "num_ang": num_ang,
+        "name": m["name"],
+        "err1": err1,
+        "err2": err2,
+        "err3": err3,
+        "err4": err4,
+        "err5": err5,
+        "err6": err6,
+        "err7": err7,
+        "err8": err8,
+        "lit_eth": m["lit_eth"],
+        "lit_mpii": m["lit_mpii"],
+        "lit_gaze360": m["lit_gaze360"],
+        "cpu": m["cpu"],
+        "gpu": m["gpu"],
+        "ram": m["ram"],
+        "vram": m["vram"],
+        "year": m["year"],
+        "weights": m["weights"],
+        "source": m["source"]
+    }
+    
+    if err1 != "—":
+        evaluated_rows.append(row_dict)
+    else:
+        unevaluated_rows.append(row_dict)
+
+# Sort evaluated rows ascending by empirical mean angular error
+evaluated_rows.sort(key=lambda x: x["num_ang"])
+
+# Sort unevaluated rows by year descending, then name
+def parse_year(y_str):
+    try:
+        return int(y_str.split('/')[0])
+    except Exception:
+        return 0
+
+unevaluated_rows.sort(key=lambda x: (parse_year(x["year"]), x["name"]), reverse=True)
+
+# Combine and assign sequential ranks
+final_rows = []
+current_rank = 1
+
+for r in evaluated_rows + unevaluated_rows:
+    final_rows.append([
+        str(current_rank),
+        r["name"],
+        r["err1"],
+        r["err2"],
+        r["err3"],
+        r["err4"],
+        r["err5"],
+        r["err6"],
+        r["err7"],
+        r["err8"],
+        r["lit_eth"],
+        r["lit_mpii"],
+        r["lit_gaze360"],
+        r["cpu"],
+        r["gpu"],
+        r["ram"],
+        r["vram"],
+        r["year"],
+        r["weights"],
+        r["source"]
+    ])
+    current_rank += 1
+
+# Export to CSV and TSV
+csv_path = os.path.join("docs", "leaderboard.csv")
+with open(csv_path, 'w', encoding='utf-8-sig', newline='') as f:
     writer = csv.writer(f)
     writer.writerow(headers)
-    writer.writerows(rows)
-print(f"Successfully generated docs/leaderboard.csv ({len(rows)} models, {len(headers)} columns).")
+    writer.writerows(final_rows)
+print(f"Successfully generated {csv_path} ({len(final_rows)} models, {len(headers)} columns).")
 
-with open('docs/leaderboard.tsv', 'w', encoding='utf-8', newline='') as f:
+tsv_path = os.path.join("docs", "leaderboard.tsv")
+with open(tsv_path, 'w', encoding='utf-8', newline='') as f:
     writer = csv.writer(f, delimiter='\t')
     writer.writerow(headers)
-    writer.writerows(rows)
-print(f"Successfully generated docs/leaderboard.tsv ({len(rows)} models, {len(headers)} columns).")
+    writer.writerows(final_rows)
+print(f"Successfully generated {tsv_path} ({len(final_rows)} models, {len(headers)} columns).")
