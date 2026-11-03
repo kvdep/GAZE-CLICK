@@ -12,7 +12,7 @@ from utils.logger import metric_log
 from utils.memory import MemoryManager
 from data.unification import DataUnifier, DatasetSelectionConfig, UnifiedDataModule
 from models.registry import ModelRegistry
-from models.l2cs_net import L2CSLoss; import models.dual_stream_gaze_net; from models.yolo26n_gaze_net import YOLO26nGazeNet, StableVectorGazeLoss, ContinuousGazeLoss; import models.yolo26s_gaze_net
+from models.l2cs_net import L2CSLoss; import models.dual_stream_gaze_net; from models.yolo26n_gaze_net import YOLO26nGazeNet, StableVectorGazeLoss, ContinuousGazeLoss; import models.yolo26s_gaze_net; import models.yolo26n_deep_peft_gaze_net
 from engine.inspector import ArchitectureInspector
 from engine.trainer import GazeTrainer, EarlyStopping
 from engine.experiment_manager import ExperimentManager
@@ -20,7 +20,7 @@ from engine.experiment_manager import ExperimentManager
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Gaze Tracking MVP Framework")
     parser.add_argument("--mode", type=str, default="train", choices=["sanity_check", "unify_data", "inspect", "train", "compare", "infer"])
-    parser.add_argument("--arch", type=str, default="yolo26n_gaze_net", choices=["l2cs_gaze_net", "dual_stream_gaze_net", "yolo26n_gaze_net", "yolo26s_gaze_net"])
+    parser.add_argument("--arch", type=str, default="yolo26n_gaze_net", choices=["l2cs_gaze_net", "dual_stream_gaze_net", "yolo26n_gaze_net", "yolo26s_gaze_net", "yolo26n_deep_peft_gaze_net"])
     parser.add_argument("--backbone", type=str, default="yolo26n", choices=["mobilenet_v3_small", "mobilenet_v3_large", "resnet18", "yolo26n", "yolo26s"])
     parser.add_argument("--epochs", type=int, default=150)
     parser.add_argument("--patience", type=int, default=15)
@@ -29,6 +29,8 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("--warmup-epochs", type=int, default=5)
     parser.add_argument("--freeze-backbone", action="store_true", default=True)
     parser.add_argument("--no-freeze-backbone", dest="freeze_backbone", action="store_false")
+    parser.add_argument("--unfreeze-top", type=int, default=0)
+    parser.add_argument("--backbone-lr-multiplier", type=float, default=0.05)
     parser.add_argument("--max-samples", type=int, default=500)
     parser.add_argument("--experiments-dir", type=str, default="mvp/experiments")
     parser.add_argument("--checkpoint-path", type=str, default="")
@@ -207,7 +209,7 @@ def execute_unify_data(experiments_dir: str) -> None:
 def execute_inspect_architecture(backbone: str, device: torch.device, experiments_dir: str, arch: str = "yolo26n_gaze_net") -> None:
     t_start = time.monotonic()
     metric_log(f"Starting architecture inspection for arch '{arch}' backbone '{backbone}' on device '{device}'")
-    if arch in ("yolo26n_gaze_net", "yolo26s_gaze_net"):
+    if arch in ("yolo26n_gaze_net", "yolo26s_gaze_net", "yolo26n_deep_peft_gaze_net"):
         model = ModelRegistry.create_model(arch, pretrained=True)
     else:
         model = ModelRegistry.create_model(arch, backbone_name=backbone, pretrained_backbone=True)
@@ -286,8 +288,16 @@ def execute_train_experiment(args: argparse.Namespace, device: torch.device) -> 
             metric_log(f"Fine-tuning initialized from checkpoint: {resume_target_path}")
             loaded_payload = {}
     else:
-        if args.arch in ("yolo26n_gaze_net", "yolo26s_gaze_net"):
+        if args.arch in ("yolo26n_gaze_net", "yolo26s_gaze_net", "yolo26n_deep_peft_gaze_net"):
             model = ModelRegistry.create_model(args.arch, pretrained=True, freeze_backbone=args.freeze_backbone)
+            if args.unfreeze_top > 0 and hasattr(model, "backbone_layers"):
+                n_layers = len(model.backbone_layers)
+                cutoff = max(0, n_layers - args.unfreeze_top)
+                for idx, layer in enumerate(model.backbone_layers):
+                    req = (idx >= cutoff)
+                    for p in layer.parameters():
+                        p.requires_grad = req
+                metric_log(f"Backbone layers partially unfreezed: layers {cutoff} to {n_layers-1} trainable (top {args.unfreeze_top} layers, LR multiplier={args.backbone_lr_multiplier})")
         else:
             model = ModelRegistry.create_model(args.arch, backbone_name=args.backbone, pretrained_backbone=True)
     gpu_dev = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -309,6 +319,8 @@ def execute_train_experiment(args: argparse.Namespace, device: torch.device) -> 
         "learning_rate": args.lr,
         "warmup_epochs": max(0, args.warmup_epochs),
         "freeze_backbone": args.freeze_backbone,
+        "unfreeze_top": args.unfreeze_top,
+        "backbone_lr_multiplier": args.backbone_lr_multiplier,
         "optimizer": "AdamW",
         "patience": args.patience,
         "max_samples": args.max_samples,
@@ -330,16 +342,16 @@ def execute_train_experiment(args: argparse.Namespace, device: torch.device) -> 
         exp_ctx = exp_manager.resume_experiment(resume_run_dir, hyperparams)
     else:
         exp_ctx = exp_manager.initialize_experiment(model, hyperparams)
-    criterion = StableVectorGazeLoss() if args.arch in ("yolo26n_gaze_net", "yolo26s_gaze_net") else L2CSLoss()
+    criterion = StableVectorGazeLoss() if args.arch in ("yolo26n_gaze_net", "yolo26s_gaze_net", "yolo26n_deep_peft_gaze_net") else L2CSLoss()
     trainable_params = [p for p in model.parameters() if p.requires_grad]
     backbone_trainable = [p for p in model.backbone.parameters() if p.requires_grad] if hasattr(model, "backbone") else []
     if backbone_trainable:
         backbone_ids = set(id(p) for p in backbone_trainable)
         param_groups = [
-            {"params": [p for p in trainable_params if id(p) in backbone_ids], "lr": args.lr * 0.25, "name": "backbone"},
+            {"params": [p for p in trainable_params if id(p) in backbone_ids], "lr": args.lr * args.backbone_lr_multiplier, "name": "backbone"},
             {"params": [p for p in trainable_params if id(p) not in backbone_ids], "lr": args.lr, "name": "head"}
         ]
-        metric_log(f"Trainable parameters: Backbone={len(backbone_trainable)} tensors (LR={args.lr * 0.25:.6f}), Head/Adapters={len(param_groups[1]['params'])} tensors (LR={args.lr:.6f})")
+        metric_log(f"Trainable parameters: Backbone={len(backbone_trainable)} tensors (LR={args.lr * args.backbone_lr_multiplier:.6f}), Head/Adapters={len(param_groups[1]['params'])} tensors (LR={args.lr:.6f})")
     else:
         param_groups = [{"params": trainable_params, "lr": args.lr, "name": "head"}]
         metric_log(f"Backbone 100% FROZEN (0 trainable params). Head/Adapters trainable tensors: {len(trainable_params)} (LR={args.lr:.6f})")
