@@ -1,0 +1,30 @@
+{
+  "gpu_latency_ms": {
+    "previous": 2.677,
+    "current": 2.144
+  },
+  "gpu_fp16_latency_ms": {
+    "previous": 2.995,
+    "current": 2.207
+  },
+  "gpu_jit_latency_ms": {
+    "previous": 2.677,
+    "current": 2.144
+  },
+  "cpu_latency_ms": {
+    "previous": 5.043,
+    "current": 4.183
+  },
+  "cpu_onnx_latency_ms": {
+    "previous": 5.043,
+    "current": 4.183
+  },
+  "gpu_eager_latency_ms": {
+    "previous": 3.712,
+    "current": 2.638
+  },
+  "cpu_eager_latency_ms": {
+    "previous": 6.209,
+    "current": 4.967
+  }
+}
