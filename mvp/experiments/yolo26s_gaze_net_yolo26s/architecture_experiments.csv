@@ -1,0 +1,2 @@
+run_name,architecture,status,duration_s,best_epoch,best_val_loss,test_loss,test_ang_deg,head_pitch_mae,head_yaw_mae,test_pixel_mae,weights_path,model_source
+run_001_20261103_075359,yolo26s_gaze_net_yolo26s,completed,34515.01,47,8.350065,0.568902,8.6993,5.0069,13.5408,334.9623,D:\ПРОФ\ВУЗ\ВКР\mvp\experiments\yolo26s_gaze_net_yolo26s\run_001_20261103_075359\checkpoints\best_model.pt,D:\ПРОФ\ВУЗ\ВКР\mvp\experiments\yolo26s_gaze_net_yolo26s\run_001_20261103_075359\model_source.py

@@ -1224,5 +1224,24 @@
       }
     },
     "completed_at": "2026-11-03T07:52:03.187530+03:00"
+  },
+  {
+    "run_name": "run_001_20261103_075359",
+    "architecture_name": "yolo26s_gaze_net_yolo26s",
+    "status": "completed",
+    "total_duration_seconds": 34515.01,
+    "best_epoch": 47,
+    "best_val_loss": 8.350065,
+    "test_loss": 0.568902,
+    "test_angular_error_deg": 8.6993,
+    "test_head_pitch_mae_deg": 5.0069,
+    "test_head_yaw_mae_deg": 13.5408,
+    "test_pixel_mae": 334.9623,
+    "total_epochs_executed": 62,
+    "weights_file_path": "D:\\ПРОФ\\ВУЗ\\ВКР\\mvp\\experiments\\yolo26s_gaze_net_yolo26s\\run_001_20261103_075359\\checkpoints\\best_model.pt",
+    "model_source_file": "D:\\ПРОФ\\ВУЗ\\ВКР\\mvp\\experiments\\yolo26s_gaze_net_yolo26s\\run_001_20261103_075359\\model_source.py",
+    "original_model_file": "D:\\ПРОФ\\ВУЗ\\ВКР\\mvp\\models\\yolo26s_gaze_net.py",
+    "hyperparameter_diff": {},
+    "completed_at": "2026-11-03T17:28:59.619201+03:00"
   }
 ]
