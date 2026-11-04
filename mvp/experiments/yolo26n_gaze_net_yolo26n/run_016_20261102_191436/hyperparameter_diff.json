@@ -1,0 +1,46 @@
+{
+  "batch_size": {
+    "previous": 128,
+    "current": 896
+  },
+  "learning_rate": {
+    "previous": 0.0002,
+    "current": 0.001
+  },
+  "warmup_epochs": {
+    "previous": 2,
+    "current": 5
+  },
+  "save_every_epoch": {
+    "previous": true,
+    "current": false
+  },
+  "gpu_latency_ms": {
+    "previous": 3.016,
+    "current": 2.089
+  },
+  "gpu_fp16_latency_ms": {
+    "previous": 3.115,
+    "current": 2.089
+  },
+  "gpu_jit_latency_ms": {
+    "previous": 3.016,
+    "current": 2.558
+  },
+  "cpu_latency_ms": {
+    "previous": 4.343,
+    "current": 4.219
+  },
+  "cpu_onnx_latency_ms": {
+    "previous": 4.343,
+    "current": 4.219
+  },
+  "gpu_eager_latency_ms": {
+    "previous": 2.398,
+    "current": 3.29
+  },
+  "cpu_eager_latency_ms": {
+    "previous": 5.104,
+    "current": 5.228
+  }
+}

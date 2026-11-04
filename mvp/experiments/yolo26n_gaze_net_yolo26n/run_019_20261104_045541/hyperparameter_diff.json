@@ -1,0 +1,42 @@
+{
+  "learning_rate": {
+    "previous": 0.001,
+    "current": 0.0003
+  },
+  "unfreeze_top": {
+    "previous": null,
+    "current": 2
+  },
+  "backbone_lr_multiplier": {
+    "previous": null,
+    "current": 0.05
+  },
+  "gpu_latency_ms": {
+    "previous": 2.144,
+    "current": 2.58
+  },
+  "gpu_fp16_latency_ms": {
+    "previous": 2.207,
+    "current": 2.915
+  },
+  "gpu_jit_latency_ms": {
+    "previous": 2.144,
+    "current": 2.58
+  },
+  "cpu_latency_ms": {
+    "previous": 4.183,
+    "current": 5.142
+  },
+  "cpu_onnx_latency_ms": {
+    "previous": 4.183,
+    "current": 5.142
+  },
+  "gpu_eager_latency_ms": {
+    "previous": 2.638,
+    "current": 2.885
+  },
+  "cpu_eager_latency_ms": {
+    "previous": 4.967,
+    "current": 6.256
+  }
+}

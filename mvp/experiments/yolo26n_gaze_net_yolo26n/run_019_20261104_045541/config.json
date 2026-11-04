@@ -1,0 +1,80 @@
+{
+  "run_name": "run_019_20261104_045541",
+  "architecture_name": "yolo26n_gaze_net_yolo26n",
+  "architecture_config": {
+    "model_type": "yolo26n_gaze_net",
+    "backbone_name": "yolo26n",
+    "weights_path": "mvp/models/weights/yolo26n.pt",
+    "pretrained": true,
+    "feature_dim": 256,
+    "dropout": 0.2,
+    "freeze_backbone": true
+  },
+  "original_model_file": "D:\\ПРОФ\\ВУЗ\\ВКР\\mvp\\models\\yolo26n_gaze_net.py",
+  "copied_model_source_path": "experiments\\yolo26n_gaze_net_yolo26n\\run_019_20261104_045541\\model_source.py",
+  "hyperparameters": {
+    "backbone": "yolo26n",
+    "batch_size": 896,
+    "learning_rate": 0.0003,
+    "warmup_epochs": 5,
+    "freeze_backbone": true,
+    "unfreeze_top": 2,
+    "backbone_lr_multiplier": 0.05,
+    "optimizer": "AdamW",
+    "patience": 15,
+    "max_samples": 0,
+    "epochs_requested": 150,
+    "save_interval_minutes": 20.0,
+    "save_every_epoch": false,
+    "gpu_latency_ms": 2.58,
+    "gpu_fp16_latency_ms": 2.915,
+    "gpu_jit_latency_ms": 2.58,
+    "cpu_latency_ms": 5.142,
+    "cpu_onnx_latency_ms": 5.142,
+    "gpu_eager_latency_ms": 2.885,
+    "cpu_eager_latency_ms": 6.256
+  },
+  "hyperparameter_diff": {
+    "learning_rate": {
+      "previous": 0.001,
+      "current": 0.0003
+    },
+    "unfreeze_top": {
+      "previous": null,
+      "current": 2
+    },
+    "backbone_lr_multiplier": {
+      "previous": null,
+      "current": 0.05
+    },
+    "gpu_latency_ms": {
+      "previous": 2.144,
+      "current": 2.58
+    },
+    "gpu_fp16_latency_ms": {
+      "previous": 2.207,
+      "current": 2.915
+    },
+    "gpu_jit_latency_ms": {
+      "previous": 2.144,
+      "current": 2.58
+    },
+    "cpu_latency_ms": {
+      "previous": 4.183,
+      "current": 5.142
+    },
+    "cpu_onnx_latency_ms": {
+      "previous": 4.183,
+      "current": 5.142
+    },
+    "gpu_eager_latency_ms": {
+      "previous": 2.638,
+      "current": 2.885
+    },
+    "cpu_eager_latency_ms": {
+      "previous": 4.967,
+      "current": 6.256
+    }
+  },
+  "created_at": "2026-11-04T04:55:41.012581+03:00"
+}
