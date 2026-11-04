@@ -1,0 +1,2 @@
+run_name,architecture,status,duration_s,best_epoch,best_val_loss,test_loss,test_ang_deg,head_pitch_mae,head_yaw_mae,test_pixel_mae,weights_path,model_source
+run_001_20261103_173055,yolo26n_deep_peft_gaze_net_yolo26n,completed,40972.3,68,8.31857,0.555289,8.389,4.85,13.3584,326.959,D:\ПРОФ\ВУЗ\ВКР\mvp\experiments\yolo26n_deep_peft_gaze_net_yolo26n\run_001_20261103_173055\checkpoints\best_model.pt,D:\ПРОФ\ВУЗ\ВКР\mvp\experiments\yolo26n_deep_peft_gaze_net_yolo26n\run_001_20261103_173055\model_source.py
