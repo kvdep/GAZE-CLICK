@@ -280,6 +280,14 @@ def execute_train_experiment(args: argparse.Namespace, device: torch.device) -> 
                 p.requires_grad = False
             model.freeze_backbone = True
             metric_log("Explicitly enforced backbone freezing on loaded checkpoint (all 11 layers frozen)")
+        if args.unfreeze_top > 0 and hasattr(model, "backbone_layers"):
+            n_layers = len(model.backbone_layers)
+            cutoff = max(0, n_layers - args.unfreeze_top)
+            for idx, layer in enumerate(model.backbone_layers):
+                req = (idx >= cutoff)
+                for p in layer.parameters():
+                    p.requires_grad = req
+            metric_log(f"Backbone layers partially unfreezed: layers {cutoff} to {n_layers-1} trainable (top {args.unfreeze_top} layers, LR multiplier={args.backbone_lr_multiplier})")
         if args.resume:
             start_epoch = loaded_payload.get("epoch", 0) + 1
             metric_log(f"Resuming experiment from loaded checkpoint epoch {start_epoch}")
