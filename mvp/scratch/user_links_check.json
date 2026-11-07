@@ -1,0 +1,50 @@
+[
+  {
+    "label": "HybridGaze Kaggle (user link)",
+    "url": "https://www.kaggle.com/datasets/michachwesiuk/hybridgaze",
+    "status": "HTTP/1.1 404 Not Found",
+    "headers": "HTTP/1.1 404 Not Found\nContent-Length: 134\nContent-Type: text/html; charset=UTF-8\nDate: Sat, 07 Nov 2026 17:51:25 GMT\nAlt-Svc: h3=\":443\"; ma=2592000\n\n"
+  },
+  {
+    "label": "VRGaze HuggingFace (user link)",
+    "url": "https://huggingface.co/datasets/HungSteven/VRGaze",
+    "status": "HTTP/1.1 200 OK",
+    "headers": "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\nContent-Length: 516157\nConnection: keep-alive\nDate: Sat, 07 Nov 2026 17:51:25 GMT\nETag: W/\"7e03d-3d2am1DuviDgQwB5zHlgipKyxSs\"\nX-Powered-By: huggingface-moon\nX-Request-Id: Root=1-6aef651d-3f3dfb21002ffe2858bebc24\nRateLimit: \"pages\";r=99;t=299\nRateLimit-Policy: \"fixed window\";\"pages\";q=100;w=300\ncross-origin-opener-policy: same-origin\nReferrer-Policy: strict-origin-when-cross-origin\nx-frame-options: DENY\nX-Cache: Miss from cloudfront\nVia: 1.1 76260236da3d68a502ee6cd5fde924c6.cloudfront.net (CloudFront)\nX-Amz-Cf-Pop: HEL51-P2\nAlt-Svc: h3=\":443\"; ma=86400\nX-Amz-Cf-Id: y0CRr4gMIGKMFlnB_lSMtIGZ2jtQ6vIiM6r-XeeVZ_mzfOmsA7h_cw==\nStrict-Transport-Security: max-age=31536000\n\n"
+  },
+  {
+    "label": "GazeFollow HuggingFace (user link)",
+    "url": "https://huggingface.co/datasets/vikhyatk/gazefollow",
+    "status": "HTTP/1.1 200 OK",
+    "headers": "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\nContent-Length: 1075430\nConnection: keep-alive\nDate: Sat, 07 Nov 2026 17:51:26 GMT\nETag: W/\"1068e6-T36r/NUVv6HITyOvQcsA5Xx3MB4\"\nX-Powered-By: huggingface-moon\nX-Request-Id: Root=1-6aef651e-01eb458e3829e70d163d1b5c\nRateLimit: \"pages\";r=98;t=298\nRateLimit-Policy: \"fixed window\";\"pages\";q=100;w=300\ncross-origin-opener-policy: same-origin\nReferrer-Policy: strict-origin-when-cross-origin\nx-frame-options: DENY\nX-Cache: Miss from cloudfront\nVia: 1.1 235bf7a65ed49d73ef3ff61018265510.cloudfront.net (CloudFront)\nX-Amz-Cf-Pop: HEL51-P2\nAlt-Svc: h3=\":443\"; ma=86400\nX-Amz-Cf-Id: r86eZVpxC6E6ZNX_E5aTPqEKQfKQ7T7ZhBTlry464i7HsoM6KlfM1w==\nStrict-Transport-Security: max-age=31536000\n\n"
+  },
+  {
+    "label": "DrivFace UCI 378 (user link)",
+    "url": "https://archive.ics.uci.edu/dataset/378/drivface",
+    "status": "HTTP/1.1 200 OK",
+    "headers": "HTTP/1.1 200 OK\nServer: nginx/1.31.4\nDate: Sat, 07 Nov 2026 17:51:27 GMT\nContent-Type: text/html\nContent-Length: 81651\nConnection: keep-alive\netag: \"18cfr0w\"\nx-sveltekit-page: true\n\n"
+  },
+  {
+    "label": "DREYEVE-mini Kaggle (user link)",
+    "url": "https://www.kaggle.com/datasets/hughiephan/dreyeve-mini",
+    "status": "HTTP/1.1 404 Not Found",
+    "headers": "HTTP/1.1 404 Not Found\nContent-Length: 134\nContent-Type: text/html; charset=UTF-8\nDate: Sat, 07 Nov 2026 17:51:27 GMT\nAlt-Svc: h3=\":443\"; ma=2592000\n\n"
+  },
+  {
+    "label": "EGTEA Gaze+ Motus (user link)",
+    "url": "https://www.patientcompanion.ca/motus/datasets/egtea-gaze-plus",
+    "status": "HTTP/1.1 200 OK",
+    "headers": "HTTP/1.1 200 OK\nAge: 0\nCache-Control: private, no-cache, no-store, max-age=0, must-revalidate\nContent-Type: text/html; charset=utf-8\nDate: Sat, 07 Nov 2026 17:51:28 GMT\nLink: </_next/static/media/7b0b24f36b1a6d0b-s.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/ee40bb094c99a29a-s.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\"\nServer: Vercel\nStrict-Transport-Security: max-age=63072000\nVary: RSC, Next-Router-State-Tree, Next-Router-Prefetch\nX-Matched-Path: /motus/datasets/[slug]\nX-Powered-By: Next.js\nX-Vercel-Cache: MISS\nX-Vercel-Id: arn1::iad1::c8vhn-1794073887891-d9f0658a5e8c\n\n"
+  },
+  {
+    "label": "GazeBase Figshare File (user link)",
+    "url": "https://figshare.com/articles/dataset/GazeBase_Data_Repository/12912257?file=27039812",
+    "status": "HTTP/1.1 202 Accepted",
+    "headers": "HTTP/1.1 202 Accepted\nServer: awselb/2.0\nDate: Sat, 07 Nov 2026 17:51:28 GMT\nContent-Length: 0\nConnection: keep-alive\nx-amzn-waf-action: challenge\nCache-Control: no-store, max-age=0\nContent-Type: text/html; charset=UTF-8\nAccess-Control-Allow-Origin: *\nAccess-Control-Max-Age: 86400\nAccess-Control-Allow-Methods: OPTIONS,GET,POST\nAccess-Control-Expose-Headers: x-amzn-waf-action\n\n"
+  },
+  {
+    "label": "SynthesEyes Cambridge DOI (user link)",
+    "url": "https://doi.org/10.17863/CAM.57942",
+    "status": "HTTP/1.1 200 OK",
+    "headers": "HTTP/1.1 302 Found\nDate: Sat, 07 Nov 2026 17:51:28 GMT\nContent-Type: text/html;charset=utf-8\nConnection: keep-alive\nlocation: https://www.repository.cam.ac.uk/handle/1810/310956\nServer: cloudflare\nvary: Origin\nvary: Accept\nexpires: Sat, 07 Nov 2026 18:44:39 GMT\npermissions-policy: interest-cohort=(),browsing-topics=()\ncf-cache-status: DYNAMIC\nStrict-Transport-Security: max-age=31536000; includeSubDomains; preload\nReport-To: {\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=73RdCbURn7dC5SsFWvzR5FwVyoS3Xk3oh2fB1ULoMMICKQgZNr0nD2vA28Kj0IChJNjPC5yn7CUaY8vtNZPH3458PyRJ1z20lnCli%2BJn9bi%2FmefHAy%2BiUtU%3D\"}]}\nNel: {\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}\nCF-RAY: a56e2fad5cbfa01d-FRA\nalt-svc: h3=\":443\"; ma=86400\n\nHTTP/1.1 200 OK\ndate: Sat, 07 Nov 2026 17:51:29 GMT\nserver: Apache\nstrict-transport-security: max-age=15768000; includeSubDomains; preload\ncontent-security-policy: default-src 'self' 'unsafe-inline' 'unsafe-eval' https://api.repository.cam.ac.uk; font-src 'self' data: https://fonts.gstatic.com/s/nunito/v31/ https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/ https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/  https://fonts.gstatic.com/s/droidsans/v18/ https://fonts.gstatic.com/s/worksans/v18/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/ https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/; script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://embed.altmetric.com/assets/altmetric_badges-b688098f1994531b5a26f608b839c25cfe4de3a88df695c40fdb46f9ba7894ae.js  https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js https://core.ac.uk/recommender-plugin/  https://www.googletagmanager.com/ https://www.google-analytics.com/ https://unpkg.com/@webcomponents/webcomponentsjs@2.0.0/ https://unpkg.com/vue@^2/ https://api.altmetric.com/ https://unpkg.com/data-metrics-badge/ https://d1bxh8uas1mnw7.cloudfront.net https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; connect-src 'self' https://api.repository.cam.ac.uk https://api.core.ac.uk/recommender/plugin https://unpkg.com/data-metrics-badge/dist/data-metrics-badge.min.js.map https://region1.google-analytics.com/ https://doi.org/ https://api.datacite.org/graphql https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://cdn.jsdelivr.net/gh/citation-style-language/styles@master/ https://www.google-analytics.com/; img-src 'self' https://www.re3data.org/public/badges/s/dark/100010620.png https://core.ac.uk/ https://api.repository.cam.ac.uk data: https://badges.altmetric.com https://www.google-analytics.com/; style-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://embed.altmetric.com/assets/embed-59614f5c46b49b21eeef3bb28c4fb38d1e7069e8d014752fcb66e84942556802.css https://d1bxh8uas1mnw7.cloudfront.net https://fonts.googleapis.com https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/ https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/; frame-src 'self' https://www.re3data.org/ https://www.gstatic.com/ https://www.google.com/; object-src 'self' https://www.re3data.org/public/badges/s/dark/100010620.svg;\nx-frame-options: sameorigin\nx-content-type-options: nosniff\nx-powered-by: Express\nx-ratelimit-limit: 500\nx-ratelimit-remaining: 499\nx-ratelimit-reset: 1794073947\naccept-ranges: bytes\ncache-control: public, max-age=0\nlast-modified: Tue, 27 Oct 2026 14:55:14 GMT\netag: W/\"2ef-1a17ddbbab3\"\ncontent-type: text/html; charset=UTF-8\ncontent-length: 751\nvia: 1.1 www.repository.cam.ac.uk\ncache-control: no-cache\n\n"
+  }
+]
