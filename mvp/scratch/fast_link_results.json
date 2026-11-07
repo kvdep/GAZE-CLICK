@@ -1,0 +1,344 @@
+{
+  "VideoAttentionTarget": {
+    "url": "https://github.com/ejcgt/attention-target-detection",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://github.com/ejcgt/attention-target-detection",
+      "error": null
+    }
+  },
+  "ChildPlay_old": {
+    "url": "https://github.com/fkryan/childplay",
+    "result": {
+      "status": "FAIL",
+      "code": 404,
+      "final_url": "https://github.com/fkryan/childplay",
+      "error": "HTTP 404"
+    }
+  },
+  "ChildPlay_idiap": {
+    "url": "https://www.idiap.ch/en/dataset/childplay-gaze",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://www.idiap.ch/en/dataset/childplay-gaze",
+      "error": null
+    }
+  },
+  "ChildPlay_zenodo": {
+    "url": "https://zenodo.org/records/8254823",
+    "result": {
+      "status": "FAIL",
+      "code": 403,
+      "final_url": "https://zenodo.org/records/8254823",
+      "error": "HTTP 403"
+    }
+  },
+  "ChildPlay_github": {
+    "url": "https://github.com/idiap/geomgaze",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://github.com/idiap/geomgaze",
+      "error": null
+    }
+  },
+  "WEyeDS_old": {
+    "url": "https://dl.acm.org/",
+    "result": {
+      "status": "FAIL",
+      "code": 403,
+      "final_url": "https://dl.acm.org/",
+      "error": "HTTP 403"
+    }
+  },
+  "WEyeDS_project": {
+    "url": "https://robbinslab.github.io/weyeds/",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://robbinslab.github.io/weyeds/",
+      "error": null
+    }
+  },
+  "WEyeDS_github": {
+    "url": "https://github.com/robbinslab/weyeds-processing",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://github.com/robbinslab/weyeds-processing",
+      "error": null
+    }
+  },
+  "Katrychuk_VOG": {
+    "url": "https://zenodo.org/records/13931668",
+    "result": {
+      "status": "FAIL",
+      "code": 403,
+      "final_url": "https://zenodo.org/records/13931668",
+      "error": "HTTP 403"
+    }
+  },
+  "LPW_darus": {
+    "url": "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/darus-1718",
+    "result": {
+      "status": "FAIL",
+      "code": 404,
+      "final_url": "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/darus-1718",
+      "error": "HTTP 404"
+    }
+  },
+  "LPW_perceptualui": {
+    "url": "https://perceptualui.org/research/datasets/LPW/",
+    "result": {
+      "status": "FAIL",
+      "code": 404,
+      "final_url": "https://perceptualui.org/research/datasets/LPW/",
+      "error": "HTTP 404"
+    }
+  },
+  "HybridGaze_old_kaggle": {
+    "url": "https://www.kaggle.com/datasets/grzegorzchwesiuk/hybridgaze",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://www.kaggle.com/datasets/grzegorzchwesiuk/hybridgaze",
+      "error": null
+    }
+  },
+  "HybridGaze_paper_doi": {
+    "url": "https://doi.org/10.24425/ijet.2026.157892",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://journals.pan.pl/dlibra/publication/157892/edition/138498/content",
+      "error": null
+    }
+  },
+  "HybridGaze_pan": {
+    "url": "https://journals.pan.pl/dlibra/publication/157892/edition/140228/content",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://journals.pan.pl/dlibra/publication/157892/edition/140228/content",
+      "error": null
+    }
+  },
+  "RT-GENE_zenodo": {
+    "url": "https://zenodo.org/records/2529036",
+    "result": {
+      "status": "FAIL",
+      "code": 403,
+      "final_url": "https://zenodo.org/records/2529036",
+      "error": "HTTP 403"
+    }
+  },
+  "RT-GENE_github": {
+    "url": "https://github.com/Tobias-Fischer/rt_gene",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://github.com/Tobias-Fischer/rt_gene",
+      "error": null
+    }
+  },
+  "VRGaze_huggingface": {
+    "url": "https://huggingface.co/datasets/gazeshift/VRGaze",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://huggingface.co/datasets/gazeshift/VRGaze",
+      "error": null
+    }
+  },
+  "MPIIGaze_tar": {
+    "url": "https://datasets.d2.mpi-inf.mpg.de/MPIIGaze/MPIIGaze.tar.gz",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://datasets.d2.mpi-inf.mpg.de/MPIIGaze/MPIIGaze.tar.gz",
+      "error": null
+    }
+  },
+  "MPIIGaze_page": {
+    "url": "https://www.mpi-inf.mpg.de/departments/computer-vision-and-machine-learning/research/gaze-based-human-computer-interaction/appearance-based-gaze-estimation-in-the-wild",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://www.mpi-inf.mpg.de/departments/computer-vision-and-machine-learning/research/gaze-based-human-computer-interaction/appearance-based-gaze-estimation-in-the-wild",
+      "error": null
+    }
+  },
+  "MPIIFaceGaze_zip": {
+    "url": "https://datasets.d2.mpi-inf.mpg.de/MPIIGaze/MPIIFaceGaze.zip",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://datasets.d2.mpi-inf.mpg.de/MPIIGaze/MPIIFaceGaze.zip",
+      "error": null
+    }
+  },
+  "MPIIFaceGaze_page": {
+    "url": "https://perceptualui.org/research/datasets/MPIIFaceGaze/",
+    "result": {
+      "status": "FAIL",
+      "code": 404,
+      "final_url": "https://perceptualui.org/research/datasets/MPIIFaceGaze/",
+      "error": "HTTP 404"
+    }
+  },
+  "Columbia_Gaze": {
+    "url": "https://www.cs.columbia.edu/CAVE/databases/columbia_gaze/",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://www.cs.columbia.edu/CAVE/databases/columbia_gaze/",
+      "error": null
+    }
+  },
+  "GazeFollow_https": {
+    "url": "https://gazefollow.csail.mit.edu/",
+    "result": {
+      "status": "FAIL",
+      "code": null,
+      "final_url": "https://gazefollow.csail.mit.edu/",
+      "error": "<urlopen error _ssl.c:993: The handshake operation timed out>"
+    }
+  },
+  "GazeFollow_http": {
+    "url": "http://gazefollow.csail.mit.edu/",
+    "result": {
+      "status": "FAIL",
+      "code": null,
+      "final_url": "http://gazefollow.csail.mit.edu/",
+      "error": "timed out"
+    }
+  },
+  "GazeFollow_github": {
+    "url": "https://github.com/ejcgt/attention-target-detection",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://github.com/ejcgt/attention-target-detection",
+      "error": null
+    }
+  },
+  "DrivFace_uci": {
+    "url": "https://archive.ics.uci.edu/dataset/358/drivface",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://archive.ics.uci.edu/dataset/358/drivface",
+      "error": null
+    }
+  },
+  "DR(eye)VE_old": {
+    "url": "https://imagelab.ing.unimore.it/dreve/",
+    "result": {
+      "status": "FAIL",
+      "code": 404,
+      "final_url": "https://imagelab.ing.unimore.it/dreve/",
+      "error": "HTTP 404"
+    }
+  },
+  "DR(eye)VE_aimagelab": {
+    "url": "https://aimagelab.ing.unimore.it/imagelab/page.asp?IdPage=8",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://aimagelab-legacy.ing.unimore.it/imagelab/page.asp?IdPage=8",
+      "error": null
+    }
+  },
+  "DR(eye)VE_github": {
+    "url": "https://github.com/ndrplz/dreyeve",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://github.com/ndrplz/dreyeve",
+      "error": null
+    }
+  },
+  "EGTEA_https": {
+    "url": "https://cbs.ic.gatech.edu/fpv/",
+    "result": {
+      "status": "FAIL",
+      "code": null,
+      "final_url": "https://cbs.ic.gatech.edu/fpv/",
+      "error": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>"
+    }
+  },
+  "EGTEA_http": {
+    "url": "http://cbs.ic.gatech.edu/fpv/",
+    "result": {
+      "status": "FAIL",
+      "code": 503,
+      "final_url": "http://cbs.ic.gatech.edu/fpv/",
+      "error": "HTTP 503"
+    }
+  },
+  "EGTEA_github": {
+    "url": "https://github.com/yinb/EGTEA-Gaze-Plus",
+    "result": {
+      "status": "FAIL",
+      "code": 404,
+      "final_url": "https://github.com/yinb/EGTEA-Gaze-Plus",
+      "error": "HTTP 404"
+    }
+  },
+  "GazeBase": {
+    "url": "https://figshare.com/articles/dataset/GazeBase_Data_Repository/12912257",
+    "result": {
+      "status": "OK",
+      "code": 202,
+      "final_url": "https://figshare.com/articles/dataset/GazeBase_Data_Repository/12912257",
+      "error": null
+    }
+  },
+  "GazeBaseVR": {
+    "url": "https://figshare.com/articles/dataset/GazeBaseVR/19643442",
+    "result": {
+      "status": "OK",
+      "code": 202,
+      "final_url": "https://figshare.com/articles/dataset/GazeBaseVR/19643442",
+      "error": null
+    }
+  },
+  "SynthesEyes": {
+    "url": "https://www.repository.cam.ac.uk/handle/1810/252736",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://www.repository.cam.ac.uk/items/b7817912-50b5-423b-882e-978fb39a49df",
+      "error": null
+    }
+  },
+  "UnityEyes_old_github": {
+    "url": "https://github.com/errollw/UnityEyes",
+    "result": {
+      "status": "FAIL",
+      "code": 404,
+      "final_url": "https://github.com/errollw/UnityEyes",
+      "error": "HTTP 404"
+    }
+  },
+  "UnityEyes_cambridge": {
+    "url": "https://www.cl.cam.ac.uk/research/rainbow/projects/unityeyes/",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://www.cl.cam.ac.uk/research/rainbow/projects/unityeyes/",
+      "error": null
+    }
+  },
+  "UnityEyes_tadas_github": {
+    "url": "https://github.com/TadasBaltrusaitis/UnityEyes",
+    "result": {
+      "status": "FAIL",
+      "code": 404,
+      "final_url": "https://github.com/TadasBaltrusaitis/UnityEyes",
+      "error": "HTTP 404"
+    }
+  }
+}

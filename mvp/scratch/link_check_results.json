@@ -1,0 +1,496 @@
+[
+  {
+    "name": "VideoAttentionTarget",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://github.com/ejcgt/attention-target-detection",
+    "link_title": "GitHub",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://github.com/ejcgt/attention-target-detection",
+      "error": null
+    }
+  },
+  {
+    "name": "ChildPlay Gaze",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://github.com/fkryan/childplay",
+    "link_title": "GitHub",
+    "result": {
+      "status": "FAIL",
+      "code": 404,
+      "final_url": "https://github.com/fkryan/childplay",
+      "error": "HTTPError 404"
+    }
+  },
+  {
+    "name": "WEyeDS",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://dl.acm.org/",
+    "link_title": "ETRA",
+    "result": {
+      "status": "FAIL",
+      "code": 403,
+      "final_url": "https://dl.acm.org/",
+      "error": "HTTPError 403"
+    }
+  },
+  {
+    "name": "Katrychuk VOG",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://zenodo.org/records/13931668",
+    "link_title": "Zenodo",
+    "result": {
+      "status": "FAIL",
+      "code": 403,
+      "final_url": "https://zenodo.org/records/13931668",
+      "error": "HTTPError 403"
+    }
+  },
+  {
+    "name": "LPW",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/darus-1718",
+    "link_title": "DaRUS",
+    "result": {
+      "status": "FAIL",
+      "code": 404,
+      "final_url": "https://darus.uni-stuttgart.de/dataset.xhtml?persistentId=doi:10.18419/darus-1718",
+      "error": "HTTPError 404"
+    }
+  },
+  {
+    "name": "HybridGaze",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://www.kaggle.com/datasets/grzegorzchwesiuk/hybridgaze",
+    "link_title": "Kaggle",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://www.kaggle.com/datasets/grzegorzchwesiuk/hybridgaze",
+      "error": null
+    }
+  },
+  {
+    "name": "RT-GENE",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://zenodo.org/records/2529036",
+    "link_title": "Zenodo",
+    "result": {
+      "status": "FAIL",
+      "code": 403,
+      "final_url": "https://zenodo.org/records/2529036",
+      "error": "HTTPError 403"
+    }
+  },
+  {
+    "name": "VRGaze / GazeShift",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://huggingface.co/datasets/gazeshift/VRGaze",
+    "link_title": "HuggingFace",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://huggingface.co/datasets/gazeshift/VRGaze",
+      "error": null
+    }
+  },
+  {
+    "name": "MPIIGaze",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://datasets.d2.mpi-inf.mpg.de/MPIIGaze/MPIIGaze.tar.gz",
+    "link_title": "MPI-INF",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://datasets.d2.mpi-inf.mpg.de/MPIIGaze/MPIIGaze.tar.gz",
+      "error": null
+    }
+  },
+  {
+    "name": "MPIIFaceGaze",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://datasets.d2.mpi-inf.mpg.de/MPIIGaze/MPIIFaceGaze.zip",
+    "link_title": "MPI-INF",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://datasets.d2.mpi-inf.mpg.de/MPIIGaze/MPIIFaceGaze.zip",
+      "error": null
+    }
+  },
+  {
+    "name": "Columbia Gaze",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://www.cs.columbia.edu/CAVE/databases/columbia_gaze/",
+    "link_title": "CS Columbia",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://www.cs.columbia.edu/CAVE/databases/columbia_gaze/",
+      "error": null
+    }
+  },
+  {
+    "name": "GazeFollow",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://gazefollow.csail.mit.edu/",
+    "link_title": "MIT CSAIL",
+    "result": {
+      "status": "FAIL",
+      "code": null,
+      "final_url": "https://gazefollow.csail.mit.edu/",
+      "error": "<urlopen error _ssl.c:993: The handshake operation timed out>"
+    }
+  },
+  {
+    "name": "DrivFace",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://archive.ics.uci.edu/dataset/358/drivface",
+    "link_title": "UCI Repo",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://archive.ics.uci.edu/dataset/358/drivface",
+      "error": null
+    }
+  },
+  {
+    "name": "DR(eye)VE",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://imagelab.ing.unimore.it/dreve/",
+    "link_title": "UniMoRe",
+    "result": {
+      "status": "FAIL",
+      "code": 404,
+      "final_url": "https://imagelab.ing.unimore.it/dreve/",
+      "error": "HTTPError 404"
+    }
+  },
+  {
+    "name": "EGTEA Gaze+",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://cbs.ic.gatech.edu/fpv/",
+    "link_title": "GeorgiaTech",
+    "result": {
+      "status": "FAIL",
+      "code": null,
+      "final_url": "https://cbs.ic.gatech.edu/fpv/",
+      "error": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>"
+    }
+  },
+  {
+    "name": "GazeBase",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://figshare.com/articles/dataset/GazeBase_Data_Repository/12912257",
+    "link_title": "Figshare",
+    "result": {
+      "status": "OK",
+      "code": 202,
+      "final_url": "https://figshare.com/articles/dataset/GazeBase_Data_Repository/12912257",
+      "error": null
+    }
+  },
+  {
+    "name": "GazeBaseVR",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://figshare.com/articles/dataset/GazeBaseVR/19643442",
+    "link_title": "Figshare",
+    "result": {
+      "status": "OK",
+      "code": 202,
+      "final_url": "https://figshare.com/articles/dataset/GazeBaseVR/19643442",
+      "error": null
+    }
+  },
+  {
+    "name": "SynthesEyes",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://www.repository.cam.ac.uk/handle/1810/252736",
+    "link_title": "Apollo",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://www.repository.cam.ac.uk/items/b7817912-50b5-423b-882e-978fb39a49df",
+      "error": null
+    }
+  },
+  {
+    "name": "UnityEyes",
+    "access": "**Открытый прямой**",
+    "is_open": true,
+    "url": "https://github.com/errollw/UnityEyes",
+    "link_title": "GitHub",
+    "result": {
+      "status": "FAIL",
+      "code": 404,
+      "final_url": "https://github.com/errollw/UnityEyes",
+      "error": "HTTPError 404"
+    }
+  },
+  {
+    "name": "EVE",
+    "access": "**По запросу**",
+    "is_open": false,
+    "url": "https://ait.ethz.ch/eve",
+    "link_title": "ETH AIT",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://ait.ethz.ch/eve",
+      "error": null
+    }
+  },
+  {
+    "name": "PRECOG",
+    "access": "**По запросу**",
+    "is_open": false,
+    "url": "https://arxiv.org/abs/2610.11036",
+    "link_title": "USC SAIL",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://arxiv.org/abs/2610.11036",
+      "error": null
+    }
+  },
+  {
+    "name": "EyeDiap",
+    "access": "**По запросу**",
+    "is_open": false,
+    "url": "https://www.idiap.ch/en/dataset/eyediap",
+    "link_title": "Idiap",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://www.idiap.ch/en/dataset/eyediap",
+      "error": null
+    }
+  },
+  {
+    "name": "EyeTrax",
+    "access": "**По запросу**",
+    "is_open": false,
+    "url": "https://arxiv.org/abs/2603.12388",
+    "link_title": "arXiv",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://arxiv.org/abs/2603.12388",
+      "error": null
+    }
+  },
+  {
+    "name": "DMD (Driver)",
+    "access": "**По запросу**",
+    "is_open": false,
+    "url": "https://dmd.vicomtech.org/",
+    "link_title": "Vicomtech",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://dmd.vicomtech.org/",
+      "error": null
+    }
+  },
+  {
+    "name": "TabletGaze",
+    "access": "**По запросу**",
+    "is_open": false,
+    "url": "http://sharma.ece.rice.edu/TabletGaze/",
+    "link_title": "Rice Univ",
+    "result": {
+      "status": "FAIL",
+      "code": 503,
+      "final_url": "http://sharma.ece.rice.edu/TabletGaze/",
+      "error": "HTTPError 503"
+    }
+  },
+  {
+    "name": "Gaze360",
+    "access": "**По запросу**",
+    "is_open": false,
+    "url": "http://gaze360.csail.mit.edu/",
+    "link_title": "MIT CSAIL",
+    "result": {
+      "status": "FAIL",
+      "code": 403,
+      "final_url": "http://gaze360.csail.mit.edu/",
+      "error": "HTTPError 403"
+    }
+  },
+  {
+    "name": "UT Multiview",
+    "access": "**По запросу**",
+    "is_open": false,
+    "url": "https://www.ut-vision.org/datasets/utmultiview/",
+    "link_title": "UT Vision",
+    "result": {
+      "status": "FAIL",
+      "code": 404,
+      "final_url": "https://www.ut-vision.org/datasets/utmultiview/",
+      "error": "HTTPError 404"
+    }
+  },
+  {
+    "name": "GazeCapture",
+    "access": "**По запросу**",
+    "is_open": false,
+    "url": "https://gazecapture.csail.mit.edu/",
+    "link_title": "MIT CSAIL",
+    "result": {
+      "status": "FAIL",
+      "code": null,
+      "final_url": "https://gazecapture.csail.mit.edu/",
+      "error": "<urlopen error _ssl.c:993: The handshake operation timed out>"
+    }
+  },
+  {
+    "name": "ETH-XGaze",
+    "access": "**По запросу**",
+    "is_open": false,
+    "url": "https://ait.ethz.ch/eve",
+    "link_title": "ETH AIT",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://ait.ethz.ch/eve",
+      "error": null
+    }
+  },
+  {
+    "name": "DiGaze",
+    "access": "**По запросу**",
+    "is_open": false,
+    "url": "https://github.com/",
+    "link_title": "DiGaze",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://github.com/",
+      "error": null
+    }
+  },
+  {
+    "name": "Ego4D Gaze",
+    "access": "**По запросу**",
+    "is_open": false,
+    "url": "https://ego4d-data.org/",
+    "link_title": "Ego4D",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://ego4d-data.org/",
+      "error": null
+    }
+  },
+  {
+    "name": "BEDLAM-Gaze",
+    "access": "**По запросу**",
+    "is_open": false,
+    "url": "https://bedlam.is.tue.mpg.de/",
+    "link_title": "MPI",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://bedlam.is.tue.mpg.de/",
+      "error": null
+    }
+  },
+  {
+    "name": "NVGaze (Real)",
+    "access": "**Закрытый**",
+    "is_open": false,
+    "url": "https://research.nvidia.com/publication/2019-05_nvgaze-dataset",
+    "link_title": "NVIDIA",
+    "result": {
+      "status": "FAIL",
+      "code": 404,
+      "final_url": "https://research.nvidia.com/publication/2019-05_nvgaze-dataset",
+      "error": "HTTPError 404"
+    }
+  },
+  {
+    "name": "OpenEDS2020",
+    "access": "**Закрытый**",
+    "is_open": false,
+    "url": "https://github.com/facebookresearch/OpenEDS2020",
+    "link_title": "Meta",
+    "result": {
+      "status": "FAIL",
+      "code": 404,
+      "final_url": "https://github.com/facebookresearch/OpenEDS2020",
+      "error": "HTTPError 404"
+    }
+  },
+  {
+    "name": "OpenEDS",
+    "access": "**Закрытый**",
+    "is_open": false,
+    "url": "https://research.facebook.com/",
+    "link_title": "Meta",
+    "result": {
+      "status": "FAIL",
+      "code": 400,
+      "final_url": "https://research.facebook.com/",
+      "error": "HTTPError 400"
+    }
+  },
+  {
+    "name": "TEyeD",
+    "access": "**Закрытый / Zenodo**",
+    "is_open": false,
+    "url": "https://github.com/Fuhl/TEyeD",
+    "link_title": "GitHub",
+    "result": {
+      "status": "FAIL",
+      "code": 404,
+      "final_url": "https://github.com/Fuhl/TEyeD",
+      "error": "HTTPError 404"
+    }
+  },
+  {
+    "name": "NVGaze (Syn)",
+    "access": "**Закрытый**",
+    "is_open": false,
+    "url": "https://research.nvidia.com/",
+    "link_title": "NVIDIA",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://www.nvidia.com/en-us/research/",
+      "error": null
+    }
+  },
+  {
+    "name": "EyeSyn",
+    "access": "**Закрытый / Акад.**",
+    "is_open": false,
+    "url": "https://github.com/",
+    "link_title": "GitHub",
+    "result": {
+      "status": "OK",
+      "code": 200,
+      "final_url": "https://github.com/",
+      "error": null
+    }
+  }
+]
