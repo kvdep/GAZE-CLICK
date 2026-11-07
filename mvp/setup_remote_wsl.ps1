@@ -1,6 +1,4 @@
-# setup_remote_wsl.ps1 — Автоматическая настройка изолированного окружения WSL 2 для сокомандника
-# Требуется запуск в PowerShell от имени Администратора
-
+﻿# setup_remote_wsl.ps1 — Автоматическая настройка изолированного окружения WSL 2
 $ErrorActionPreference = "Stop"
 $TailscaleIP = "100.69.31.98"
 $VkrHostPath = "D:\ПРОФ\ВУЗ\ВКР"
@@ -19,7 +17,7 @@ if ($LASTEXITCODE -ne 0 -or ($distros -notmatch "Ubuntu")) {
     Write-Host "`n[1/5] Ubuntu уже установлена в WSL 2." -ForegroundColor Green
 }
 
-# 2. Настройка изоляции дисков и монтирования в Linux
+# 2. Настройка изоляции дисков в /etc/wsl.conf
 Write-Host "`n[2/5] Применение политик изоляции в /etc/wsl.conf..." -ForegroundColor Yellow
 
 $wslConfScript = @'
@@ -36,7 +34,7 @@ EOF
 wsl.exe -d Ubuntu -u root -- bash -c "$wslConfScript"
 
 # Перезапуск экземпляра WSL для применения wsl.conf
-wsl.exe --terminate Ubuntu
+wsl.exe --terminate Ubuntu 2>$null
 
 # 3. Создание пользователя teammate, каталога ВКР и настройка прав
 Write-Host "`n[3/5] Создание пользователя teammate и точки монтирования..." -ForegroundColor Yellow
@@ -46,8 +44,8 @@ id -u teammate &>/dev/null || useradd -m -s /bin/bash -u 1001 teammate
 usermod -aG video,render teammate
 
 mkdir -p /home/teammate/vkr
-grep -q "D:\\\\ПРОФ\\\\ВУЗ\\\\ВКР" /etc/fstab || echo "$VkrHostPath /home/teammate/vkr drvfs rw,noatime,uid=1001,gid=1001,umask=022 0 0" >> /etc/fstab
-mount -a
+grep -q "/home/teammate/vkr" /etc/fstab || echo "$VkrHostPath /home/teammate/vkr drvfs rw,noatime,uid=1001,gid=1001,umask=022 0 0" >> /etc/fstab
+mount -a 2>/dev/null
 
 mkdir -p /home/teammate/.ssh
 touch /home/teammate/.ssh/authorized_keys
