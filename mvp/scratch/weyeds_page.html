@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>WEyeDS: a desktop webcam dataset for gaze estimation</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/Footer-Dark-icons.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md bg-body" data-bs-theme="dark">
+        <div class="container-fluid"><img class="img-fluid" src="assets/img/robbins_lab_icon.png" width="48" height="33" style="margin-right: 10px;"><a class="navbar-brand" href="#"><strong>WEyeDS</strong></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link active" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#code">Code</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#download">Download</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#cite">Cite</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <section class="d-flex flex-column align-items-center align-content-center py-4 py-xl-5">
+        <div class="container d-flex justify-content-center">
+            <div class="text-center d-flex flex-column align-self-center p-4 p-lg-5" style="width: 984px;">
+                <h1 class="fw-bold mb-4">WEyeDS:&nbsp;A Desktop Webcam Dataset for Gaze Estimation</h1>
+                <p>WEyeDS is a webcam gaze estimation dataset meant to help address appearance-based gaze estimation challenges. The dataset was initially collected online and contained 38 participants. Later, we expanded it to 54 participants. We used a CNN model to test the dataset performance. The code for data collection &amp; model training as well as the dataset itself are available below.</p>
+                <h2 id="about" style="padding: 0px;text-align: left;margin-top: 59px;">About</h2>
+                <p style="text-align: left;">The dataset contains full-face images as well as left and right eye crops for each participant. Each image is accompanied by a label with a coordinate of a dot that a participant looked at. Each coordinate is a number between 0 and 1 and indicates a proportion of a vertical and horizontal user viewport. The dataset also contains metadata about user's machine information and screen details.</p>
+                <h2 id="code" style="padding: 0px;text-align: left;margin-top: 59px;margin-bottom: 36px;">Code</h2>
+                <div class="d-flex flex-row">
+                    <div class="col-md-6 d-flex flex-column">
+                        <h4 class="text-start">Data Processing</h4>
+                        <p class="text-start" style="margin-right: 72px;">The code we used for data processing is available on GitHub</p><a class="btn btn-primary" role="button" style="background: var(--bs-success-text-emphasis);width: 192px;" href="https://github.com/robbinslab/weyeds-processing">Data Processing Code</a>
+                    </div>
+                    <div class="col-md-6 d-flex flex-column">
+                        <h4 class="text-start">Data Collection Task</h4>
+                        <p class="text-start" style="margin-right: 72px;">The data were collected online using JATOS and lab.js. The code for the data collection is also available on GitHub.</p><a class="btn btn-primary" role="button" style="background: var(--bs-success-text-emphasis);width: 186px;" href="https://github.com/robbinslab/webcam-data-collection">Data Collection Code</a>
+                    </div>
+                </div>
+                <h2 id="download" style="padding: 0px;text-align: left;margin-top: 59px;margin-bottom: 8px;">Download</h2>
+                <p style="text-align: left;">We are happy to share the data with anyone interested! Please fill out the form below and we will send you the download link. Please make sure to use your institutional email. If you have any questions, please reach us at robbinslab@richmond.edu.</p><a class="btn btn-primary" role="button" style="background: var(--bs-success-text-emphasis);width: 164px;" href="https://richmond.ca1.qualtrics.com/jfe/form/SV_3pEzZBWmLms2jH0">Download Dataset</a>
+                <h2 id="cite" style="padding: 0px;text-align: left;margin-top: 59px;margin-bottom: 8px;">Cite</h2>
+                <p style="text-align: left;">Please use the following citation if you are using the dataset. Thank you!</p><code class="text-start">@inproceedings{evdokimov2024weyeds,<br>&nbsp; &nbsp;author = {Evdokimov, Anatolii and Finegan-Dollak, Catherine and Robbins, Arryn},<br>&nbsp; &nbsp;title = {WEyeDS: A desktop webcam dataset for gaze estimation},<br>&nbsp; &nbsp;year = {2024},<br>&nbsp; &nbsp;isbn = {9798400706073},<br>&nbsp; &nbsp;publisher = {Association for Computing Machinery},<br>&nbsp; &nbsp;address = {New York, NY, USA},<br>&nbsp; &nbsp;url = {https://doi.org/10.1145/3649902.3655646},<br>&nbsp; &nbsp;doi = {10.1145/3649902.3655646},<br>&nbsp; &nbsp;booktitle = {Proceedings of the 2024 Symposium on Eye Tracking Research and Applications},<br>&nbsp; &nbsp;articleno = {52},<br>&nbsp; &nbsp;numpages = {2},<br>&nbsp; &nbsp;keywords = {appearance-based models, dataset, eye tracking, gaze estimation, webcam},<br>&nbsp; &nbsp;location = {Glasgow, United Kingdom},<br>&nbsp; &nbsp;series = {ETRA '24}<br>}</code>
+                <p style="text-align: center;margin-top: 62px;">We are happy to answer any of your questions! Please send an email to <strong>robbinslab@richmond.edu</strong>, and we will do our best to address your questions.</p>
+            </div>
+        </div>
+    </section>
+    <footer class="text-center bg-dark">
+        <div class="container text-white py-4 py-lg-5">
+            <ul class="list-inline">
+                <li class="list-inline-item me-4"><a class="link-light" href="https://arrynrobbins.com/research-team">Robbins Lab</a></li>
+            </ul>
+        </div>
+    </footer>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+</body>
+
+</html>
