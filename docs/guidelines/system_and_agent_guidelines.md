@@ -3,8 +3,8 @@
 Документ устанавливает инженерные регламенты, архитектурные контракты взаимодействия агентов, правила управления памятью, требования к коду и механизмы отказоустойчивости для выпускной квалификационной работы (ВКР).
 
 Связанные файлы:
-- Техническая постановка темы: [Тема.txt](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/Тема.txt)
-- Настоящее руководство: [00_system_and_agent_guidelines.md](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md)
+- Техническая постановка темы: [Тема.txt](file:///d:/ПРОФ/ВУЗ/ВКР/Тема.txt)
+- Настоящее руководство: [00_system_and_agent_guidelines.md](file:///d:/ПРОФ/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md)
 
 ---
 
@@ -33,22 +33,22 @@
                                                                [Реестр гипотез]
 ```
 
-1. <a id="coder"></a>**Кодер ([`Coder`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#coder)):**
+1. <a id="coder"></a>**Кодер ([`Coder`](file:///d:/ПРОФ/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#coder)):**
    - Генерирует код моделей, функций потерь, слоев и пайплайнов обработки данных.
    - Ограничения: функционал в приоритете, краткость кода, использование `;` для объединения связанных инструкций, полный запрет комментариев, запрет изменения названий и сигнатур существующих функций при рефакторинге, обязательная явная типизация входных и выходных параметров через модуль `typing`. Строго запрещено использовать полумеры или заменять одно другим. Категорически запрещено заменять запрошенное пользователем (архитектуры, слои, веса, датасеты, гиперпараметры) на альтернативы без прямого ведома и предварительного согласия пользователя.
 
-2. <a id="codeverifier"></a>**Верификатор кода ([`CodeVerifier`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#codeverifier)):**
+2. <a id="codeverifier"></a>**Верификатор кода ([`CodeVerifier`](file:///d:/ПРОФ/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#codeverifier)):**
    - Выполняет статический анализ типов через `mypy` и синтаксический контроль.
    - Проверяет инварианты размерностей тензоров на каждом слое сети.
    - Анализирует код на наличие утечек памяти: поиск незакрытых графов вычислений (отсутствие `.detach()` при сохранении промежуточных значений лосса), отсутствие очистки промежуточных ссылок, корректность освобождения файловых дескрипторов.
    - Результат: бинарный вердикт `PASS` или `FAIL` с указанием конкретной строки и нарушенного инварианта. Переход к следующему этапу возможен только при статусе `PASS`.
 
-3. <a id="gputrainer"></a>**Тренер на GPU ([`GPUTrainer`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#gputrainer)):**
+3. <a id="gputrainer"></a>**Тренер на GPU ([`GPUTrainer`](file:///d:/ПРОФ/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#gputrainer)):**
    - Запускает процесс обучения исключительно в изолированном дочернем процессе с системным тайм-аутом (`watchdog`).
    - Контролирует динамику потребления оперативной (RAM) и видеопамяти (VRAM).
-   - Исполняет протокол обучения: минимум 150 эпох, механизм ранней остановки ([`EarlyStopping`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#earlystopping)), поэпошное логирование метрик, сохранение чекпоинтов с полной конфигурацией гиперпараметров.
+   - Исполняет протокол обучения: минимум 150 эпох, механизм ранней остановки ([`EarlyStopping`](file:///d:/ПРОФ/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#earlystopping)), поэпошное логирование метрик, сохранение чекпоинтов с полной конфигурацией гиперпараметров.
 
-4. <a id="metricsanalyst"></a>**Аналитик метрик ([`MetricsAnalyst`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#metricsanalyst)):**
+4. <a id="metricsanalyst"></a>**Аналитик метрик ([`MetricsAnalyst`](file:///d:/ПРОФ/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#metricsanalyst)):**
    - Вычисляет финальные физические и геометрические метрики на тестовой выборке: средняя ошибка в пикселях $\mathcal{E}_{\text{pix}}$, угловая ошибка $\mathcal{E}_{\text{deg}}$, время задержки вывода $T_{\text{inf}}$ (мс), 95-й перцентиль задержки $P_{95}$, пиковое потребление VRAM (МБ).
    - Формирует сводную сравнительную таблицу `pandas.DataFrame` со стилизацией через `background_gradient`.
    - Заносит структурированную запись в файл реестра гипотез.
@@ -121,7 +121,7 @@
 5. Перенос модели в VRAM (`cuda`) строго перед входом в цикл эпох.
 6. Выполнение эпохи обучения с расчетом $\mathcal{L}_{\text{train}}$.
 7. Выполнение эпохи валидации с расчетом $\mathcal{L}_{\text{val}}$.
-8. Вызов [`EarlyStopping`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#earlystopping) и проверка критериев остановки.
+8. Вызов [`EarlyStopping`](file:///d:/ПРОФ/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#earlystopping) и проверка критериев остановки.
 9. При достижении критерия остановки: выгрузка модели из VRAM в RAM, выполнение очистки кэша CUDA, расчет метрик на тестовом наборе $\mathcal{L}_{\text{test}}$, фиксация результатов.
 
 ---
@@ -139,7 +139,7 @@
 
 ### 1.5. Реестр гипотез: схема и правила ведения
 
-Все результаты экспериментов подлежат обязательной записи в единый структурированный реестр `c:\Users\jack_\MAIN\ВУЗ\ВКР\docs\experiments_registry.json`.
+Все результаты экспериментов подлежат обязательной записи в единый структурированный реестр `d:\ПРОФ\ВУЗ\ВКР\docs\experiments_registry.json`.
 
 Схема записи реестра:
 
@@ -217,7 +217,7 @@ $$M_{\text{batch}} = B \times \sum_{l=1}^L (C_l \times H_l \times W_l \times S_{
 где $B$ — размер батча, $C_l, H_l, W_l$ — размерности выхода слоя $l$, $S_{\text{dtype}} = 4 \text{ байта}$ (для `torch.float32`) или $2 \text{ байта}$ (для `torch.float16`).
 
 <a id="memoryguard"></a>
-Класс динамического контроля памяти [`MemoryGuard`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#memoryguard):
+Класс динамического контроля памяти [`MemoryGuard`](file:///d:/ПРОФ/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#memoryguard):
 
 ```python
 import os, gc, psutil, torch
@@ -318,7 +318,7 @@ def scoped_gpu_context(model: torch.nn.Module) -> Generator[torch.nn.Module, Non
 - `Сообщение`: Текст без переводов строк внутри сообщения.
 
 <a id="metriclogger"></a>
-Реализация класса [`MetricLogger`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#metriclogger):
+Реализация класса [`MetricLogger`](file:///d:/ПРОФ/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#metriclogger):
 
 ```python
 import sys, time, psutil, torch
@@ -357,14 +357,14 @@ LOGGER = MetricLogger()
 ### 3.2. Требования к протоколу обучения
 
 1. Минимальное количество эпох: **150**.
-2. Обязательный механизм прерывания: [`EarlyStopping`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#earlystopping).
+2. Обязательный механизм прерывания: [`EarlyStopping`](file:///d:/ПРОФ/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#earlystopping).
 3. Формат вывода на каждой эпохе:
    `Epoch {epoch}/{total} | L Train: {loss_train:.4f} | L Val: {loss_val:.4f}`
 4. Формат вывода при тестировании:
    `L Test: {loss_test:.4f}`
 
 <a id="earlystopping"></a>
-Реализация модуля [`EarlyStopping`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#earlystopping):
+Реализация модуля [`EarlyStopping`](file:///d:/ПРОФ/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#earlystopping):
 
 ```python
 import copy, torch
@@ -403,7 +403,7 @@ class EarlyStopping:
 Файл весов (.pt / .pth / .safetensors) обязан включать словарь с архитектурными гиперпараметрами, состоянием модели, состоянием оптимизатора и планировщика шага. Запрещено сохранять чистый `state_dict` без словаря конфигурации.
 
 <a id="modelcheckpointmanager"></a>
-Реализация менеджера контрольных точек [`ModelCheckpointManager`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#modelcheckpointmanager):
+Реализация менеджера контрольных точек [`ModelCheckpointManager`](file:///d:/ПРОФ/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#modelcheckpointmanager):
 
 ```python
 import os, torch
@@ -457,7 +457,7 @@ class ModelCheckpointManager:
 Для визуализации и сравнения результатов используется `pandas.DataFrame` со стилизацией градиентом от зеленого (лучший результат) к красному (худший результат).
 
 <a id="render_model_comparison_table"></a>
-Функция [`render_model_comparison_table`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#render_model_comparison_table):
+Функция [`render_model_comparison_table`](file:///d:/ПРОФ/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#render_model_comparison_table):
 
 ```python
 import pandas as pd
@@ -512,7 +512,7 @@ def render_model_comparison_table(records: List[Dict[str, Any]]) -> pd.io.format
 Лимит времени выполнения любого отдельного скрипта или задачи: строго **$< 20$ минут (1200 секунд)**. Превышение лимита означает зависание процесса (deadlock или бесконечный цикл) и влечет немедленное уничтожение процесса через `SIGKILL`.
 
 <a id="executionwatchdog"></a>
-Исполняемый сторожевой запуск скриптов [`ExecutionWatchdog`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#executionwatchdog):
+Исполняемый сторожевой запуск скриптов [`ExecutionWatchdog`](file:///d:/ПРОФ/ВУЗ/ВКР/docs/00_system_and_agent_guidelines.md#executionwatchdog):
 
 ```python
 import subprocess, sys

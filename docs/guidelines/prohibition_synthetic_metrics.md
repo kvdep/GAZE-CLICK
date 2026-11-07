@@ -7,7 +7,7 @@
 
 ## 1. Суть зафиксированной ошибки
 
-В файл [scripts/export_leaderboard.py](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/scripts/export_leaderboard.py), а также в генерируемые таблицы [docs/leaderboard.csv](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/leaderboard.csv), [docs/leaderboard.tsv](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/docs/leaderboard.tsv) и в облачную Google-таблицу были внесены вымышленные (синтетически сконструированные) числовые значения в колонки **«Ошибка 5–8: Тестовый датасет»** (Mean deg, Median deg, Экран px, Корреляция R2) для моделей №18–31 (IVGaze, Gazelle, MCGaze, CrossGaze, GazeShift, GLC, GazeCLR, OpenFace 3.0, Ghost-CBAM MobileNetV4, MAGE, ViT-Base Mobile Gaze, FAZE, iTracker), а также моделей №5 (EyeTAG), №6 (STAGE) и №12 (EMC-Gaze).
+В файл [scripts/export_leaderboard.py](file:///d:/ПРОФ/ВУЗ/ВКР/scripts/export_leaderboard.py), а также в генерируемые таблицы [docs/leaderboard.csv](file:///d:/ПРОФ/ВУЗ/ВКР/docs/leaderboard.csv), [docs/leaderboard.tsv](file:///d:/ПРОФ/ВУЗ/ВКР/docs/leaderboard.tsv) и в облачную Google-таблицу были внесены вымышленные (синтетически сконструированные) числовые значения в колонки **«Ошибка 5–8: Тестовый датасет»** (Mean deg, Median deg, Экран px, Корреляция R2) для моделей №18–31 (IVGaze, Gazelle, MCGaze, CrossGaze, GazeShift, GLC, GazeCLR, OpenFace 3.0, Ghost-CBAM MobileNetV4, MAGE, ViT-Base Mobile Gaze, FAZE, iTracker), а также моделей №5 (EyeTAG), №6 (STAGE) и №12 (EMC-Gaze).
 
 ### Механизм появления недостоверных данных:
 1. **Угловая ошибка (Mean deg):** была скопирована из чужих академических статей, где авторы оценивали свои модели на собственных изолированных выборках (EVE, EYEDIAP, Gaze360, GazeCapture, EGTEA).
@@ -21,7 +21,7 @@
 
 ## 2. Причина критической недопустимости
 
-1. Модели №18–31, №5, №6, №12 **не имеют адаптеров** в директории [mvp/adapters/](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/adapters/), не интегрированы в конвейер проекта и **никогда не запускались** в кодовой базе ВКР — ни на видеопотоке веб-камеры, ни на локальном тестовом датасете (`mvp/experiments/test_unified.parquet`).
+1. Модели №18–31, №5, №6, №12 **не имеют адаптеров** в директории [mvp/adapters/](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/adapters/), не интегрированы в конвейер проекта и **никогда не запускались** в кодовой базе ВКР — ни на видеопотоке веб-камеры, ни на локальном тестовом датасете (`mvp/experiments/test_unified.parquet`).
 2. Присвоение непроверенным моделям значений в колонке с названием «Ошибка: Тестовый датасет» является прямой дезинформацией и искажением эмпирических результатов исследования.
 3. Экстраполяция метрик из головы или статей в колонки экспериментального тестирования полностью разрушает воспроизводимость и научную достоверность ВКР.
 

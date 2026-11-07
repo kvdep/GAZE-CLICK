@@ -8191,3 +8191,6 @@
 [08:59:55] [00:00:00] [GPU] [33.8] [8.3] [experiment_manager.py:243] Finalized experiment: run_019_20261104_045541. Status: COMPLETED, Total duration: 14668.81s, Best Val Loss: 10.699637
 [08:59:55] [00:00:00] [GPU] [33.8] [8.3] [experiment_manager.py:244] Saved weights file (.pt): [WEIGHTS:D:\ПРОФ\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_019_20261104_045541\checkpoints\best_model.pt]
 [08:59:55] [00:00:00] [GPU] [33.8] [8.3] [experiment_manager.py:245] Saved model source definition (.py): [ARTIFACT:D:\ПРОФ\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_019_20261104_045541\model_source.py]
+[15:22:39] [00:00:00] [GPU] [44.2] [8.9] [registry.py:65] Loading model weights from file: D:\ПРОФ\ВУЗ\ВКР\mvp\experiments\yolo26n_deep_peft_gaze_net_yolo26n\run_001_20261103_173055\checkpoints\best_model.pt
+[15:23:14] [00:00:00] [GPU] [44.5] [8.9] [registry.py:65] Loading model weights from file: D:\ПРОФ\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_019_20261104_045541\checkpoints\best_model.pt
+[15:23:15] [00:00:00] [GPU] [44.4] [8.9] [registry.py:77] Loaded model weights from file: D:\ПРОФ\ВУЗ\ВКР\mvp\experiments\yolo26n_gaze_net_yolo26n\run_019_20261104_045541\checkpoints\best_model.pt

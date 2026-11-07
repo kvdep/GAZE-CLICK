@@ -1,0 +1,406 @@
+{
+  "http://arxiv.org/abs/2602.05132v1": {
+    "title": "ARGaze: Autoregressive Transformers for Online Egocentric Gaze Estimation",
+    "published": "2026-02-04T23:33:16Z",
+    "authors": [
+      "Jia Li",
+      "Wenjie Zhao",
+      "Shijian Deng",
+      "Bolin Lai",
+      "Yuheng Wu",
+      "RUijia Chen",
+      "Jon E. Froehlich",
+      "Yuhang Zhao",
+      "Yapeng Tian"
+    ],
+    "summary": "Online egocentric gaze estimation predicts where a camera wearer is looking from first-person video using only past and current frames, a task essential for augmented reality and assistive technologies. Unlike third-person gaze estimation, this setting lacks explicit head or eye signals, requiring models to infer current visual attention from sparse, indirect cues such as hand-object interactions and salient scene content. We observe that gaze exhibits strong temporal continuity during goal-directed activities: knowing where a person looked recently provides a powerful prior for predicting where they look next. Inspired by vision-conditioned autoregressive decoding in vision-language models, we propose ARGaze, which reformulates gaze estimation as sequential prediction: at each timestep, a transformer decoder predicts current gaze by conditioning on (i) current visual features and (ii) a fixed-length Gaze Context Window of recent gaze target estimates. This design enforces causality and enables bounded-resource streaming inference. We achieve state-of-the-art performance across multiple egocentric benchmarks under online evaluation, with extensive ablations validating that autoregressive modeling with bounded gaze history is critical for robust prediction. We will release our source code and pre-trained models.",
+    "url": "http://arxiv.org/abs/2602.05132v1"
+  },
+  "http://arxiv.org/abs/2603.24938v1": {
+    "title": "Infinite Gaze Generation for Videos with Autoregressive Diffusion",
+    "published": "2026-03-26T02:02:08Z",
+    "authors": [
+      "Jenna Kang",
+      "Colin Groth",
+      "Tong Wu",
+      "Finley Torrens",
+      "Patsorn Sangkloy",
+      "Gordon Wetzstein",
+      "Qi Sun"
+    ],
+    "summary": "Predicting human gaze in video is fundamental to advancing scene understanding and multimodal interaction. While traditional saliency maps provide spatial probability distributions and scanpaths offer ordered fixations, both abstractions often collapse the fine-grained temporal dynamics of raw gaze. Furthermore, existing models are typically constrained to short-term windows ($\\approx$ 3-5s), failing to capture the long-range behavioral dependencies inherent in real-world content. We present a generative framework for infinite-horizon raw gaze prediction in videos of arbitrary length. By leveraging an autoregressive diffusion model, we synthesize gaze trajectories characterized by continuous spatial coordinates and high-resolution timestamps. Our model is conditioned on a saliency-aware visual latent space. Quantitative and qualitative evaluations demonstrate that our approach significantly outperforms existing approaches in long-range spatio-temporal accuracy and trajectory realism.",
+    "url": "http://arxiv.org/abs/2603.24938v1"
+  },
+  "http://arxiv.org/abs/2603.28319v1": {
+    "title": "Beyond Scanpaths: Graph-Based Gaze Simulation in Dynamic Scenes",
+    "published": "2026-03-30T11:41:11Z",
+    "authors": [
+      "Luke Palmer",
+      "Petar Palasek",
+      "Hazem Abdelkawy"
+    ],
+    "summary": "Accurately modelling human attention is essential for numerous computer vision applications, particularly in the domain of automotive safety. Existing methods typically collapse gaze into saliency maps or scanpaths, treating gaze dynamics only implicitly. We instead formulate gaze modelling as an autoregressive dynamical system and explicitly unroll raw gaze trajectories over time, conditioned on both gaze history and the evolving environment. Driving scenes are represented as gaze-centric graphs processed by the Affinity Relation Transformer (ART), a heterogeneous graph transformer that models interactions between driver gaze, traffic objects, and road structure. We further introduce the Object Density Network (ODN) to predict next-step gaze distributions, capturing the stochastic and object-centric nature of attentional shifts in complex environments. We also release Focus100, a new dataset of raw gaze data from 30 participants viewing egocentric driving footage. Trained directly on raw gaze, without fixation filtering, our unified approach produces more natural gaze trajectories, scanpath dynamics, and saliency maps than existing attention models, offering valuable insights for the temporal modelling of human attention in dynamic environments.",
+    "url": "http://arxiv.org/abs/2603.28319v1"
+  },
+  "http://arxiv.org/abs/2407.19605v2": {
+    "title": "Look Hear: Gaze Prediction for Speech-directed Human Attention",
+    "published": "2024-07-28T22:35:08Z",
+    "authors": [
+      "Sounak Mondal",
+      "Seoyoung Ahn",
+      "Zhibo Yang",
+      "Niranjan Balasubramanian",
+      "Dimitris Samaras",
+      "Gregory Zelinsky",
+      "Minh Hoai"
+    ],
+    "summary": "For computer systems to effectively interact with humans using spoken language, they need to understand how the words being generated affect the users' moment-by-moment attention. Our study focuses on the incremental prediction of attention as a person is seeing an image and hearing a referring expression defining the object in the scene that should be fixated by gaze. To predict the gaze scanpaths in this incremental object referral task, we developed the Attention in Referral Transformer model or ART, which predicts the human fixations spurred by each word in a referring expression. ART uses a multimodal transformer encoder to jointly learn gaze behavior and its underlying grounding tasks, and an autoregressive transformer decoder to predict, for each word, a variable number of fixations based on fixation history. To train ART, we created RefCOCO-Gaze, a large-scale dataset of 19,738 human gaze scanpaths, corresponding to 2,094 unique image-expression pairs, from 220 participants performing our referral task. In our quantitative and qualitative analyses, ART not only outperforms existing methods in scanpath prediction, but also appears to capture several human attention patterns, such as waiting, scanning, and verification.",
+    "url": "http://arxiv.org/abs/2407.19605v2"
+  },
+  "http://arxiv.org/abs/2604.08600v1": {
+    "title": "Gaze2Report: Radiology Report Generation via Visual-Gaze Prompt Tuning of LLMs",
+    "published": "2026-04-07T20:26:14Z",
+    "authors": [
+      "Aishik Konwer",
+      "Moinak Bhattacharya",
+      "Prateek Prasanna"
+    ],
+    "summary": "Existing deep learning methods for radiology report generation enhance diagnostic efficiency but often overlook physician-informed medical priors. This leads to a suboptimal alignment between the structured explanations and disease manifestations. Eye gaze data provides critical insights into a radiologist's visual attention, enhancing the relevance and interpretability of extracted features while aligning with human decision-making processes. However, despite its promising potential, the integration of eye gaze information into AI-driven medical imaging workflows is impeded by challenges such as the complexity of multimodal data fusion and the high cost of gaze acquisition, particularly its absence during inference, limiting its practical applicability in real-world clinical settings. To address these issues, we introduce Gaze2Report, a framework which leverages a scanpath prediction module and Graph Neural Network (GNN) to generate joint visual-gaze tokens. Combined with instruction and report tokens, these form a multimodal prompt used to fine-tune LoRA layers of large language models (LLMs) for autoregressive report generation. Gaze2Report enhances report quality through eye-gaze-guided visual learning and incorporates on-the-fly scanpath prediction, enabling the model to operate without gaze input during inference.",
+    "url": "http://arxiv.org/abs/2604.08600v1"
+  },
+  "http://arxiv.org/abs/2610.19635v1": {
+    "title": "Eye, Robot: Learning Expressive Gaze Dynamics via a VLM-Guided Transformer-VAE",
+    "published": "2026-10-14T06:04:04Z",
+    "authors": [
+      "Yuhang Hu",
+      "Junlin Lyu",
+      "Yuan Fang",
+      "Xiaoying Shen",
+      "Lechen Zhang",
+      "Jiong Lin",
+      "Judah Goldfeder",
+      "Steven Tian",
+      "Hod Lipson"
+    ],
+    "summary": "Gaze coordinates attention in human interaction through coupled eye, head, and eyelid motion. A humanoid robot must choose where to look while generating a suitable movement toward that target; fixed tracking rules alone do not model the temporal structure of human gaze. We separate these tasks with an asynchronous vision-language model that selects a scene referent, a reactive perception module that maintains fixation, and a Realistic Gaze Transformer (RGT) that generates target-conditioned motion. RGT is a Transformer-VAE trained on markerless human recordings retargeted to the robot's 11-DoF joint space: self-supervised pretraining encodes recent full-head history, and autoregressive fine-tuning exposes the model to its own predictions during rollout. At inference, a four-dimensional binocular-eye trajectory conditions coordinated neck and eye motion; an auxiliary blink predictor triggers eyelid templates during playback. On a two-second benchmark in which all controllers receive the same ground-truth target, RGT-Base obtains the lowest reported overall seven-joint MSE, and physical demonstrations show the integrated targeting and control pipeline. The evidence establishes robot-space kinematic fidelity and real-time RGT inference; perceived naturalness and open-vocabulary target-selection accuracy remain questions for controlled evaluation.",
+    "url": "http://arxiv.org/abs/2610.19635v1"
+  },
+  "http://arxiv.org/abs/2504.01024v1": {
+    "title": "Gaze-Guided 3D Hand Motion Prediction for Detecting Intent in Egocentric Grasping Tasks",
+    "published": "2025-03-27T15:26:41Z",
+    "authors": [
+      "Yufei He",
+      "Xucong Zhang",
+      "Arno H. A. Stienen"
+    ],
+    "summary": "Human intention detection with hand motion prediction is critical to drive the upper-extremity assistive robots in neurorehabilitation applications. However, the traditional methods relying on physiological signal measurement are restrictive and often lack environmental context. We propose a novel approach that predicts future sequences of both hand poses and joint positions. This method integrates gaze information, historical hand motion sequences, and environmental object data, adapting dynamically to the assistive needs of the patient without prior knowledge of the intended object for grasping. Specifically, we use a vector-quantized variational autoencoder for robust hand pose encoding with an autoregressive generative transformer for effective hand motion sequence prediction. We demonstrate the usability of these novel techniques in a pilot study with healthy subjects. To train and evaluate the proposed method, we collect a dataset consisting of various types of grasp actions on different objects from multiple subjects. Through extensive experiments, we demonstrate that the proposed method can successfully predict sequential hand movement. Especially, the gaze information shows significant enhancements in prediction capabilities, particularly with fewer input frames, highlighting the potential of the proposed method for real-world applications.",
+    "url": "http://arxiv.org/abs/2504.01024v1"
+  },
+  "http://arxiv.org/abs/2603.12254v1": {
+    "title": "Attend Before Attention: Efficient and Scalable Video Understanding via Autoregressive Gazing",
+    "published": "2026-03-12T17:58:52Z",
+    "authors": [
+      "Baifeng Shi",
+      "Stephanie Fu",
+      "Long Lian",
+      "Hanrong Ye",
+      "David Eigen",
+      "Aaron Reite",
+      "Boyi Li",
+      "Jan Kautz",
+      "Song Han",
+      "David M. Chan",
+      "Pavlo Molchanov",
+      "Trevor Darrell",
+      "Hongxu Yin"
+    ],
+    "summary": "Multi-modal large language models (MLLMs) have advanced general-purpose video understanding but struggle with long, high-resolution videos -- they process every pixel equally in their vision transformers (ViTs) or LLMs despite significant spatiotemporal redundancy. We introduce AutoGaze, a lightweight module that removes redundant patches before processed by a ViT or an MLLM. Trained with next-token prediction and reinforcement learning, AutoGaze autoregressively selects a minimal set of multi-scale patches that can reconstruct the video within a user-specified error threshold, eliminating redundancy while preserving information. Empirically, AutoGaze reduces visual tokens by 4x-100x and accelerates ViTs and MLLMs by up to 19x, enabling scaling MLLMs to 1K-frame 4K-resolution videos and achieving superior results on video benchmarks (e.g., 67.0% on VideoMME). Furthermore, we introduce HLVid: the first high-resolution, long-form video QA benchmark with 5-minute 4K-resolution videos, where an MLLM scaled with AutoGaze improves over the baseline by 10.1% and outperforms the previous best MLLM by 4.5%. Project page: https://autogaze.github.io/.",
+    "url": "http://arxiv.org/abs/2603.12254v1"
+  },
+  "http://arxiv.org/abs/2605.23992v1": {
+    "title": "A World Model of Radiologist Reading for Medical Image Representation Learning",
+    "published": "2026-05-17T22:30:29Z",
+    "authors": [
+      "Yiwei Li",
+      "Zihao Wu",
+      "Huaqin Zhao",
+      "Yifan Zhou",
+      "Chao Cao",
+      "Dajiang Zhu",
+      "Tianming Liu",
+      "Lin Zhao"
+    ],
+    "summary": "Radiologist eye-tracking data provide a rich record of how experts search, compare, and accumulate evidence during image reading; yet, existing methods exploit this signal only partially, either as a static spatial prior or as an auxiliary prediction target decoupled from diagnosis. We propose GazeWorld, a medical imaging world model that treats the image as the world and the radiologist's fixation sequence as a trajectory through it. GazeWorld autoregressively predicts the latent representation of the next fixated patch from all previously visited ones, while a spatial-completion branch covers unvisited regions. At inference, GazeWorld generates a sequence of patch representations from the image alone without requiring real gaze data. Frozen GazeWorld features achieve state-of-the-art diagnostic accuracy across all nine supervised settings on CheXpert, RSNA Pneumonia, and SIIM-ACR Pneumothorax, as well as the highest zero-shot accuracy on all three benchmarks. On the GazeSearch benchmark, a generic decoder trained on the same frozen features outperforms the purpose-built LogitGaze-Med by over 16\\% in ScanMatch and 22\\% in SED, despite not being explicitly trained to predict gaze. GazeWorld demonstrates that modeling how experts read, not just what they conclude, offers a promising pretraining paradigm for medical imaging AI.",
+    "url": "http://arxiv.org/abs/2605.23992v1"
+  },
+  "http://arxiv.org/abs/2603.23617v2": {
+    "title": "M3T: Discrete Multi-Modal Motion Tokens for Sign Language Production",
+    "published": "2026-03-24T18:05:03Z",
+    "authors": [
+      "Alexandre Symeonidis-Herzig",
+      "Jianhe Low",
+      "Ozge Mercanoglu Sincan",
+      "Richard Bowden"
+    ],
+    "summary": "Sign language production requires more than hand motion generation. Non-manual features, including mouthings, eyebrow raises, gaze, and head movements, are grammatically obligatory and cannot be recovered from manual articulators alone. Existing 3D production systems face two barriers to integrating them: the body-model fittings they train on retain a facial space too low-dimensional to encode these articulations, and, if richer representations are adopted, standard discrete tokenization suffers from codebook collapse, leaving most of the expression space largely unreachable. We propose SMPL-FX, which couples FLAME's rich expression space with the SMPL-X body parameterisation, and tokenize the resulting representation with modality-specific Finite Scalar Quantization VAEs for body, hands, and face, raising face codebook utilization from 78.8% to 99.0%. M3T is an autoregressive transformer trained on this multi-modal motion vocabulary, with an auxiliary sign-to-text translation objective that encourages semantically grounded embeddings. Across three standard datasets, M3T achieves state-of-the-art sign language production quality, and on NMFs-CSL, where signs are distinguishable only by non-manual features, our model reaches 58.3% accuracy against 49.0% for the strongest comparable baseline, without large-scale sign-language pre-training. Project page: https://cogvis-cvssp.github.io/papers/m3t/",
+    "url": "http://arxiv.org/abs/2603.23617v2"
+  },
+  "http://arxiv.org/abs/2512.15340v2": {
+    "title": "Towards Seamless Interaction: Causal Turn-Level Modeling of Interactive 3D Conversational Head Dynamics",
+    "published": "2025-12-17T11:37:35Z",
+    "authors": [
+      "Junjie Chen",
+      "Fei Wang",
+      "Zhihao Huang",
+      "Qing Zhou",
+      "Kun Li",
+      "Dan Guo",
+      "Linfeng Zhang",
+      "Xun Yang"
+    ],
+    "summary": "Human conversation involves continuous exchanges of speech and nonverbal cues such as head nods, gaze shifts, and facial expressions that convey attention and emotion. Modeling these bidirectional dynamics in 3D is essential for building expressive avatars and interactive robots. However, existing frameworks often treat talking and listening as independent processes or rely on non-causal full-sequence modeling, hindering temporal coherence across turns. We present TIMAR (Turn-level Interleaved Masked AutoRegression), a causal framework for 3D conversational head generation that models dialogue as interleaved audio-visual contexts. It fuses multimodal information within each turn and applies turn-level causal attention to accumulate conversational history, while a lightweight diffusion head predicts continuous 3D head dynamics that captures both coordination and expressive variability. Experiments on the DualTalk benchmark show that TIMAR reduces Fréchet Distance and MSE by 15-30% on the test set, and achieves similar gains on out-of-distribution data. The source code has been released at https://github.com/CoderChen01/towards-seamless-interaction.",
+    "url": "http://arxiv.org/abs/2512.15340v2"
+  },
+  "http://arxiv.org/abs/2307.03918v1": {
+    "title": "VS-TransGRU: A Novel Transformer-GRU-based Framework Enhanced by Visual-Semantic Fusion for Egocentric Action Anticipation",
+    "published": "2023-07-08T06:49:54Z",
+    "authors": [
+      "Congqi Cao",
+      "Ze Sun",
+      "Qinyi Lv",
+      "Lingtong Min",
+      "Yanning Zhang"
+    ],
+    "summary": "Egocentric action anticipation is a challenging task that aims to make advanced predictions of future actions from current and historical observations in the first-person view. Most existing methods focus on improving the model architecture and loss function based on the visual input and recurrent neural network to boost the anticipation performance. However, these methods, which merely consider visual information and rely on a single network architecture, gradually reach a performance plateau. In order to fully understand what has been observed and capture the dependencies between current observations and future actions well enough, we propose a novel visual-semantic fusion enhanced and Transformer GRU-based action anticipation framework in this paper. Firstly, high-level semantic information is introduced to improve the performance of action anticipation for the first time. We propose to use the semantic features generated based on the class labels or directly from the visual observations to augment the original visual features. Secondly, an effective visual-semantic fusion module is proposed to make up for the semantic gap and fully utilize the complementarity of different modalities. Thirdly, to take advantage of both the parallel and autoregressive models, we design a Transformer based encoder for long-term sequential modeling and a GRU-based decoder for flexible iteration decoding. Extensive experiments on two large-scale first-person view datasets, i.e., EPIC-Kitchens and EGTEA Gaze+, validate the effectiveness of our proposed method, which achieves new state-of-the-art performance, outperforming previous approaches by a large margin.",
+    "url": "http://arxiv.org/abs/2307.03918v1"
+  },
+  "http://arxiv.org/abs/2409.17027v3": {
+    "title": "Counterfactual Token Generation in Large Language Models",
+    "published": "2024-09-25T15:30:24Z",
+    "authors": [
+      "Ivi Chatzi",
+      "Nina Corvelo Benz",
+      "Eleni Straitouri",
+      "Stratis Tsirtsis",
+      "Manuel Gomez-Rodriguez"
+    ],
+    "summary": "\"Sure, I am happy to generate a story for you: Captain Lyra stood at the helm of her trusty ship, the Maelstrom's Fury, gazing out at the endless sea. [...] Lyra's eyes welled up with tears as she realized the bitter truth - she had sacrificed everything for fleeting riches, and lost the love of her crew, her family, and herself.\" Although this story, generated by a large language model, is captivating, one may wonder -- how would the story have unfolded if the model had chosen \"Captain Maeve\" as the protagonist instead? We cannot know. State-of-the-art large language models are stateless -- they maintain no internal memory or state. Given a prompt, they generate a sequence of tokens as an output using an autoregressive process. As a consequence, they cannot reason about counterfactual alternatives to tokens they have generated in the past. In this work, our goal is to enhance them with this functionality. To this end, we develop a causal model of token generation that builds upon the Gumbel-Max structural causal model. Our model allows any large language model to perform counterfactual token generation at almost no cost in comparison with vanilla token generation, it is embarrassingly simple to implement, and it does not require any fine-tuning nor prompt engineering. We implement our model on Llama 3 8B-Instruct and Ministral-8B-Instruct and conduct a qualitative and a quantitative analysis of counterfactually generated text. We conclude with a demonstrative application of counterfactual token generation for bias detection, unveiling interesting insights about the model of the world constructed by large language models.",
+    "url": "http://arxiv.org/abs/2409.17027v3"
+  },
+  "http://arxiv.org/abs/2307.16368v3": {
+    "title": "AntGPT: Can Large Language Models Help Long-term Action Anticipation from Videos?",
+    "published": "2023-07-31T02:14:19Z",
+    "authors": [
+      "Qi Zhao",
+      "Shijie Wang",
+      "Ce Zhang",
+      "Changcheng Fu",
+      "Minh Quan Do",
+      "Nakul Agarwal",
+      "Kwonjoon Lee",
+      "Chen Sun"
+    ],
+    "summary": "Can we better anticipate an actor's future actions (e.g. mix eggs) by knowing what commonly happens after his/her current action (e.g. crack eggs)? What if we also know the longer-term goal of the actor (e.g. making egg fried rice)? The long-term action anticipation (LTA) task aims to predict an actor's future behavior from video observations in the form of verb and noun sequences, and it is crucial for human-machine interaction. We propose to formulate the LTA task from two perspectives: a bottom-up approach that predicts the next actions autoregressively by modeling temporal dynamics; and a top-down approach that infers the goal of the actor and plans the needed procedure to accomplish the goal. We hypothesize that large language models (LLMs), which have been pretrained on procedure text data (e.g. recipes, how-tos), have the potential to help LTA from both perspectives. It can help provide the prior knowledge on the possible next actions, and infer the goal given the observed part of a procedure, respectively. To leverage the LLMs, we propose a two-stage framework, AntGPT. It first recognizes the actions already performed in the observed videos and then asks an LLM to predict the future actions via conditioned generation, or to infer the goal and plan the whole procedure by chain-of-thought prompting. Empirical results on the Ego4D LTA v1 and v2 benchmarks, EPIC-Kitchens-55, as well as EGTEA GAZE+ demonstrate the effectiveness of our proposed approach. AntGPT achieves state-of-the-art performance on all above benchmarks, and can successfully infer the goal and thus perform goal-conditioned \"counterfactual\" prediction via qualitative analysis. Code and model will be released at https://brown-palm.github.io/AntGPT",
+    "url": "http://arxiv.org/abs/2307.16368v3"
+  },
+  "http://arxiv.org/abs/2512.15950v5": {
+    "title": "Modeling Issues with Eye Tracking Data",
+    "published": "2025-12-17T20:22:43Z",
+    "authors": [
+      "Gregory Camilli"
+    ],
+    "summary": "I describe and compare procedures for binary eye-tracking (ET) data. The basic GLM model is a logistic mixed model combined with random effects for persons and items. Additional models address error correlation in eye-tracking serial observations. In particular, three novel approaches are illustrated that address serial without the use of an observed lag-1 predictor: a first-order autoregressive model and a first-order moving average models obtained with generalized estimating equations, and a recurrent two-state survival model used with run-length encoded data. Altogether, the results of five different analyses point to unresolved issues in the analysis of eye-tracking data and new directions for analytic development. A more traditional model incorporating a lag-1 observed outcome for serial correlation is also included.",
+    "url": "http://arxiv.org/abs/2512.15950v5"
+  },
+  "http://arxiv.org/abs/2609.02163v2": {
+    "title": "Do Cantonese-Adapted Language Models Better Predict Cantonese Reading? A Cross-Model Eye-Tracking Evaluation",
+    "published": "2026-09-02T06:24:34Z",
+    "authors": [
+      "Ziqi Zhang",
+      "Emmanuele Chersoni",
+      "Mohammad Momenian"
+    ],
+    "summary": "Information-theoretic measures derived from autoregressive language models are widely used to characterize the expectations that shape human reading, but whether language-variety-specific training improves such psycholinguistic alignment remains unclear. This question is still open for Cantonese, where recent NLP evaluations reported mixed benefits from Cantonese-specific training relative to Mandarin-oriented or general-purpose models. Using naturalistic Cantonese eye-tracking data, we compare two within-family adaptation contrasts: CKIP GPT-2 Tiny versus its lightly Cantonese-adapted JED351 derivative, and Qwen2.5-7B versus CantoneseLLM-7B, which underwent substantially more extensive Cantonese continued pretraining and instruction tuning. From each model, we derive lexical surprisal, POS surprisal, entropy before the target, and entropy reduction. Lexical surprisal and the joint four-metric model consistently favor CantoneseLLM-7B, followed by Qwen2.5-7B, CKIP, and JED351, whereas entropy reduction favors CKIP. These results suggest that more extensive Cantonese-specific training can be associated with stronger predictive fit, while model rankings also depend on the information-theoretic measure being evaluated.",
+    "url": "http://arxiv.org/abs/2609.02163v2"
+  },
+  "http://arxiv.org/abs/2607.02083v1": {
+    "title": "DeepGaze3.5-VL: Modeling Scanpaths via Autoregressive Token Prediction",
+    "published": "2026-07-02T12:25:45Z",
+    "authors": [
+      "Susmit Agrawal",
+      "Matthias Bethge",
+      "Matthias Kümmerer"
+    ],
+    "summary": "Understanding human visual attention on a scene over time has applications in domains such as interface design and inferring cognitive states. Modeling visual scanpaths has historically relied on specialized architectures with hand-crafted priors. While these architectures can model fixation sequences, their rigid structural biases restrict easy extendability and flexible conditioning. For instance, integrating task-specific instructions or adapting to distinct viewer identities requires custom, disjoint architectural additions. We frame scanpath prediction purely as a discrete sequence modeling task. By mapping coordinates into a text vocabulary, we leverage the pretrained representations of Vision-Language Models. This framing absorbs diverse factors of variation: simple prompting allows for global conditioning, such as providing viewer identities to capture personalized biases, or task-specific objectives like visual search. The framework can also integrate per-fixation attributes, such as individual fixation durations, alongside spatial locations. The autoregressive alignment enables the scalable, exact computation of per-fixation log-likelihoods, directly equivalent to the commonly used Information Gain (IG) metric. Our model, DeepGaze3.5-VL, establishes a new state-of-the-art across multiple datasets, achieving 2.18 bits of IG on MIT1003, a 46% improvement over DeepGaze III. This advantage persists even when baselines use identical high-capacity vision encoders. Beyond predictive performance, our generative framework serves as a powerful computational tool for direct behavioral interventions, allowing for controlled in-silico simulations that would be experimentally difficult or impossible to conduct in vivo. We demonstrate this ability by performing controlled interventions on the durations of pre-saccadic fixations, recovering known oculomotor phenomena purely from data.",
+    "url": "http://arxiv.org/abs/2607.02083v1"
+  },
+  "http://arxiv.org/abs/2508.01668v1": {
+    "title": "Measuring and Predicting Where and When Pathologists Focus their Visual Attention while Grading Whole Slide Images of Cancer",
+    "published": "2025-08-03T08:53:45Z",
+    "authors": [
+      "Souradeep Chakraborty",
+      "Ruoyu Xue",
+      "Rajarsi Gupta",
+      "Oksana Yaskiv",
+      "Constantin Friedman",
+      "Natallia Sheuka",
+      "Dana Perez",
+      "Paul Friedman",
+      "Won-Tak Choi",
+      "Waqas Mahmud",
+      "Beatrice Knudsen",
+      "Gregory Zelinsky",
+      "Joel Saltz",
+      "Dimitris Samaras"
+    ],
+    "summary": "The ability to predict the attention of expert pathologists could lead to decision support systems for better pathology training. We developed methods to predict the spatio-temporal (where and when) movements of pathologists' attention as they grade whole slide images (WSIs) of prostate cancer. We characterize a pathologist's attention trajectory by their x, y, and m (magnification) movements of a viewport as they navigate WSIs using a digital microscope. This information was obtained from 43 pathologists across 123 WSIs, and we consider the task of predicting the pathologist attention scanpaths constructed from the viewport centers. We introduce a fixation extraction algorithm that simplifies an attention trajectory by extracting fixations in the pathologist's viewing while preserving semantic information, and we use these pre-processed data to train and test a two-stage model to predict the dynamic (scanpath) allocation of attention during WSI reading via intermediate attention heatmap prediction. In the first stage, a transformer-based sub-network predicts the attention heatmaps (static attention) across different magnifications. In the second stage, we predict the attention scanpath by sequentially modeling the next fixation points in an autoregressive manner using a transformer-based approach, starting at the WSI center and leveraging multi-magnification feature representations from the first stage. Experimental results show that our scanpath prediction model outperforms chance and baseline models. Tools developed from this model could assist pathology trainees in learning to allocate their attention during WSI reading like an expert.",
+    "url": "http://arxiv.org/abs/2508.01668v1"
+  },
+  "http://arxiv.org/abs/2603.22939v1": {
+    "title": "FixationFormer: Direct Utilization of Expert Gaze Trajectories for Chest X-Ray Classification",
+    "published": "2026-03-24T08:35:01Z",
+    "authors": [
+      "Daniel Beckmann",
+      "Benjamin Risse"
+    ],
+    "summary": "Expert eye movements provide a rich, passive source of domain knowledge in radiology, offering a powerful cue for integrating diagnostic reasoning into computer-aided analysis. However, direct integration into CNN-based systems, which historically have dominated the medical image analysis domain, is challenging: gaze recordings are sequential, temporally dense yet spatially sparse, noisy, and variable across experts. As a consequence, most existing image-based models utilize reduced representations such as heatmaps. In contrast, gaze naturally aligns with transformer architectures, as both are sequential in nature and rely on attention to highlight relevant input regions. In this work, we introduce FixationFormer, a transformer-based architecture that represents expert gaze trajectories as sequences of tokens, thereby preserving their temporal and spatial structure. By modeling gaze sequences jointly with image features, our approach addresses sparsity and variability in gaze data while enabling a more direct and fine-grained integration of expert diagnostic cues through explicit cross-attention between the image and gaze token sequences. We evaluate our method on three publicly available benchmark chest X-ray datasets and demonstrate that it achieves state-of-the-art classification performance, highlighting the value of representing gaze as a sequence in transformer-based medical image analysis.",
+    "url": "http://arxiv.org/abs/2603.22939v1"
+  },
+  "http://arxiv.org/abs/2502.10378v1": {
+    "title": "Unknown Word Detection for English as a Second Language (ESL) Learners Using Gaze and Pre-trained Language Models",
+    "published": "2025-02-14T18:57:04Z",
+    "authors": [
+      "Jiexin Ding",
+      "Bowen Zhao",
+      "Yuntao Wang",
+      "Xinyun Liu",
+      "Rui Hao",
+      "Ishan Chatterjee",
+      "Yuanchun Shi"
+    ],
+    "summary": "English as a Second Language (ESL) learners often encounter unknown words that hinder their text comprehension. Automatically detecting these words as users read can enable computing systems to provide just-in-time definitions, synonyms, or contextual explanations, thereby helping users learn vocabulary in a natural and seamless manner. This paper presents EyeLingo, a transformer-based machine learning method that predicts the probability of unknown words based on text content and eye gaze trajectory in real time with high accuracy. A 20-participant user study revealed that our method can achieve an accuracy of 97.6%, and an F1-score of 71.1%. We implemented a real-time reading assistance prototype to show the effectiveness of EyeLingo. The user study shows improvement in willingness to use and usefulness compared to baseline methods.",
+    "url": "http://arxiv.org/abs/2502.10378v1"
+  },
+  "http://arxiv.org/abs/2610.00922v1": {
+    "title": "EyeTAG: Eye Trajectory-Aware Gaze Estimation",
+    "published": "2026-10-01T01:57:31Z",
+    "authors": [
+      "Jungmin Lee",
+      "Niamat Ullah",
+      "Yoseob Han"
+    ],
+    "summary": "Gaze estimation under natural head-eye motion underpins applications from driver monitoring to human-computer interaction. Single-frame methods predict each frame independently, so consecutive outputs fluctuate as jitter. Multi-frame methods reduce this, but they learn motion implicitly inside appearance features, so the gaze trajectory is never an explicit variable. We propose EyeTAG (Eye Trajectory-Aware Gaze Estimation), a causal multi-frame framework built around an explicit first-order gaze prior: at each step it differentiates its own recent predictions and feeds the resulting trajectory back as a compact kinematic token. Because differencing is translation-invariant in gaze space, this token carries subject-invariant motion rather than personal gaze offsets. Face and eye streams supply visual evidence, fused by cross-attention and a causal Transformer decoder. EyeTAG reduces the mean angular error by about 1.0$^\\circ$ on Gaze360 and performs on par with the strongest baseline on EVE (2.56$^\\circ$ vs. 2.58$^\\circ$). Within-model ablations, which keep the encoder and the rest of the architecture fixed and vary only the gaze history, show that the differential formulation, rather than temporal context alone, removes the systematic saccade bias that persists even with an absolute gaze-history prior. Our code is available at https://github.com/peter8366/EyeTAG.",
+    "url": "http://arxiv.org/abs/2610.00922v1"
+  },
+  "http://arxiv.org/abs/2507.23021v1": {
+    "title": "Modeling Human Gaze Behavior with Diffusion Models for Unified Scanpath Prediction",
+    "published": "2025-07-30T18:36:09Z",
+    "authors": [
+      "Giuseppe Cartella",
+      "Vittorio Cuculo",
+      "Alessandro D'Amelio",
+      "Marcella Cornia",
+      "Giuseppe Boccignone",
+      "Rita Cucchiara"
+    ],
+    "summary": "Predicting human gaze scanpaths is crucial for understanding visual attention, with applications in human-computer interaction, autonomous systems, and cognitive robotics. While deep learning models have advanced scanpath prediction, most existing approaches generate averaged behaviors, failing to capture the variability of human visual exploration. In this work, we present ScanDiff, a novel architecture that combines diffusion models with Vision Transformers to generate diverse and realistic scanpaths. Our method explicitly models scanpath variability by leveraging the stochastic nature of diffusion models, producing a wide range of plausible gaze trajectories. Additionally, we introduce textual conditioning to enable task-driven scanpath generation, allowing the model to adapt to different visual search objectives. Experiments on benchmark datasets show that ScanDiff surpasses state-of-the-art methods in both free-viewing and task-driven scenarios, producing more diverse and accurate scanpaths. These results highlight its ability to better capture the complexity of human visual behavior, pushing forward gaze prediction research. Source code and models are publicly available at https://aimagelab.github.io/ScanDiff.",
+    "url": "http://arxiv.org/abs/2507.23021v1"
+  },
+  "http://arxiv.org/abs/2512.06834v2": {
+    "title": "COIVis: Eye-tracking-based Visual Exploration of Concept Learning in MOOC Videos",
+    "published": "2025-12-07T13:14:49Z",
+    "authors": [
+      "Zhiguang Zhou",
+      "Ruiqi Yu",
+      "Yuming Ma",
+      "Hao Ni",
+      "Guojun Li",
+      "Li Ye",
+      "Xiaoying Wang",
+      "Yize Li",
+      "Yigang Wang",
+      "Yong Wang"
+    ],
+    "summary": "Massive Open Online Courses (MOOCs) make high-quality instruction accessible. However, the lack of face-to-face interaction makes it difficult for instructors to obtain feedback on learners' performance and provide more effective instructional guidance. Traditional analytical approaches, such as clickstream logs or quiz scores, capture only coarse-grained learning outcomes and offer limited insight into learners' moment-to-moment cognitive states. In this study, we propose COIVis, an eye tracking-based visual analytics system that supports concept-level exploration of learning processes in MOOC videos. COIVis first extracts course concepts from multimodal video content and aligns them with the temporal structure and screen space of the lecture, defining Concepts of Interest (COIs), which anchor abstract concepts to specific spatiotemporal regions. Learners' gaze trajectories are transformed into COI sequences, and five interpretable learner-state features -- Attention, Cognitive Load, Interest, Preference, and Synchronicity -- are computed at the COI level based on eye tracking metrics. Building on these representations, COIVis provides a narrative, multi-view visualization enabling instructors to move from cohort-level overviews to individual learning paths, quickly locate problematic concepts, and compare diverse learning strategies. We evaluate COIVis through two case studies and in-depth user-feedback interviews. The results demonstrate that COIVis effectively provides instructors with valuable insights into the consistency and anomalies of learners' learning patterns, thereby supporting timely and personalized interventions for learners and optimizing instructional design.",
+    "url": "http://arxiv.org/abs/2512.06834v2"
+  },
+  "http://arxiv.org/abs/2404.12235v2": {
+    "title": "Beyond Average: Individualized Visual Scanpath Prediction",
+    "published": "2024-04-18T14:51:42Z",
+    "authors": [
+      "Xianyu Chen",
+      "Ming Jiang",
+      "Qi Zhao"
+    ],
+    "summary": "Understanding how attention varies across individuals has significant scientific and societal impacts. However, existing visual scanpath models treat attention uniformly, neglecting individual differences. To bridge this gap, this paper focuses on individualized scanpath prediction (ISP), a new attention modeling task that aims to accurately predict how different individuals shift their attention in diverse visual tasks. It proposes an ISP method featuring three novel technical components: (1) an observer encoder to characterize and integrate an observer's unique attention traits, (2) an observer-centric feature integration approach that holistically combines visual features, task guidance, and observer-specific characteristics, and (3) an adaptive fixation prioritization mechanism that refines scanpath predictions by dynamically prioritizing semantic feature maps based on individual observers' attention traits. These novel components allow scanpath models to effectively address the attention variations across different observers. Our method is generally applicable to different datasets, model architectures, and visual tasks, offering a comprehensive tool for transforming general scanpath models into individualized ones. Comprehensive evaluations using value-based and ranking-based metrics verify the method's effectiveness and generalizability.",
+    "url": "http://arxiv.org/abs/2404.12235v2"
+  },
+  "http://arxiv.org/abs/2407.10563v1": {
+    "title": "Pathformer3D: A 3D Scanpath Transformer for 360° Images",
+    "published": "2024-07-15T09:24:27Z",
+    "authors": [
+      "Rong Quan",
+      "Yantao Lai",
+      "Mengyu Qiu",
+      "Dong Liang"
+    ],
+    "summary": "Scanpath prediction in 360° images can help realize rapid rendering and better user interaction in Virtual/Augmented Reality applications. However, existing scanpath prediction models for 360° images execute scanpath prediction on 2D equirectangular projection plane, which always result in big computation error owing to the 2D plane's distortion and coordinate discontinuity. In this work, we perform scanpath prediction for 360° images in 3D spherical coordinate system and proposed a novel 3D scanpath Transformer named Pathformer3D. Specifically, a 3D Transformer encoder is first used to extract 3D contextual feature representation for the 360° image. Then, the contextual feature representation and historical fixation information are input into a Transformer decoder to output current time step's fixation embedding, where the self-attention module is used to imitate the visual working memory mechanism of human visual system and directly model the time dependencies among the fixations. Finally, a 3D Gaussian distribution is learned from each fixation embedding, from which the fixation position can be sampled. Evaluation on four panoramic eye-tracking datasets demonstrates that Pathformer3D outperforms the current state-of-the-art methods. Code is available at https://github.com/lsztzp/Pathformer3D .",
+    "url": "http://arxiv.org/abs/2407.10563v1"
+  },
+  "http://arxiv.org/abs/2407.13335v1": {
+    "title": "OAT: Object-Level Attention Transformer for Gaze Scanpath Prediction",
+    "published": "2024-07-18T09:33:17Z",
+    "authors": [
+      "Yini Fang",
+      "Jingling Yu",
+      "Haozheng Zhang",
+      "Ralf van der Lans",
+      "Bertram Shi"
+    ],
+    "summary": "Visual search is important in our daily life. The efficient allocation of visual attention is critical to effectively complete visual search tasks. Prior research has predominantly modelled the spatial allocation of visual attention in images at the pixel level, e.g. using a saliency map. However, emerging evidence shows that visual attention is guided by objects rather than pixel intensities. This paper introduces the Object-level Attention Transformer (OAT), which predicts human scanpaths as they search for a target object within a cluttered scene of distractors. OAT uses an encoder-decoder architecture. The encoder captures information about the position and appearance of the objects within an image and about the target. The decoder predicts the gaze scanpath as a sequence of object fixations, by integrating output features from both the encoder and decoder. We also propose a new positional encoding that better reflects spatial relationships between objects. We evaluated OAT on the Amazon book cover dataset and a new dataset for visual search that we collected. OAT's predicted gaze scanpaths align more closely with human gaze patterns, compared to predictions by algorithms based on spatial attention on both established metrics and a novel behavioural-based metric. Our results demonstrate the generalization ability of OAT, as it accurately predicts human scanpaths for unseen layouts and target objects.",
+    "url": "http://arxiv.org/abs/2407.13335v1"
+  },
+  "http://arxiv.org/abs/2303.09383v3": {
+    "title": "Unifying Top-down and Bottom-up Scanpath Prediction Using Transformers",
+    "published": "2023-03-16T15:13:09Z",
+    "authors": [
+      "Zhibo Yang",
+      "Sounak Mondal",
+      "Seoyoung Ahn",
+      "Ruoyu Xue",
+      "Gregory Zelinsky",
+      "Minh Hoai",
+      "Dimitris Samaras"
+    ],
+    "summary": "Most models of visual attention aim at predicting either top-down or bottom-up control, as studied using different visual search and free-viewing tasks. In this paper we propose the Human Attention Transformer (HAT), a single model that predicts both forms of attention control. HAT uses a novel transformer-based architecture and a simplified foveated retina that collectively create a spatio-temporal awareness akin to the dynamic visual working memory of humans. HAT not only establishes a new state-of-the-art in predicting the scanpath of fixations made during target-present and target-absent visual search and ``taskless'' free viewing, but also makes human gaze behavior interpretable. Unlike previous methods that rely on a coarse grid of fixation cells and experience information loss due to fixation discretization, HAT features a sequential dense prediction architecture and outputs a dense heatmap for each fixation, thus avoiding discretizing fixations. HAT sets a new standard in computational attention, which emphasizes effectiveness, generality, and interpretability. HAT's demonstrated scope and applicability will likely inspire the development of new attention models that can better predict human behavior in various attention-demanding scenarios. Code is available at https://github.com/cvlab-stonybrook/HAT.",
+    "url": "http://arxiv.org/abs/2303.09383v3"
+  },
+  "http://arxiv.org/abs/2303.15274v3": {
+    "title": "Gazeformer: Scalable, Effective and Fast Prediction of Goal-Directed Human Attention",
+    "published": "2023-03-27T15:02:48Z",
+    "authors": [
+      "Sounak Mondal",
+      "Zhibo Yang",
+      "Seoyoung Ahn",
+      "Dimitris Samaras",
+      "Gregory Zelinsky",
+      "Minh Hoai"
+    ],
+    "summary": "Predicting human gaze is important in Human-Computer Interaction (HCI). However, to practically serve HCI applications, gaze prediction models must be scalable, fast, and accurate in their spatial and temporal gaze predictions. Recent scanpath prediction models focus on goal-directed attention (search). Such models are limited in their application due to a common approach relying on trained target detectors for all possible objects, and the availability of human gaze data for their training (both not scalable). In response, we pose a new task called ZeroGaze, a new variant of zero-shot learning where gaze is predicted for never-before-searched objects, and we develop a novel model, Gazeformer, to solve the ZeroGaze problem. In contrast to existing methods using object detector modules, Gazeformer encodes the target using a natural language model, thus leveraging semantic similarities in scanpath prediction. We use a transformer-based encoder-decoder architecture because transformers are particularly useful for generating contextual representations. Gazeformer surpasses other models by a large margin on the ZeroGaze setting. It also outperforms existing target-detection models on standard gaze prediction for both target-present and target-absent search tasks. In addition to its improved performance, Gazeformer is more than five times faster than the state-of-the-art target-present visual search model.",
+    "url": "http://arxiv.org/abs/2303.15274v3"
+  },
+  "http://arxiv.org/abs/2403.17477v1": {
+    "title": "DiffGaze: A Diffusion Model for Continuous Gaze Sequence Generation on 360° Images",
+    "published": "2024-03-26T08:13:02Z",
+    "authors": [
+      "Chuhan Jiao",
+      "Yao Wang",
+      "Guanhua Zhang",
+      "Mihai Bâce",
+      "Zhiming Hu",
+      "Andreas Bulling"
+    ],
+    "summary": "We present DiffGaze, a novel method for generating realistic and diverse continuous human gaze sequences on 360° images based on a conditional score-based denoising diffusion model. Generating human gaze on 360° images is important for various human-computer interaction and computer graphics applications, e.g. for creating large-scale eye tracking datasets or for realistic animation of virtual humans. However, existing methods are limited to predicting discrete fixation sequences or aggregated saliency maps, thereby neglecting crucial parts of natural gaze behaviour. Our method uses features extracted from 360° images as condition and uses two transformers to model the temporal and spatial dependencies of continuous human gaze. We evaluate DiffGaze on two 360° image benchmarks for gaze sequence generation as well as scanpath prediction and saliency prediction. Our evaluations show that DiffGaze outperforms state-of-the-art methods on all tasks on both benchmarks. We also report a 21-participant user study showing that our method generates gaze sequences that are indistinguishable from real human sequences.",
+    "url": "http://arxiv.org/abs/2403.17477v1"
+  }
+}

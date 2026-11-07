@@ -22,6 +22,7 @@
 | **RT-GENE** | Fischer et al., ECCV 2018 | $15$ (17 сессий) | $114\,558$ (glasses)<br>$154\,755$ (noglasses) | Kinect v2 ($1920 \times 1080$) + очки SMI ETG 2W ($60\text{ Гц}$) | Естественные интерьеры и уличные сцены, дистанция $1.0 - 2.5\text{ м}$ | Yaw: $[-50.9^\circ, +66.7^\circ]$<br>Pitch: $[-80.8^\circ, +34.3^\circ]$ | $37.2\text{ ГБ}$ (35 архивов TAR на Zenodo) | **Верифицирован по REST API** (Zenodo Record 2529036) |
 | **ETH-XGaze** | Zhang et al., ETH Zurich, ECCV 2020 | $110$ | $1\,083\,492$ | 18 синхронных камер Canon 250D ($6000 \times 4000$) | Лабораторный калибровочный стенд, дистанция $60 - 80\text{ см}$ | Yaw: $\pm 120^\circ$<br>Pitch: $\pm 70^\circ$ | $14.37\text{ ГБ}$ ($15\,432\,351\,744$ байт в Baidu)<br>$130\text{ ГБ}$ ($224\text{px}$ raw)<br>$497\text{ ГБ}$ ($448\text{px}$ raw) | Обнаружен архив в Baidu Netdisk (`ETH-Xgaze.rar`) |
 | **EYEDIAP** | Funes Mora et al., Idiap, ETRA 2014 | $16$ | $94$ сессии ($426\text{k}$ кадров) | HD RGB ($1920 \times 1080$) + Kinect VGA ($640 \times 480$) | Мониторная калибровка (Screen) и плавающий маркер (3D floating target) | Yaw: $\pm 40^\circ$<br>Pitch: $\pm 30^\circ$ | $208.99\text{ МБ}$ (Baidu preprocessed)<br>$\approx 65\text{ ГБ}$ (full raw) | Обнаружен архив в Baidu Netdisk (`EyeDiap.rar`) |
+| **EVE** | Park et al., ETH Zurich / NVIDIA, ECCV 2020 | $54$ | $12\,300\,000$ ($105\text{ ч}$ видео) | 1 Basler (60 FPS) + 3 Logitech C922 (30 FPS) + Tobii Pro Spectrum (150 Гц) | Настольный монитор $24\text{''}$, чтение текста, видео, дистанция $50 - 70\text{ см}$ | Yaw: $\pm 30^\circ$<br>Pitch: $\pm 20^\circ$ | $\approx 2.5\text{ ТБ}$ (все ракурсы)<br>$\approx 30 - 45\text{ ГБ}$ (на 1 участника) | Доступ по заявке: [Google Form](https://docs.google.com/forms/d/e/1FAIpQLSfZtMVpNbWV9yHX5toXVzVpDpOENy-SB7XfMIx5V6u7sITuNg/viewform?usp=sf_link). Веса в [Releases](https://github.com/swook/EVE/releases/tag/v0.0) |
 
 ---
 
@@ -51,7 +52,7 @@
     5. `Gaze360.tar.partae`: $5\,368\,709\,120$ байт
     6. `Gaze360.tar.partaf`: $3\,705\,210\,880$ байт
     Сумма: $\sum_{i=1}^6 \text{size}_i = 30\,548\,756\,480$ байт (ровно $28.45\text{ ГБ}$, первый заголовок TAR `metadata.mat`).
-  - Скрипт загрузки с поддержкой докачки: [`mvp/experiments/download_gaze360_splits.py`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/experiments/download_gaze360_splits.py).
+  - Скрипт загрузки с поддержкой докачки: [`mvp/experiments/download_gaze360_splits.py`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/experiments/download_gaze360_splits.py).
   - Сборка итогового архива после загрузки:
     ```cmd
     copy /b E:\ВКР\Gaze360\splits\Gaze360.tar.parta* E:\ВКР\Gaze360\Gaze360.tar
@@ -63,7 +64,7 @@
 ### 3.2. Columbia Gaze Data Set (Columbia CAVE)
 * **Прямой URL:** `https://www.cs.columbia.edu/CAVE/databases/columbia_gaze/columbia_gaze_data_set.zip`
 * **Объем:** $2\,378\,561\,401$ байт ($2.22\text{ ГБ}$).
-* **Скрипт загрузки:** [`mvp/experiments/download_columbia_gaze.py`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/experiments/download_columbia_gaze.py) (потоковая загрузка с докачкой Range HTTP).
+* **Скрипт загрузки:** [`mvp/experiments/download_columbia_gaze.py`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/experiments/download_columbia_gaze.py) (потоковая загрузка с докачкой Range HTTP).
 * **Статус загрузки, верификации и распаковки:** Загрузка полностью завершена за 2914.8 с. Контрольная сумма и целостность архива верифицированы модулем `zipfile.testzip()` (CRC32 тест пройден без сбоев). Распаковка полностью завершена за 280.3 с в `E:\ВКР\ColumbiaGaze\Columbia Gaze Data Set\` ($5\,882$ файла изображений $5184 \times 3456$ по всем 56 субъектам, исключая служебные файлы macOS).
 * **Ортогональность к Gaze360:**
   1. Выборка полностью независима: 56 участников (32 мужчины, 24 женщины в возрасте 18–36 лет, 21 носит корригирующие очки).
@@ -73,7 +74,7 @@
 ### 3.3. MPIIFaceGaze (Max Planck Institute for Informatics)
 * **Прямой URL:** `https://huggingface.co/datasets/doanhlt/degraded-gaze-mpiifacegaze/resolve/main/MPIIFaceGaze.h5`
 * **Объем:** $4\,948\,673\,290$ байт ($4.61\text{ ГБ}$).
-* **Скрипт загрузки:** [`mvp/experiments/download_mpiifacegaze.py`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/experiments/download_mpiifacegaze.py).
+* **Скрипт загрузки:** [`mvp/experiments/download_mpiifacegaze.py`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/experiments/download_mpiifacegaze.py).
 * **Статус загрузки и верификации:** Загрузка полностью завершена за 4974.0 с. Объем файла на диске: ровно $4\,948\,673\,290\text{ байт}$. Магические байты HDF5 (`b'\x89HDF\r\n\x1a\n'`) подтверждены. Файл доступен для извлечения нормализованных кропов лиц $224 \times 224$ и истинных 3D-векторов.
 * **Ортогональность к Gaze360:**
   1. Доменная специфика: данные собраны в реальных сценариях работы за ноутбуком в течение 12 месяцев (15 участников, 45 000 кадров).

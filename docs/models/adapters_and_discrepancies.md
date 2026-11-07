@@ -24,7 +24,7 @@
    $$\frac{\partial Y_{screen}}{\partial \theta} = - D \cdot \frac{\pi}{180^\circ} \cdot \frac{H_{px}}{H_{mm}} = -\text{geo\_by} \approx -99.208 \text{ px/deg}$$
 
 ### Анализ механизма деградации
-В коммите `7c5df4a` в класс [`GazeCalibration`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/engine/calibration.py) была внедрена эвристика:
+В коммите `7c5df4a` в класс [`GazeCalibration`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/engine/calibration.py) была внедрена эвристика:
 ```python
 # ОШИБОЧНЫЙ КОД ИЗ 7c5df4a:
 geo_by = self.user_distance_mm * (math.pi / 180.0) * px_per_mm_y  # +99.208 px/deg
@@ -40,7 +40,7 @@ $$w_y[\text{pitch}] = -121.38 \text{ px/deg}$$
 * Корреляция Пирсона $R_y$ на тесте стала строго отрицательной ($R_y = -0.898$), а угловая ошибка увеличилась с **2.98°** до **7.09°**.
 
 ### Исправление
-1. В [`mvp/engine/calibration.py`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/engine/calibration.py) искусственный порог `wy[1] <= 0.15 * geo_by` полностью удален.
+1. В [`mvp/engine/calibration.py`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/engine/calibration.py) искусственный порог `wy[1] <= 0.15 * geo_by` полностью удален.
 2. Для подавления мультиколлинеарности между поворотом головы и углом взгляда введена диагональная регуляризация Тихонова: $\text{diag}([0, \lambda, 50.0])$, где вес регуляризации головы $\lambda_{head} = 50.0$ препятствует искажению основного наклона взгляда.
 3. В бескалибровочном прогнозе `predict_uncalibrated` формула скорректирована с учетом направления:
    $$dy\_mm = -D \cdot \tan(\theta) \cdot gain_y$$
@@ -66,20 +66,20 @@ $$w_y[\text{pitch}] = -121.38 \text{ px/deg}$$
 | **Idiap ResNet-18** | RGB | ImageNet | Вектор взгляда $[g_x, g_y, g_z]$ | 3D единичный вектор | 3 кропа: Лицо (224x224) + Левый глаз (224x224) + Правый глаз (224x224) |
 | **Qualcomm EyeGaze** | RGB | $[0.0, 1.0]$ float32 | `[pitch_L, yaw_L, pitch_R, yaw_R]` | Радианы | 128x128 кроп лица, ONNX Mobile Graph |
 
-Для полной изоляции логики моделей разработан пакет [`mvp/adapters/`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/adapters/):
-* [`BaseGazeAdapter`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/adapters/base.py) — базовый абстрактный класс.
-* [`PureGazeAdapter`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/adapters/puregaze_adapter.py)
-* [`UniGazeAdapter`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/adapters/unigaze_adapter.py)
-* [`PTGazeETHAdapter`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/adapters/ptgaze_eth_adapter.py)
-* [`GazeTRAdapter`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/adapters/gazetr_adapter.py)
-* [`MediaPipeAdapter`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/adapters/mediapipe_adapter.py)
-* [`YOLOAdapter`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/adapters/yolo_adapter.py)
-* [`PTGazeMPIIAdapter`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/adapters/ptgaze_mpii_adapter.py)
-* [`YakhyoAdapter`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/adapters/yakhyo_adapter.py)
-* [`L2CSAdapter`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/adapters/l2cs_adapter.py)
-* [`IdiapResNet18Adapter`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/adapters/idiap_adapter.py)
-* [`QualcommEyeGazeAdapter`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/adapters/qualcomm_adapter.py)
-* [`factory.py`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/adapters/factory.py) — фабричный метод `create_adapter(model_name, device, checkpoint_path)`.
+Для полной изоляции логики моделей разработан пакет [`mvp/adapters/`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/adapters/):
+* [`BaseGazeAdapter`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/adapters/base.py) — базовый абстрактный класс.
+* [`PureGazeAdapter`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/adapters/puregaze_adapter.py)
+* [`UniGazeAdapter`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/adapters/unigaze_adapter.py)
+* [`PTGazeETHAdapter`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/adapters/ptgaze_eth_adapter.py)
+* [`GazeTRAdapter`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/adapters/gazetr_adapter.py)
+* [`MediaPipeAdapter`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/adapters/mediapipe_adapter.py)
+* [`YOLOAdapter`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/adapters/yolo_adapter.py)
+* [`PTGazeMPIIAdapter`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/adapters/ptgaze_mpii_adapter.py)
+* [`YakhyoAdapter`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/adapters/yakhyo_adapter.py)
+* [`L2CSAdapter`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/adapters/l2cs_adapter.py)
+* [`IdiapResNet18Adapter`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/adapters/idiap_adapter.py)
+* [`QualcommEyeGazeAdapter`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/adapters/qualcomm_adapter.py)
+* [`factory.py`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/adapters/factory.py) — фабричный метод `create_adapter(model_name, device, checkpoint_path)`.
 
 ### 2.1. Анализ дефекта транспонирования осей PureGaze (ошибка «паралич курсора и дрейф в центре»)
 
@@ -100,7 +100,7 @@ $$w_y[\text{pitch}] = -121.38 \text{ px/deg}$$
    
    При горизонтальном движении глаз угол, переданный как `pitch`, менялся на $33.31^\circ$, а `yaw` менялся лишь на $4.04^\circ$. При вертикальном движении `yaw` менялся на $17.67^\circ$, а `pitch` — на $2.80^\circ$. Оси рыскания и возвышения были повернуты на $90^\circ$ относительно друг друга.
 
-3. **Механизм коллапса в калибраторе [`GazeCalibration`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/engine/calibration.py):**
+3. **Механизм коллапса в калибраторе [`GazeCalibration`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/engine/calibration.py):**
    * В калибраторе горизонтальная координата $X_{screen}$ настраивается строго по `yaw` ($\mathbf{X}_x = [1, \text{yaw}, \text{head\_yaw}]$).
    * Вертикальная координата $Y_{screen}$ настраивается строго по `pitch` ($\mathbf{X}_y = [1, \text{pitch}, \text{head\_pitch}]$).
    * Из-за инверсии осей горизонтальное движение попадало в `pitch` (которое никак не влияет на $X$), а вертикальное движение — в `yaw` (которое никак не влияет на $Y$). Векторы фичей оказались ортогональны целевым смещениям.
@@ -110,7 +110,7 @@ $$w_y[\text{pitch}] = -121.38 \text{ px/deg}$$
    В ранней версии `evaluate_multi_session_suite.py` использовалась многомерная Ridge-регрессия с полной матрицей весов $2 \times 2$: $[\text{yaw}, \text{pitch}] \times \mathbf{W} \to [X, Y]$. Она автоматически находила внедиагональные коэффициенты ($X$ через `pitch`, а $Y$ через `yaw`), получая малую ошибку оффлайн, но реальный калибратор приложения разделяет оси для предотвращения межосевых наводок.
 
 5. **Исправление и эмпирическая проверка:**
-   В [`mvp/adapters/puregaze_adapter.py`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/adapters/puregaze_adapter.py) оси приведены к строгому стандарту ETH-XGaze:
+   В [`mvp/adapters/puregaze_adapter.py`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/adapters/puregaze_adapter.py) оси приведены к строгому стандарту ETH-XGaze:
    ```python
    yaw_rad = float(angles[0, 0].item())
    pitch_rad = float(angles[0, 1].item())
@@ -124,7 +124,7 @@ $$w_y[\text{pitch}] = -121.38 \text{ px/deg}$$
 
 ## 3. ЭМПИРИЧЕСКИЙ БЕНЧМАРК НА 9 РЕАЛЬНЫХ СЕССИЯХ ПОЛЬЗОВАТЕЛЯ (3344 КАДРА)
 
-Оценка произведена на полном наборе синхронизированных видеозаписей пользователя (webcam 1280x720, экран 2880x1800, дистанция 600 мм, $9.537$ px/мм) с использованием промышленного калибратора [`GazeCalibration`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/engine/calibration.py):
+Оценка произведена на полном наборе синхронизированных видеозаписей пользователя (webcam 1280x720, экран 2880x1800, дистанция 600 мм, $9.537$ px/мм) с использованием промышленного калибратора [`GazeCalibration`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/engine/calibration.py):
 * `20261013_182824` (424 кадра)
 * `20261014_115554` (401 кадр)
 * `20261017_140128` (373 кадра)
@@ -199,7 +199,7 @@ $$w_y[\text{pitch}] = -121.38 \text{ px/deg}$$
 
 ## 5. КОМАНДЫ ЗАПУСКА ДЛЯ КАЖДОЙ МОДЕЛИ
 
-Для запуска любого из адаптеров в приложении [`mvp/app.py`](file:///c:/Users/jack_/MAIN/ВУЗ/ВКР/mvp/app.py) используются следующие параметры:
+Для запуска любого из адаптеров в приложении [`mvp/app.py`](file:///d:/ПРОФ/ВУЗ/ВКР/mvp/app.py) используются следующие параметры:
 
 ### 1. PureGaze (Лидер по точности, 1.85°):
 ```powershell
